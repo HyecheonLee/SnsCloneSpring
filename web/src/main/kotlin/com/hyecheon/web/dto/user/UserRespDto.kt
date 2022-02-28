@@ -1,0 +1,30 @@
+package com.hyecheon.web.dto.user
+
+import com.hyecheon.domain.dto.user.UserConverter
+import com.hyecheon.domain.entity.user.User
+import org.mapstruct.factory.Mappers
+import java.time.LocalDateTime
+
+/**
+ * User: hyecheon lee
+ * Email: rainbow880616@gmail.com
+ * Date: 2022/02/26
+ */
+object UserRespDto {
+	private val converter = Mappers.getMapper(UserConverter::class.java)
+
+	data class Model(
+		var id: Long? = null,
+		var firstName: String? = null,
+		var lastName: String? = null,
+		var username: String? = null,
+		var email: String? = null,
+		var roles: List<String> = listOf(),
+		var createdAt: LocalDateTime,
+		var updatedAt: LocalDateTime,
+	) {
+		companion object {
+			fun of(user: User) = converter.toModel(user)
+		}
+	}
+}

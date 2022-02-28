@@ -1,0 +1,51 @@
+spring:
+  profiles:
+    active: local
+
+app:
+  server:
+    domain: localhost
+    hosts: http://${app.server.domain}:3000, http://localhost:8080
+  jwt:
+    secret: antte
+    maxAge: 60602430
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    hikari:
+      jdbc-url: jdbc:mariadb://localhost:3306/twitter
+      username: antte
+      password: antte
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MariaDB103Dialect
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 1000
+        default_batch_fetch_size: 1000
+        implicit_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+    open-in-view: false
+  sleuth:
+    jdbc:
+      p6spy:
+        tracing:
+          include-parameter-values: true
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+      multiline: true
+      logging: slf4j
+      log-file: logs/spy.log
+logging:
+  file:
+    path: logs
