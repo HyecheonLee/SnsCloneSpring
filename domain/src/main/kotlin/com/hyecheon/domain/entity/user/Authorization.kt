@@ -13,7 +13,7 @@ import javax.persistence.*
 @Entity
 class Authorization(
 	@Column(unique = true)
-	val role: String,
+	var role: String? = null,
 ) : BaseEntity(), GrantedAuthority {
 
 	@ManyToMany(mappedBy = "roles")

@@ -16,8 +16,8 @@ class User(
 	var firstName: String? = null,
 
 	var lastName: String? = null,
-	@Column(unique = true)
 
+	@Column(unique = true)
 	var username: String? = null,
 	@Column(unique = true)
 

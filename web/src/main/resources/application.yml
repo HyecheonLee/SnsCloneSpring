@@ -9,7 +9,9 @@ app:
   jwt:
     secret: antte
     maxAge: 60602430
-
+server:
+  error:
+    include-message: always
 ---
 
 spring:
@@ -49,3 +51,5 @@ decorator:
 logging:
   file:
     path: logs
+#  level:
+#    root: trace

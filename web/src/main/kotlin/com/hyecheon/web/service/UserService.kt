@@ -4,6 +4,7 @@ import com.hyecheon.domain.entity.user.Authorization
 import com.hyecheon.domain.entity.user.AuthorizationRepository
 import com.hyecheon.domain.entity.user.User
 import com.hyecheon.domain.entity.user.UserRepository
+import com.hyecheon.web.exception.IdNotExistsException
 import com.hyecheon.web.exception.PasswordInvalidException
 import com.hyecheon.web.security.JwtTokenProvider
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -36,7 +37,7 @@ class UserService(
 		val savedUser = userRepository.save(user)
 
 		savedUser.addRole(authorization)
-		savedUser
+		savedUser.id!!
 	}
 
 	fun findByUsername(username: String) = run {
@@ -49,6 +50,10 @@ class UserService(
 		if (!passwordEncoder.matches(password, user.password)) {
 			throw PasswordInvalidException("$username 의 비밀번호가 틀립니다.")
 		}
-		jwtTokenProvider.generateToken(username)
+		jwtTokenProvider.generateToken(user)
+	}
+
+	fun findById(id: Long) {
+		userRepository.findById(id).orElseThrow { IdNotExistsException("사용자 id[${id}] 가 존재하지 않습니다.") }
 	}
 }

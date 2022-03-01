@@ -23,11 +23,6 @@ class JwtAuthenticationEntryPoint : AuthenticationEntryPoint {
 	) {
 
 		log.error("Responding with unauthorized error. Message - {}", e.message)
-
-//		val unAuthorizationCode: ErrorCode = request.getAttribute("unauthorization.code") as ErrorCode
-
-//		request.setAttribute("response.failure.code", unAuthorizationCode.name())
-//		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, unAuthorizationCode.message())
-
+		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.message)
 	}
 }

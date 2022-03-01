@@ -1,8 +1,12 @@
 package com.hyecheon.web.exception
 
+import com.hyecheon.web.dto.web.ErrorDto
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.context.request.WebRequest
+import javax.servlet.http.HttpServletRequest
 
 /**
  * User: hyecheon lee
@@ -11,9 +15,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
  */
 @RestControllerAdvice
 class ExceptionHandler {
+	private val log = LoggerFactory.getLogger(this::class.java)
 
 	@ExceptionHandler(Exception::class)
-	fun allException(e: Exception) = run {
-		ResponseEntity.ok(e.message)
+	fun allException(e: Exception, request: HttpServletRequest, webRequest: WebRequest) = run {
+		val errorRespDto = ErrorDto.of(request)
+
+		ResponseEntity.ok(errorRespDto)
 	}
 }

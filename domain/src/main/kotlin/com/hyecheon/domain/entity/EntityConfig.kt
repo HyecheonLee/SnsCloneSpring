@@ -1,13 +1,12 @@
 package com.hyecheon.domain.entity
 
+import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.domain.entity.user.User
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.domain.AuditorAware
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.security.core.context.SecurityContext
-import org.springframework.security.core.context.SecurityContextHolder
 import java.util.*
 
 
@@ -20,17 +19,14 @@ import java.util.*
 @EnableJpaAuditing
 @EntityScan("com.hyecheon.domain.entity")
 @EnableJpaRepositories("com.hyecheon.domain.entity")
-class EntityConfig : AuditorAware<User> {
-	override fun getCurrentAuditor(): Optional<User> {
+class EntityConfig() : AuditorAware<String> {
 
-		val optionalLoggedUser = Optional.ofNullable(SecurityContextHolder.getContext())
-			.map { obj: SecurityContext -> obj.authentication }
-			.flatMap { authentication ->
-				val principal = authentication.principal
-				if (principal is User) Optional.of(principal)
-				else Optional.empty()
-			}
-		if (optionalLoggedUser.isEmpty) return Optional.empty()
-		return Optional.of(optionalLoggedUser.get())
+	override fun getCurrentAuditor(): Optional<String> {
+		val optionalAuthToken = AuthToken.loggedToken()
+		if (optionalAuthToken.isPresent) {
+			val authToken = optionalAuthToken.get()
+			return authToken.username?.let { Optional.of(it) } ?: Optional.empty()
+		}
+		return Optional.empty()
 	}
 }

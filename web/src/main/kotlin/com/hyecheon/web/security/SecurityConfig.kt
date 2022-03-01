@@ -6,6 +6,9 @@ import com.hyecheon.web.config.AppProperty
 import com.hyecheon.web.service.UserService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -21,8 +24,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
  * Email: rainbow880616@gmail.com
  * Date: 2022/02/26
  */
+
+@Configuration
 @EnableWebSecurity
-class SecurityConfig(private val appProperty: AppProperty) : WebSecurityConfigurerAdapter() {
+class SecurityConfig(
+	private val appProperty: AppProperty,
+	private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
+) : WebSecurityConfigurerAdapter() {
 	private val log = LoggerFactory.getLogger(this::class.java)
 
 	override fun configure(http: HttpSecurity) {
@@ -39,7 +47,11 @@ class SecurityConfig(private val appProperty: AppProperty) : WebSecurityConfigur
 			.permitAll()
 			.antMatchers("$API_V1/**").hasRole("USER")
 			.and()
+			.exceptionHandling()
+			.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+			.and()
 			.formLogin().disable().headers().frameOptions().disable()
+
 
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
 	}
@@ -71,8 +83,7 @@ class SecurityConfig(private val appProperty: AppProperty) : WebSecurityConfigur
 	@Bean
 	fun jwtAuthenticationFilter(
 		jwtTokenProvider: JwtTokenProvider? = null,
-		userService: UserService? = null,
 	) = run {
-		JwtAuthenticationFilter(jwtTokenProvider!!, userService!!)
+		JwtAuthenticationFilter(jwtTokenProvider!!)
 	}
 }

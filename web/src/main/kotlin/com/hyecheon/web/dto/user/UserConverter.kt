@@ -18,8 +18,10 @@ import org.mapstruct.*
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 abstract class UserConverter {
 
+	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	abstract fun toEntity(user: UserReqDto.Join): User
 
+	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	@Mapping(source = "roles", target = "roles", qualifiedByName = ["toRole"])
 	abstract fun toModel(user: User?): UserRespDto.Model
 

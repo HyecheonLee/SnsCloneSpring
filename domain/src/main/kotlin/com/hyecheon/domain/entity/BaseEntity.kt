@@ -3,6 +3,7 @@ package com.hyecheon.domain.entity
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -13,16 +14,16 @@ import javax.persistence.*
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-abstract class BaseEntity {
+abstract class BaseEntity : Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	open var id: Long? = null
+	var id: Long? = null
 
 	@CreatedDate
-	open var createdAt: LocalDateTime? = null
+	var createdAt: LocalDateTime? = null
 
 	@LastModifiedDate
-	open var updatedAt: LocalDateTime? = null
+	var updatedAt: LocalDateTime? = null
 
 }

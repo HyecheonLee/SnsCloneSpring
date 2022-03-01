@@ -3,7 +3,6 @@ package com.hyecheon.domain.entity.post
 import com.hyecheon.domain.entity.BaseEntity
 import com.hyecheon.domain.entity.user.User
 import org.hibernate.Hibernate
-import org.slf4j.LoggerFactory
 import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import javax.persistence.*
@@ -21,11 +20,13 @@ class Post(
 	var content: String? = null,
 ) : BaseEntity() {
 
-	@CreatedBy
-	@JoinColumn(name = "user_id")
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
+	@JoinColumn(name = "username", referencedColumnName = "username", updatable = false, insertable = false)
 	var postedBy: User? = null
 
+	@CreatedBy
+	@Column(name = "username", updatable = false)
+	var username: String? = null
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true

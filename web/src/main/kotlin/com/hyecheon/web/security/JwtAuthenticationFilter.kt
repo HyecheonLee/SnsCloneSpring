@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse
 
 class JwtAuthenticationFilter(
 	private val jwtTokenProvider: JwtTokenProvider,
-	private val userService: UserService,
 ) : OncePerRequestFilter() {
 	override fun doFilterInternal(
 		request: HttpServletRequest,
@@ -28,13 +27,12 @@ class JwtAuthenticationFilter(
 	) {
 		try {
 			val jwt: String? = getJwtFromRequest(request) //request에서 jwt 토큰을 꺼낸다.
+
 			if (!jwt.isNullOrBlank() && jwtTokenProvider.validateToken(jwt)) {
-				val username = jwtTokenProvider.getUsernameFromJWT(jwt) //jwt에서 사용자 id를 꺼낸다.
-				val user = userService.findByUsername(username)
-				val authentication = UsernamePasswordAuthenticationToken(user, null, user.roles)
+				val authToken = jwtTokenProvider.getUsernameFromJWT(jwt) //jwt에서 사용자 id를 꺼낸다.
+				val authentication = authToken.createToken()
 				authentication.details = WebAuthenticationDetailsSource().buildDetails(request) //기본적으로 제공한 details 세팅
-				SecurityContextHolder.getContext().authentication =
-					UsernamePasswordAuthenticationToken(user, null, user.roles)
+				SecurityContextHolder.getContext().authentication = authToken.createToken()
 			} else {
 				if (jwt.isNullOrBlank()) {
 					request.setAttribute("unauthorization", "401 인증키 없음.")

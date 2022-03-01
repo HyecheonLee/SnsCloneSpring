@@ -1,5 +1,6 @@
 package com.hyecheon.web.dto.user
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.hyecheon.domain.dto.user.UserConverter
 import com.hyecheon.domain.entity.user.User
 import org.mapstruct.factory.Mappers
@@ -13,15 +14,17 @@ import java.time.LocalDateTime
 object UserRespDto {
 	private val converter = Mappers.getMapper(UserConverter::class.java)
 
+	@JsonInclude(value = JsonInclude.Include.NON_NULL)
 	data class Model(
 		var id: Long? = null,
 		var firstName: String? = null,
 		var lastName: String? = null,
 		var username: String? = null,
 		var email: String? = null,
+		@JsonInclude(JsonInclude.Include.NON_EMPTY)
 		var roles: List<String> = listOf(),
-		var createdAt: LocalDateTime,
-		var updatedAt: LocalDateTime,
+		var createdAt: LocalDateTime?,
+		var updatedAt: LocalDateTime?,
 	) {
 		companion object {
 			fun of(user: User) = converter.toModel(user)

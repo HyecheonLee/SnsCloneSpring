@@ -1,5 +1,6 @@
 package com.hyecheon.web.api
 
+import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.web.api.Constant.USER_API
 import com.hyecheon.web.config.AppProperty
 import com.hyecheon.web.dto.user.UserReqDto
@@ -9,10 +10,10 @@ import com.hyecheon.web.service.UserService
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.*
+import java.net.URI
+import javax.security.auth.login.LoginException
 
 
 /**
@@ -27,12 +28,26 @@ class UserApi(
 	private val appProperty: AppProperty,
 ) {
 
+	@GetMapping("/me")
+	fun me() = run {
+		val token = AuthToken.loggedToken()
+		if (!token.isPresent) throw LoginException("로그인을 해주세요.")
+		val username = token.get().username ?: throw LoginException("로그인을 해주세요.")
+		val loggedUser = userService.findByUsername(username)
+		ResponseEntity.ok(
+			ResponseDto(data = UserRespDto.Model.of(loggedUser))
+		)
+	}
+
+	@GetMapping("/{id}")
+	fun findById(@PathVariable id: Long) = run {
+		userService.findById(id)
+	}
+
 	@PostMapping("/join")
 	fun join(@RequestBody user: UserReqDto.Join) = run {
-		val savedUser = userService.join(user.toEntity())
-		ResponseEntity.ok(
-			ResponseDto(data = UserRespDto.Model.of(savedUser))
-		)
+		val userId = userService.join(user.toEntity())
+		ResponseEntity.created(URI.create("/${USER_API}/me"))
 	}
 
 	@PostMapping("/login")

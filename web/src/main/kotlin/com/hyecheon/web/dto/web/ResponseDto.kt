@@ -1,5 +1,7 @@
 package com.hyecheon.web.dto.web
 
+import javax.servlet.http.HttpServletRequest
+
 /**
  * User: hyecheon lee
  * Email: rainbow880616@gmail.com
@@ -9,4 +11,5 @@ data class ResponseDto<T>(
 	val code: Int = 0,
 	val data: T,
 	val message: String = "success",
-)
+) {
+}
