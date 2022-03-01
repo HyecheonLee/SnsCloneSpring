@@ -1,9 +1,10 @@
 import Link from "next/link";
-import React, { FunctionComponent, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from 'react-hook-form'
-import { apiV1, apiV1User } from '../../apiUtils'
+import { apiV1User } from '../../apiUtils'
 import { useRouter } from 'next/router'
-import LoadingModal from '../LoadingModal'
+import { useDispatch } from 'react-redux'
+import { modalActions } from '../../store/modal'
 
 interface IProps {
 
@@ -16,20 +17,23 @@ type FormData = {
 
 const LoginForm: React.FC<IProps> = ({...props}) => {
   const {register, handleSubmit, watch, formState: {errors}} = useForm<FormData>();
-  let router = useRouter()
-  const [showLoading, setShowLoading] = useState(false);
-
+  const router = useRouter()
+  const dispatch = useDispatch()
+  const {showLoading, removeModal} = modalActions
+  useEffect(() => {
+    return () => {
+      dispatch(removeModal())
+    }
+  });
   const onSubmit = (data: FormData) => {
-    setShowLoading(true);
-    apiV1User.post("/users/login", data)
+    dispatch(showLoading("로그인중입니다."))
+    apiV1User.post("/login", data)
       .then(async value => {
-        await router.push("/");
-        setShowLoading(false);
+        await dispatch(removeModal());
+        if (value.ok) {
+          await router.push("/");
+        }
       })
-      .catch(error => {
-        console.log(error);
-        setShowLoading(false);
-      });
   }
 
   return (
@@ -55,7 +59,6 @@ const LoginForm: React.FC<IProps> = ({...props}) => {
         <a className="text-center w-100 btn btn-link my-0"> Need an account? Register
           here.</a>
       </Link>
-      <LoadingModal show={showLoading}/>
     </div>);
 };
 

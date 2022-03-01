@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import Link from 'next/link'
 import { useForm } from "react-hook-form";
 import { apiV1User } from '../../apiUtils'
 import { useRouter } from 'next/router'
-import LoadingModal from '../LoadingModal'
+import { useDispatch } from 'react-redux'
+import { modalActions } from '../../store/modal'
 
 interface IProps {
 }
@@ -19,18 +20,29 @@ type FormData = {
 const RegisterForm: React.FC<IProps> = ({...props}) => {
   const router = useRouter()
   const {register, handleSubmit, watch, formState: {errors}} = useForm<FormData>();
-  const [showLoading, setShowLoading] = useState(false);
+  const dispatch = useDispatch()
+  const {showLoading, removeModal} = modalActions
+
+  useEffect(() => {
+    return () => {
+      dispatch(removeModal())
+    };
+  }, []);
+
   const onSubmit = (data: FormData) => {
-    setShowLoading(true);
-    apiV1User.post("/users/join", data)
+    dispatch(showLoading("사용자 등록중입니다."))
+    apiV1User.post("/join", data)
       .then(async value => {
-        await router.push("/users/login");
-        setShowLoading(false);
+        await dispatch(removeModal())
+        if (value.ok) {
+          await router.push("/auth/login");
+        }
       })
       .catch(error => {
         console.log(error);
       })
   }
+
 
   return (<div style={{maxWidth: "500px", width: "80%"}}
                className="shadow-lg rounded-2 p-4 bg-white">
@@ -80,7 +92,6 @@ const RegisterForm: React.FC<IProps> = ({...props}) => {
         <a className="text-center w-100 btn btn-link my-0"> Already have an account? Login
           here</a>
       </Link>
-      <LoadingModal show={showLoading}/>
     </div>
   );
 }
