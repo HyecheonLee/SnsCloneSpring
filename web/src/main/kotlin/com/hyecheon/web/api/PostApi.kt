@@ -1,9 +1,14 @@
 package com.hyecheon.web.api
 
+import com.hyecheon.domain.entity.user.AuthToken
+import com.hyecheon.domain.exception.LoggedNotException
 import com.hyecheon.web.dto.post.PostReqDto
 import com.hyecheon.web.dto.post.PostRespDto
 import com.hyecheon.web.dto.web.ResponseDto
 import com.hyecheon.web.service.PostService
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -16,17 +21,28 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(Constant.POST_API)
 class PostApi(
 	private val postService: PostService,
-) {
+
+	) {
 
 	@GetMapping
-	fun get() = run {
-		val posts = postService.findAll()
-
+	fun get(
+		@PageableDefault(sort = ["id"], direction = Sort.Direction.DESC) pageable: Pageable,
+	) = run {
+		val posts = postService.findAll(pageable).content
 		val data = posts.map { PostRespDto.Model.of(it) }
-		println(data)
 		ResponseEntity.ok(
 			ResponseDto(data = data)
 		)
+	}
+
+	@PostMapping("/{postId}/like")
+	fun like(@PathVariable postId: Long) = run {
+		postService.like(postId)
+	}
+
+	@DeleteMapping("/{postId}/unlike")
+	fun unlike(@PathVariable postId: Long) = run {
+		postService.unLike(postId)
 	}
 
 	@PostMapping

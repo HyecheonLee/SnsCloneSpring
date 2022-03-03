@@ -28,16 +28,17 @@ class UserService(
 
 	@Transactional
 	fun join(user: User) = run {
-		user.password = passwordEncoder.encode(user.password)
-
 		val authorization =
 			authorizationRepository.findByRole("USER")
 				?: authorizationRepository.save(Authorization("USER"))
 
-		val savedUser = userRepository.save(user)
+		val newUser = user.apply {
+			password = passwordEncoder.encode(password)
+			profilePic = "/images/profilePic.jpeg"
+			addRole(authorization)
+		}
+		userRepository.save(newUser)
 
-		savedUser.addRole(authorization)
-		savedUser.id!!
 	}
 
 	fun findByUsername(username: String) = run {

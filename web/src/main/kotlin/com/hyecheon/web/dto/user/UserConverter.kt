@@ -4,6 +4,7 @@ import com.hyecheon.domain.entity.user.Authorization
 import com.hyecheon.domain.entity.user.User
 import com.hyecheon.web.dto.user.UserReqDto
 import com.hyecheon.web.dto.user.UserRespDto
+import org.hibernate.Hibernate
 import org.mapstruct.*
 
 
@@ -26,5 +27,7 @@ abstract class UserConverter {
 	abstract fun toModel(user: User?): UserRespDto.Model
 
 	@Named("toRole")
-	fun toRole(roles: MutableSet<Authorization>) = roles.map { it.role }
+	fun toRole(roles: MutableSet<Authorization>) = run {
+		roles.filter { Hibernate.isInitialized(it) }.map { it.role }
+	}
 }

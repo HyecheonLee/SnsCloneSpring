@@ -3,6 +3,7 @@ package com.hyecheon.web.dto.post
 import com.hyecheon.domain.dto.user.UserConverter
 import com.hyecheon.domain.entity.post.Post
 import com.hyecheon.domain.entity.user.User
+import org.hibernate.Hibernate
 import org.mapstruct.*
 import org.mapstruct.factory.Mappers
 
@@ -22,7 +23,11 @@ abstract class PostConverter {
 
 	@Named("toUserResp")
 	fun toUserResp(user: User?) = run {
-		val converter = Mappers.getMapper(UserConverter::class.java)
-		converter.toModel(user)
+		if (Hibernate.isInitialized(user)) {
+			val converter = Mappers.getMapper(UserConverter::class.java)
+			converter.toModel(user)
+		} else {
+			null
+		}
 	}
 }

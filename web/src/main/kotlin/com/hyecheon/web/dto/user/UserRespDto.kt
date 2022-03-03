@@ -23,8 +23,9 @@ object UserRespDto {
 		var email: String? = null,
 		@JsonInclude(JsonInclude.Include.NON_EMPTY)
 		var roles: List<String> = listOf(),
-		var createdAt: LocalDateTime?,
-		var updatedAt: LocalDateTime?,
+		var profilePic: String? = null,
+		var createdAt: LocalDateTime? = null,
+		var updatedAt: LocalDateTime? = null,
 	) {
 		companion object {
 			fun of(user: User) = converter.toModel(user)

@@ -1,7 +1,11 @@
 package com.hyecheon.domain.entity.post
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
 import java.util.*
 
 /**
@@ -14,6 +18,18 @@ interface PostRepository : JpaRepository<Post, Long> {
 	@EntityGraph(attributePaths = ["postedBy", "postedBy.roles"], type = EntityGraph.EntityGraphType.LOAD)
 	override fun findAll(): MutableList<Post>
 
+	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
+	override fun findAll(pageable: Pageable): Page<Post>
+
+
 	@EntityGraph(attributePaths = ["postedBy", "postedBy.roles"], type = EntityGraph.EntityGraphType.LOAD)
 	override fun findById(id: Long): Optional<Post>
+
+	@Modifying
+	@Query("insert into post_like(user_id,post_id) values (:userId , :postId)", nativeQuery = true)
+	fun mPostLike(userId: Long, postId: Long)
+
+	@Modifying
+	@Query("delete from post_like where user_id = :userId and post_id = :postId", nativeQuery = true)
+	fun mPostUnLike(userId: Long, postId: Long)
 }

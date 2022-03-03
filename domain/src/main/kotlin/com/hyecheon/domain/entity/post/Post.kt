@@ -28,6 +28,20 @@ class Post(
 	@Column(name = "username", updatable = false)
 	var username: String? = null
 
+	var likeCnt: Long = 0
+
+	@Transient
+	var userLike: Boolean = false
+
+	fun postLike() = run {
+		likeCnt++
+	}
+
+	fun postUnLike() = run {
+		if (likeCnt > 0)
+			likeCnt--
+	}
+
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
