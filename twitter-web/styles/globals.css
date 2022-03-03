@@ -182,3 +182,7 @@ button {
     color: var(--blue);
     border-radius: 50%;
 }
+
+.active {
+    color: var(--bludLight);
+}

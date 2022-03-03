@@ -1,11 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image'
 import { PostType } from '../../types/post'
-import dayjs from 'dayjs';
+import { apiV1Post, domain } from '../../apiUtils'
+import { dayjs } from '../../utils/DayjsUtils';
 
 const Post = ({post}: { post: PostType }) => {
   let {postedBy} = post
-  const timeDiff = dayjs(postedBy.createdAt).toNow()
+  const timeDiff = dayjs(post.createdAt).fromNow();
+  const [like, setLike] = useState(post.userLike);
+  const [likeCnt, setLikeCnt] = useState(post.likeCnt);
+
+  const likeButton = (e: any) => {
+    if (like) {
+      postUnLike()
+    } else {
+      postLike()
+    }
+  }
+  const postLike = () => {
+    setLike(true)
+    setLikeCnt(prevState => prevState + 1)
+    apiV1Post.post(`/${post.id}/like`).then(value => {
+      if (!value.ok) {
+        setLike(false);
+        setLikeCnt(prevState => prevState - 1)
+      }
+    });
+  }
+  const postUnLike = () => {
+    setLike(false)
+    setLikeCnt(prevState => prevState - 1)
+    apiV1Post.delete(`/${post.id}/unlike`).then(value => {
+      if (!value.ok) {
+        setLike(true);
+        setLikeCnt(prevState => prevState + 1)
+      }
+    });
+  }
 
   return (
     <div className="post" data-id="${postData._id}">
@@ -13,14 +44,13 @@ const Post = ({post}: { post: PostType }) => {
         <div className="userImageContainer">
           <Image
             unoptimized={true}
-            loader={({src}) => "http://localhost:8080" + src}
-            src={`/${postedBy?.profilePic}`}
+            loader={({src}) => domain + src}
+            src={`${domain}${postedBy?.profilePic}`}
             alt="Picture of the author"
             width={50} height={50}/>
         </div>
         <div className="postContentContainer">
           <div className="header">
-
             <a href="/profile/${postedBy.username}"
                className="displayName">{postedBy.firstName + " " + postedBy.lastName}</a>
             <span className="username">@{postedBy.username}</span>
@@ -40,10 +70,13 @@ const Post = ({post}: { post: PostType }) => {
                 <i className="fas fa-retweet"></i>
               </button>
             </div>
-            <div className="postButtonContainer">
-              <button className="likeButton">
+            <div
+              className={`postButtonContainer d-flex align-items-center`}>
+              <button onClick={likeButton}
+                      className={`mx-1 likeButton  ${like ? "active" : ""}`}>
                 <i className="fas fa-heart"></i>
               </button>
+              <span className={`${like ? "active" : "text-muted"}`}>{likeCnt}</span>
             </div>
           </div>
         </div>

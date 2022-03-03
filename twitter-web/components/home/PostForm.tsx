@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image'
 import { useSelector } from '../../store'
 import { useForm } from 'react-hook-form'
-import { apiV1Post } from '../../apiUtils'
+import { apiV1Post, domain } from '../../apiUtils'
 
 interface FormData {
   content: string
@@ -22,7 +22,6 @@ const PostForm = () => {
 
 
   const onSubmit = (data: FormData) => {
-
     apiV1Post.post("", data)
   }
 
@@ -38,14 +37,13 @@ const PostForm = () => {
     let content = e.currentTarget.value
     enableSubmit(content)
   }
-
   return (
     <div className="postFormContainer">
       <div className={"userImageContainer"}>
         <Image
           unoptimized={true}
-          loader={({src}) => "http://localhost:8080" + src}
-          src={`/${user?.profilePic}`}
+          loader={({src}) => domain + src}
+          src={`${domain}${user?.profilePic}`}
           alt="Picture of the author"
           width={50} height={50}/>
       </div>

@@ -5,5 +5,7 @@ export type PostType = {
   content: string,
   createdAt: string,
   updatedAt: string,
-  postedBy: UserType
+  postedBy: UserType,
+  userLike: boolean,
+  likeCnt: number
 }

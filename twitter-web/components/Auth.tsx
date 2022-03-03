@@ -41,7 +41,7 @@ const Auth: React.FC<IProps> = ({...props}) => {
       dispatch(removeModal());
     }
   }, [])
-  console.log("=====");
+
   if (!auth.login) return null
 
   return (<>
