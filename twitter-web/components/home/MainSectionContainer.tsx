@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import Post from './Post'
 import { useSelector } from '../../store'
 import PostForm from './PostForm'
-import { apiV1Post, apiV1PostUrl } from '../../apiUtils'
+import { apiV1Post, apiV1PostUrl } from '../../utils/apiUtils'
 import useSWR from 'swr';
 import axios from 'axios'
 import { ApiResponseType } from '../../types/api'

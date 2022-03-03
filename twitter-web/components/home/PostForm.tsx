@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image'
 import { useSelector } from '../../store'
 import { useForm } from 'react-hook-form'
-import { apiV1Post, domain } from '../../apiUtils'
+import { apiV1Post, domain } from '../../utils/apiUtils'
 
 interface FormData {
   content: string
@@ -38,14 +38,15 @@ const PostForm = () => {
     enableSubmit(content)
   }
   return (
-    <div className="postFormContainer">
-      <div className={"userImageContainer"}>
-        <Image
+    <div className="d-flex border-bottom border-5 flex-shrink-0 p-3">
+      <div>
+        {user && user.profilePic && <Image
+          className={"rounded-circle bg-white"}
           unoptimized={true}
           loader={({src}) => domain + src}
           src={`${domain}${user?.profilePic}`}
           alt="Picture of the author"
-          width={50} height={50}/>
+          width={50} height={50}/>}
       </div>
       <div className="textareaContainer">
         <form onSubmit={handleSubmit(onSubmit)}>

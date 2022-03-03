@@ -87,13 +87,6 @@ button {
     flex: 1;
 }
 
-.postFormContainer {
-    display: flex;
-    padding: var(--spacing);
-    border-bottom: 10px solid rgb(230, 236, 240);
-    flex-shrink: 0;
-}
-
 .post {
     display: flex;
     flex-direction: column;
@@ -112,17 +105,6 @@ button {
 
 .username, .date {
     color: var(--greyText);
-}
-
-.userImageContainer {
-    width: 50px;
-    height: 50px;
-}
-
-.userImageContainer img {
-    width: 100%;
-    border-radius: 50%;
-    background-color: white;
 }
 
 .textareaContainer {
@@ -154,15 +136,6 @@ button {
     font-weight: bold;
 }
 
-.postFooter {
-    display: flex;
-    align-items: center;
-}
-
-.postFooter .postButtonContainer {
-    flex: 1;
-    display: flex;
-}
 
 .postFooter .postButtonContainer button {
     padding: 2px 5px;

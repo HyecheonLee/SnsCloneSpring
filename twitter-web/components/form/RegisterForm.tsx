@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Link from 'next/link'
 import { useForm } from "react-hook-form";
-import { apiV1User } from '../../apiUtils'
+import { apiV1User } from '../../utils/apiUtils'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
 import { modalActions } from '../../store/modal'

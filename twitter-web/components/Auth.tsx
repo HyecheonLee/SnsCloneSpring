@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from '../store'
 import { useDispatch } from 'react-redux'
 import { authActions } from '../store/auth'
-import { apiV1User } from '../apiUtils'
+import { apiV1User } from '../utils/apiUtils'
 import { UserType } from '../types/user'
 import { ApiResponseType, ErrorType } from '../types/api'
 import { useRouter } from 'next/router'
@@ -34,7 +34,7 @@ const Auth: React.FC<IProps> = ({...props}) => {
   }
 
   useEffect(() => {
-    if (!auth.login) {
+    if (!auth.login || auth.user) {
       login()
     }
     return () => {
@@ -42,7 +42,7 @@ const Auth: React.FC<IProps> = ({...props}) => {
     }
   }, [])
 
-  if (!auth.login) return null
+  if (!auth.login && auth.user) return null
 
   return (<>
     {props.children}

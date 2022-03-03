@@ -19,7 +19,7 @@ const auth = createSlice({
       state.login = true
     },
     logout(state) {
-      state.login = true
+      state.login = false
       state.user = null
     }
   }

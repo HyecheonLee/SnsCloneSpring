@@ -1,48 +1,57 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image'
 import { PostType } from '../../types/post'
-import { apiV1Post, domain } from '../../apiUtils'
+import { apiV1Post, domain } from '../../utils/apiUtils'
 import { dayjs } from '../../utils/DayjsUtils';
 
+
+const postLike = async (id: number) => {
+  return await apiV1Post.post(`/${id}/like`).then(value => {
+    return value
+  });
+}
+const postUnLike = async (id: number) => {
+  return await apiV1Post.delete(`/${id}/unlike`).then(value => {
+    return value
+  });
+}
+
+
 const Post = ({post}: { post: PostType }) => {
-  let {postedBy} = post
+  const {postedBy} = post
+
   const timeDiff = dayjs(post.createdAt).fromNow();
   const [like, setLike] = useState(post.userLike);
   const [likeCnt, setLikeCnt] = useState(post.likeCnt);
 
-  const likeButton = (e: any) => {
-    if (like) {
-      postUnLike()
+  const likeButton = useCallback(async (e: any) => {
+    const nextLike = !like;
+    const currentCnt = likeCnt;
+    const currentLike = like;
+
+    setLike(nextLike)
+    setLikeCnt(prevState => nextLike ? currentCnt + 1 : currentCnt - 1);
+
+    let result;
+    if (nextLike) {
+      result = await postLike(post.id)
     } else {
-      postLike()
+      result = await postUnLike(post.id)
     }
-  }
-  const postLike = () => {
-    setLike(true)
-    setLikeCnt(prevState => prevState + 1)
-    apiV1Post.post(`/${post.id}/like`).then(value => {
-      if (!value.ok) {
-        setLike(false);
-        setLikeCnt(prevState => prevState - 1)
-      }
-    });
-  }
-  const postUnLike = () => {
-    setLike(false)
-    setLikeCnt(prevState => prevState - 1)
-    apiV1Post.delete(`/${post.id}/unlike`).then(value => {
-      if (!value.ok) {
-        setLike(true);
-        setLikeCnt(prevState => prevState + 1)
-      }
-    });
-  }
+
+    if (!result.ok) {
+      setLikeCnt(currentCnt);
+      setLike(currentLike);
+    }
+  }, [like, likeCnt]);
+
 
   return (
     <div className="post" data-id="${postData._id}">
-      <div className="mainContentContainer">
-        <div className="userImageContainer">
+      <div className="d-flex">
+        <div>
           <Image
+            className={"rounded-circle bg-white"}
             unoptimized={true}
             loader={({src}) => domain + src}
             src={`${domain}${postedBy?.profilePic}`}
@@ -50,88 +59,42 @@ const Post = ({post}: { post: PostType }) => {
             width={50} height={50}/>
         </div>
         <div className="postContentContainer">
-          <div className="header">
-            <a href="/profile/${postedBy.username}"
-               className="displayName">{postedBy.firstName + " " + postedBy.lastName}</a>
-            <span className="username">@{postedBy.username}</span>
-            <span className="date">{timeDiff}</span>
+          <div>
+            <a
+              className="fw-bold text-decoration-none">{postedBy.firstName + " " + postedBy.lastName}</a>
+            <span className="text-muted">@{postedBy.username}</span>
+            <span className="text-muted">{timeDiff}</span>
           </div>
-          <div className="postBody">
+          <div>
             <span>{post.content}</span>
           </div>
-          <div className="postFooter">
-            <div className="postButtonContainer">
+          <div className="d-flex text-center">
+            <div className="flex-fill d-flex align-items-center">
               <button>
-                <i className="fas fa-comment"></i>
+                <i className="rounded-circle p-1 fas fa-comment"></i>
               </button>
             </div>
-            <div className="postButtonContainer">
+            <div className="flex-fill d-flex align-items-center">
               <button>
-                <i className="fas fa-retweet"></i>
+                <i className="rounded-circle p-1 fas fa-retweet"></i>
               </button>
             </div>
             <div
-              className={`postButtonContainer d-flex align-items-center`}>
+              className={`flex-fill d-flex align-items-center`}>
               <button onClick={likeButton}
-                      className={`mx-1 likeButton  ${like ? "active" : ""}`}>
-                <i className="fas fa-heart"></i>
+                      className={`mx-1  ${like ? "active" : "text-black-50"}`}>
+                <i className="rounded-circle p-1 fas fa-heart"></i>
               </button>
-              <span className={`${like ? "active" : "text-muted"}`}>{likeCnt}</span>
+              <span className={`${like ? "active" : "text-black-50"}`}>{likeCnt}</span>
             </div>
           </div>
         </div>
       </div>
       <style jsx>{`
-        .post {
-          display: flex;
-          flex-direction: column;
-          padding: var(--spacing);
-          cursor: pointer;
-          border-bottom: 1px solid var(--lightGery);
-        }
-
-        .mainContentContainer {
-          display: flex;
-        }
-
-        .postFooter {
-          display: flex;
-          align-items: center;
-        }
-
-        .postFooter .postButtonContainer {
-          flex: 1;
-          display: flex;
-        }
-
-        .postFooter .postButtonContainer button {
-          padding: 2px 5px;
-        }
-
-        .header a:hover {
-          text-decoration: underline;
-        }
-
-        .header a,
-        .header span {
-          padding-right: 5px;
-        }
-
-        .postButtonContainer button:hover {
+        button:hover {
           background-color: var(--buttonHoverBg);
           color: var(--blue);
           border-radius: 50%;
-        }
-
-        .userImageContainer {
-          width: 50px;
-          height: 50px;
-        }
-
-        .userImageContainer img {
-          width: 100%;
-          border-radius: 50%;
-          background-color: white;
         }
       `}
       </style>
@@ -139,5 +102,5 @@ const Post = ({post}: { post: PostType }) => {
   );
 };
 
-export default Post;
+export default React.memo(Post);
 

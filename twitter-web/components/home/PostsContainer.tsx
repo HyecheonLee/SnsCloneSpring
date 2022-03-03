@@ -1,6 +1,6 @@
 import React from 'react';
 import useSWR from 'swr'
-import { apiV1Post, apiV1PostUrl } from '../../apiUtils'
+import { apiV1Post, apiV1PostUrl } from '../../utils/apiUtils'
 import { ApiResponseType } from '../../types/api'
 import { PostType } from '../../types/post'
 import Post from './Post'
@@ -13,13 +13,14 @@ const PostsContainer = () => {
       })
       .then(value => {
         return value?.data
-      })
-  })
+      });
+  });
+
   if (error || !data) {
     return <div>Loading...</div>
   }
   return (
-    <div className="postsContainer">
+    <div className="container">
       {data.map((post) => {
         return <Post key={post.id} post={post}/>
       })}
@@ -27,4 +28,4 @@ const PostsContainer = () => {
   );
 };
 
-export default PostsContainer;
+export default React.memo(PostsContainer);
