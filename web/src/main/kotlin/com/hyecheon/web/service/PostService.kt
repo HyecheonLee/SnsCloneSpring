@@ -29,17 +29,17 @@ class PostService(
 	private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
-	fun findAll(pageable: Pageable) = run {
-		val pagePost = postRepository.findAll(pageable)
+	fun findAll(postId: Long) = run {
+		val pagePost = postRepository.findTop10ByIdLessThanOrderByIdDesc(postId)
 		val loggedUser = loggedUser()
-		val postIds = pagePost.content.map { post -> post.id }.filterNotNull()
+		val postIds = pagePost.mapNotNull { post -> post.id }
 		val postLike = postLikeRepository.findAllByUserAndPostIdIn(loggedUser, postIds)
-		pagePost.map { post ->
+		pagePost.forEach { post ->
 			if (postLike.any { postLike -> post.id == postLike.post.id }) {
 				post.userLike = true
 			}
-			post
 		}
+		pagePost
 	}
 
 	fun new(post: Post) = run {

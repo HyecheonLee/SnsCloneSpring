@@ -19,7 +19,7 @@ interface PostRepository : JpaRepository<Post, Long> {
 	override fun findAll(): MutableList<Post>
 
 	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
-	override fun findAll(pageable: Pageable): Page<Post>
+	fun findTop10ByIdLessThanOrderByIdDesc(id: Long): List<Post>
 
 
 	@EntityGraph(attributePaths = ["postedBy", "postedBy.roles"], type = EntityGraph.EntityGraphType.LOAD)

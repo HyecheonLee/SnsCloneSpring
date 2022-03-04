@@ -20,17 +20,30 @@ import java.util.concurrent.CopyOnWriteArraySet
 @Service
 class NotifyService {
 	private val log = LoggerFactory.getLogger(this::class.java)
-	val emitterMap: MutableMap<String, MutableSet<SseEmitter>> = CopyOnWriteMap()
+	val emitterMap: MutableMap<String, SseEmitter> = CopyOnWriteMap()
 
 	fun getEmitter(type: String) = run {
-		val emitter = SseEmitter(NotifyApi.SSE_SESSION_TIMEOUT)
-		val emitterSet = emitterMap.getOrDefault(type, CopyOnWriteArraySet())
-		emitterSet.add(emitter)
-		emitterMap[type] = emitterSet
+		val authToken = getAuthToken()
 
-		emitter.onTimeout { emitterSet.remove(emitter) }
-		emitter.onCompletion { emitterSet.remove(emitter) }
-		log.info("emitter ")
+		if (emitterMap.containsKey(authToken.username)) {
+			log.info("이미 생성된 emitter 삭제");
+			emitterMap[authToken.username]?.complete()
+			emitterMap.remove(authToken.username)
+		}
+
+		val emitter = SseEmitter(NotifyApi.SSE_SESSION_TIMEOUT)
+
+		emitterMap[authToken.username!!] = emitter
+
+		emitter.onTimeout {
+			emitterMap.remove(authToken.username)
+			emitter.complete()
+		}
+		emitter.onCompletion {
+			emitterMap.remove(authToken.username)
+			emitter.complete()
+		}
+
 		emitter
 	}
 
@@ -38,9 +51,7 @@ class NotifyService {
 	@EventListener
 	fun onPostEvent(postEvent: PostRespDto.Model) = run {
 		log.info("post event : {}", postEvent)
-		val postSseEmitter = emitterMap["post"]
-		log.info("post sse emitter {}", postSseEmitter?.size)
-		postSseEmitter?.forEach {
+		emitterMap.values.forEach {
 			try {
 				it.send(postEvent)
 			} catch (e: Exception) {
