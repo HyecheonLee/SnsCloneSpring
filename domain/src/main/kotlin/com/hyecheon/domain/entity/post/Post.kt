@@ -16,17 +16,13 @@ import javax.persistence.*
 @Table(name = "posts")
 @Entity
 class Post(
-	@Column
+	@Lob @Column
 	var content: String? = null,
 ) : BaseEntity() {
 
 	@ManyToOne
-	@JoinColumn(name = "username", referencedColumnName = "username", updatable = false, insertable = false)
+	@JoinColumn(name = "username", referencedColumnName = "username")
 	var postedBy: User? = null
-
-	@CreatedBy
-	@Column(name = "username", updatable = false)
-	var username: String? = null
 
 	var likeCnt: Long = 0
 

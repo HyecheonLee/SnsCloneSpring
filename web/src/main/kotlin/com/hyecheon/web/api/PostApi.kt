@@ -30,9 +30,7 @@ class PostApi(
 	) = run {
 		val posts = postService.findAll(pageable).content
 		val data = posts.map { PostRespDto.Model.of(it) }
-		ResponseEntity.ok(
-			ResponseDto(data = data)
-		)
+		ResponseEntity.ok(ResponseDto(data = data))
 	}
 
 	@PostMapping("/{postId}/like")

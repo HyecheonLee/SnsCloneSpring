@@ -12,7 +12,7 @@ data class ErrorDto(
 	var uri: String,
 	var method: String,
 	var clientIp: String,
-	var query: String,
+	var query: String?,
 	var parameter: Map<String, Array<String>>,
 ) {
 	companion object {

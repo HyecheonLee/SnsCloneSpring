@@ -39,6 +39,20 @@ class UserApi(
 		)
 	}
 
+	@DeleteMapping("/me")
+	fun deleteMe() = run {
+		val responseCookie = ResponseCookie.from("authToken", "")
+			.httpOnly(true)
+			.secure(true)
+			.path("/")
+			.maxAge(0)
+			.domain(appProperty.server.domain)
+			.build()
+		ResponseEntity.noContent()
+			.header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+			.build<Any>()
+	}
+
 	@GetMapping("/{id}")
 	fun findById(@PathVariable id: Long) = run {
 		userService.findById(id)

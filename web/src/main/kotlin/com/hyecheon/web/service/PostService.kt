@@ -7,6 +7,10 @@ import com.hyecheon.domain.entity.post.PostRepository
 import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.domain.entity.user.UserRepository
 import com.hyecheon.domain.exception.LoggedNotException
+import com.hyecheon.web.dto.post.PostRespDto
+import com.hyecheon.web.event.PostEvent
+import com.hyecheon.web.utils.getAuthToken
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,6 +26,7 @@ class PostService(
 	private val postRepository: PostRepository,
 	private val userRepository: UserRepository,
 	private val postLikeRepository: PostLikeRepository,
+	private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
 	fun findAll(pageable: Pageable) = run {
@@ -39,6 +44,9 @@ class PostService(
 
 	fun new(post: Post) = run {
 		val newSavedPost = postRepository.save(post)
+		val postedBy = loggedUser()
+		newSavedPost.postedBy = postedBy
+		applicationEventPublisher.publishEvent(PostRespDto.Model.of(newSavedPost))
 		newSavedPost.id!!
 	}
 
@@ -67,11 +75,7 @@ class PostService(
 	}
 
 	fun loggedUser() = run {
-		val optionalAuthToken = AuthToken.loggedToken()
-		if (!optionalAuthToken.isPresent) {
-			throw LoggedNotException("로그인을 해주세요")
-		}
-		val authToken = optionalAuthToken.get()
+		val authToken = getAuthToken()
 		userRepository.getById(authToken.userId!!)
 	}
 }
