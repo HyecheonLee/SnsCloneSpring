@@ -13,23 +13,19 @@ const usePostEvent = () => {
     let source: EventSource | null = null;
     if (listening) {
       source = new EventSource(postEventUrl, {withCredentials: true});
-      source.addEventListener('open', () => {
+      source.onopen = (e) => {
         console.log('SSE opened!');
-      });
-
-      source.addEventListener('message', (e) => {
+      }
+      source.onmessage = (e) => {
         const data: PostType = JSON.parse(e.data);
         setPosts(prevState => [data, ...prevState]);
-      });
-
-      source.addEventListener('error', (e) => {
-        console.error('Error: ', e);
-      });
+      }
+      source.onerror = (e) => {
+        source?.close();
+      }
     }
     return () => {
-      if (source) {
-        source.close();
-      }
+      source?.close();
     };
   }, [listening]);
   return {setListening, posts, setPosts};
