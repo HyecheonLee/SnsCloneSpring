@@ -11,6 +11,7 @@ interface FormData {
 const PostForm = () => {
   const {
     register,
+    reset,
     getValues,
     handleSubmit,
   } = useForm<FormData>();
@@ -23,6 +24,14 @@ const PostForm = () => {
 
   const onSubmit = (data: FormData) => {
     apiV1Post.post("", data)
+      .then(value => {
+        if (value.ok) {
+          reset({
+            content: ""
+          });
+          setEnabled(false);
+        }
+      })
   }
 
   function enableSubmit(content: string) {
