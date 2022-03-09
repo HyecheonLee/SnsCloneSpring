@@ -29,7 +29,11 @@ const PostsContainer = () => {
       .then(value => value.data?.data as PostType[])
       .then(value => {
         resultPost(value);
-      })
+      });
+  }
+
+  const deletePost = async (id: number) => {
+    await apiV1Post.delete("/" + id)
   }
 
   const nextClickHandler = () => {
@@ -39,7 +43,7 @@ const PostsContainer = () => {
   return (
     <div className="container">
       {posts.map((post) => {
-        return <Post key={`post_${post.id}`} post={post}/>
+        return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
       })}
       {hasNext &&
       <button onClick={nextClickHandler}

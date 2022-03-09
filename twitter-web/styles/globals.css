@@ -96,13 +96,6 @@ button {
     flex-shrink: 0;
 }
 
-.postContentContainer {
-    padding-left: var(--spacing);
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
 .username, .date {
     color: var(--greyText);
 }

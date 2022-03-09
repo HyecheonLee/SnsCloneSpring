@@ -31,6 +31,12 @@ const usePostEvent = () => {
           return [data, ...prevState]
         });
       }
+      if (event.type === "deletePost") {
+        const postId = event.data as number
+        setPosts(prevState => {
+          return [...prevState.filter(post => post.id !== postId)]
+        });
+      }
       if (event.type === "postStatus") {
         const data = event.data as PostStatusType;
         setPosts(prevState => {

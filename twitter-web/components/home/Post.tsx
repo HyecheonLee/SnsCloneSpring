@@ -5,6 +5,7 @@ import { apiV1Post, domain } from '../../utils/apiUtils'
 import { dayjs } from '../../utils/DayjsUtils';
 import { useDispatch } from 'react-redux'
 import { replyActions } from '../../store/reply'
+import { useSelector } from '../../store'
 
 
 const postLike = async (id: number) => {
@@ -19,11 +20,15 @@ const postUnLike = async (id: number) => {
 }
 
 
-const Post = ({post}: { post: PostType }) => {
+const Post = ({
+                post,
+                deletePost
+              }: { post: PostType, deletePost: (id: number) => void }) => {
   const {postedBy} = post
 
   const timeDiff = dayjs(post.createdAt).fromNow();
   const [like, setLike] = useState(post.userLike);
+  const {user} = useSelector(state => state.auth)
   let dispatch = useDispatch()
 
   const likeButton = useCallback(async (e: any) => {
@@ -47,7 +52,6 @@ const Post = ({post}: { post: PostType }) => {
     const {showReply} = replyActions
     dispatch(showReply(post))
   }
-
   let replyCnt = post.postStatus?.replyCnt
 
   return (
@@ -62,12 +66,12 @@ const Post = ({post}: { post: PostType }) => {
             alt="Picture of the author"
             width={50} height={50}/>
         </div>
-        <div className="postContentContainer">
-          <div>
+        <div className="d-flex flex-column flex-fill ps-3 position-relative">
+          <div className={"d-flex align-items-center"}>
             <a
               className="fw-bold text-decoration-none">{postedBy.firstName + " " + postedBy.lastName}</a>
             <span className="text-muted">@{postedBy.username}</span>
-            <span className="text-muted">{timeDiff}</span>
+            <span className="text-muted mx-2">{timeDiff}</span>
           </div>
           <div>
             <span>{post.content}</span>
@@ -76,7 +80,7 @@ const Post = ({post}: { post: PostType }) => {
             <div className="flex-fill d-flex align-items-center">
               <button onClick={showReply}
                       className={`${(replyCnt && replyCnt > 0) ? "active" : "text-black-50"}`}>
-                <i className="rounded-circle p-1 fas fa-comment"></i>
+                <i className="rounded-circle p-1 fas fa-comment"/>
               </button>
               <span
                 className={`${(replyCnt && replyCnt > 0) ? "active" : "text-black-50"}`}>
@@ -85,11 +89,10 @@ const Post = ({post}: { post: PostType }) => {
             </div>
             <div className="flex-fill d-flex align-items-center">
               <button>
-                <i className="rounded-circle p-1 fas fa-retweet"></i>
+                <i className="rounded-circle p-1 fas fa-retweet"/>
               </button>
             </div>
-            <div
-              className={`flex-fill d-flex align-items-center`}>
+            <div className={`flex-fill d-flex align-items-center`}>
               <button onClick={likeButton}
                       className={`mx-1  ${like ? "active" : "text-black-50"}`}>
                 <i className="rounded-circle p-1 fas fa-heart"></i>
@@ -97,6 +100,11 @@ const Post = ({post}: { post: PostType }) => {
               <span
                 className={`${like ? "active" : "text-black-50"}`}>{post.postStatus?.likeCnt || 0}</span>
             </div>
+            {user?.id === postedBy.id && <div className={"position-absolute end-0"}>
+              <button onClick={e => deletePost(post.id)}>
+                <i className="rounded-circle p-1 fas fa-trash"/>
+              </button>
+            </div>}
           </div>
         </div>
       </div>
