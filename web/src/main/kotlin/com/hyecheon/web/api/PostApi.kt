@@ -27,13 +27,12 @@ class PostApi(
 	) {
 
 	@GetMapping
-	fun get(
-		@RequestParam("postId") postId: Long,
-	) = run {
+	fun get(@RequestParam("postId") postId: Long) = run {
 		val posts = postService.findAll(if (postId <= 0) Long.MAX_VALUE else postId)
 		val data = posts.map { PostRespDto.of(it) }
 		ResponseEntity.ok(ResponseDto(data = data))
 	}
+
 
 	@PostMapping("/{postId}/like")
 	fun like(@PathVariable postId: Long) = run {
@@ -52,5 +51,11 @@ class PostApi(
 		ResponseEntity.ok(
 			ResponseDto(data = model)
 		)
+	}
+
+	@DeleteMapping("/{id}")
+	fun delete(@PathVariable id: Long) = run {
+		postService.deleteById(id)
+		ResponseDto(data = "success")
 	}
 }

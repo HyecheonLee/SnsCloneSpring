@@ -17,4 +17,6 @@ interface PostLikeRepository : JpaRepository<PostLike, Long> {
 	fun existsByUserAndPost(user: User, post: Post): Boolean
 
 	fun deleteByUserAndPost(user: User, post: Post)
+
+	fun deleteAllByPost(post: Post)
 }

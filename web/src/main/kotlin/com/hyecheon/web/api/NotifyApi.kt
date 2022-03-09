@@ -22,10 +22,6 @@ import java.util.concurrent.CopyOnWriteArraySet
 class NotifyApi(
 	private val notifyService: NotifyService,
 ) {
-	companion object {
-		const val SSE_SESSION_TIMEOUT: Long = 30 * 60 * 1000L
-	}
-
 	@GetMapping(value = ["/{type}"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
 	fun notice(@PathVariable type: String) = run {
 		notifyService.getEmitter("post")

@@ -4,8 +4,11 @@ import com.hyecheon.domain.entity.post.Post
 import com.hyecheon.domain.entity.post.PostLikeRepository
 import com.hyecheon.domain.entity.post.PostRepository
 import com.hyecheon.domain.entity.post.PostStatus
+import com.hyecheon.domain.entity.reply.ReplyRepository
 import com.hyecheon.domain.entity.user.UserRepository
 import com.hyecheon.web.dto.post.PostRespDto
+import com.hyecheon.web.dto.web.NotifyDto
+import com.hyecheon.web.exception.IdNotExistsException
 import com.hyecheon.web.utils.getAuthToken
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -56,5 +59,13 @@ class PostService(
 	fun loggedUser() = run {
 		val authToken = getAuthToken()
 		userRepository.getById(authToken.userId!!)
+	}
+
+	@Transactional
+	fun deleteById(id: Long) {
+		val post = postRepository.findById(id).orElseThrow { IdNotExistsException("postId not exists") }
+		postLikeRepository.deleteAllByPost(post)
+		postRepository.delete(post)
+		applicationEventPublisher.publishEvent(NotifyDto("deletePost", id))
 	}
 }

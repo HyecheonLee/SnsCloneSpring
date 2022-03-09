@@ -1,6 +1,7 @@
 package com.hyecheon.domain.entity.post
 
 import com.hyecheon.domain.entity.BaseEntity
+import com.hyecheon.domain.entity.reply.Reply
 import com.hyecheon.domain.entity.user.User
 import org.hibernate.Hibernate
 import org.springframework.data.annotation.CreatedBy
@@ -30,12 +31,16 @@ class Post(
 	@OneToOne(mappedBy = "post", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
 	var postStatus: PostStatus? = null
 
+	@OneToMany(mappedBy = "post", cascade = [CascadeType.ALL])
+	var replies: MutableSet<Reply> = mutableSetOf()
+
 	fun like() = run {
 		if (postStatus == null) {
 			postStatus = PostStatus(this)
 		}
 		postStatus?.like()
 	}
+
 
 	fun unLike() = run {
 		if (postStatus == null) {
