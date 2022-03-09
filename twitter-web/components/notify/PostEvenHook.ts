@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { PostType } from '../../types/post'
+import { useEffect, useState } from "react";
+import { PostStatusType, PostType } from '../../types/post'
 
 interface IProps {
 
@@ -7,28 +7,52 @@ interface IProps {
 
 const usePostEvent = () => {
   let postEventUrl = `http://localhost:8080/api/v1/notify/post`
-  const [listening, setListening] = useState(false);
   const [posts, setPosts] = useState<PostType[]>([]);
   useEffect(() => {
-    let source: EventSource | null = null;
-    if (listening) {
-      source = new EventSource(postEventUrl, {withCredentials: true});
-      source.onopen = (e) => {
-        console.log('SSE opened!');
+    const source = eventSource()
+    return () => {
+      source.then(value => value.close());
+    };
+  }, []);
+
+
+  async function eventSource() {
+    const source: EventSource = await new EventSource(postEventUrl, {withCredentials: true});
+
+    source.onopen = (e) => {
+      console.log('SSE opened!');
+    }
+
+    source.onmessage = (e) => {
+      const event = JSON.parse(e.data);
+      if (event.type === "post") {
+        let data = event.data as PostType;
+        setPosts(prevState => {
+          return [data, ...prevState]
+        });
       }
-      source.onmessage = (e) => {
-        const data: PostType = JSON.parse(e.data);
-        setPosts(prevState => [data, ...prevState]);
-      }
-      source.onerror = (e) => {
-        source?.close();
+      if (event.type === "postStatus") {
+        const data = event.data as PostStatusType;
+        setPosts(prevState => {
+          const newPosts = prevState.map(post => {
+            if (post.id === data.postId) {
+              post.postStatus = data
+            }
+            return post
+          })
+          return [...newPosts]
+        });
       }
     }
-    return () => {
+
+    source.onerror = (e) => {
       source?.close();
-    };
-  }, [listening]);
-  return {setListening, posts, setPosts};
+    }
+
+    return source;
+  }
+
+  return {posts, setPosts};
 };
 
 export default usePostEvent;

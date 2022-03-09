@@ -1,12 +1,6 @@
 import React, { useEffect } from 'react';
-import Post from './Post'
 import { useSelector } from '../../store'
 import PostForm from './PostForm'
-import { apiV1Post, apiV1PostUrl } from '../../utils/apiUtils'
-import useSWR from 'swr';
-import axios from 'axios'
-import { ApiResponseType } from '../../types/api'
-import { PostType } from '../../types/post'
 import PostsContainer from './PostsContainer'
 
 const MainSectionContainer = () => {
@@ -21,7 +15,7 @@ const MainSectionContainer = () => {
     <>
       <div className="mainSectionContainer col-10 col-md-8 col-lg-6">
         <div className={"titleContainer"}>
-          <h1 className={"display-6 fw-bold"}>Home</h1>
+          <h1 className={"display-6 fw-bold"}>Home [ {user?.username} ]</h1>
         </div>
         <PostForm/>
         <PostsContainer/>

@@ -6,22 +6,20 @@ import Post from './Post'
 import usePostEvent from '../notify/PostEvenHook'
 
 const PostsContainer = () => {
-  const {setPosts, posts, setListening} = usePostEvent()
+  const {setPosts, posts} = usePostEvent()
   const [postId, setPostId] = useState(0)
   const [hasNext, setHasNext] = useState(false);
 
   useEffect(() => {
     fetchPost()
-    setListening(true)
   }, []);
 
   function resultPost(value: PostType[] | null) {
     if (value) {
       setPosts(prevState => [...prevState, ...value]);
-      let postType = value[value.length - 1]
+      const postType = value[value.length - 1]
       setPostId(postType.id);
     }
-
     if (!value || value.length < 10) setHasNext(false);
     else setHasNext(true);
   }
@@ -29,7 +27,9 @@ const PostsContainer = () => {
   function fetchPost() {
     apiV1Post.get<ApiResponseType<PostType[]>>(`?postId=${postId}&size=10`)
       .then(value => value.data?.data as PostType[])
-      .then(value => resultPost(value))
+      .then(value => {
+        resultPost(value);
+      })
   }
 
   const nextClickHandler = () => {
@@ -43,7 +43,7 @@ const PostsContainer = () => {
       })}
       {hasNext &&
       <button onClick={nextClickHandler}
-              className={"btn w-100 btn-info btn-lg"}>다음</button>}
+              className={"btn w-100 btn-info btn-lg text-white"}>다음</button>}
     </div>
   );
 };

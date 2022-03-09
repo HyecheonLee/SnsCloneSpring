@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Image from 'next/image'
 import { PostType } from '../../types/post'
 import { apiV1Post, domain } from '../../utils/apiUtils'
@@ -22,15 +22,13 @@ const Post = ({post}: { post: PostType }) => {
 
   const timeDiff = dayjs(post.createdAt).fromNow();
   const [like, setLike] = useState(post.userLike);
-  const [likeCnt, setLikeCnt] = useState(post.likeCnt);
+
 
   const likeButton = useCallback(async (e: any) => {
     const nextLike = !like;
-    const currentCnt = likeCnt;
     const currentLike = like;
 
     setLike(nextLike)
-    setLikeCnt(prevState => nextLike ? currentCnt + 1 : currentCnt - 1);
 
     let result;
     if (nextLike) {
@@ -40,10 +38,9 @@ const Post = ({post}: { post: PostType }) => {
     }
 
     if (!result.ok) {
-      setLikeCnt(currentCnt);
       setLike(currentLike);
     }
-  }, [like, likeCnt]);
+  }, [like]);
 
 
   return (
@@ -85,7 +82,8 @@ const Post = ({post}: { post: PostType }) => {
                       className={`mx-1  ${like ? "active" : "text-black-50"}`}>
                 <i className="rounded-circle p-1 fas fa-heart"></i>
               </button>
-              <span className={`${like ? "active" : "text-black-50"}`}>{likeCnt}</span>
+              <span
+                className={`${like ? "active" : "text-black-50"}`}>{post.postStatus?.likeCnt || 0}</span>
             </div>
           </div>
         </div>
@@ -102,5 +100,5 @@ const Post = ({post}: { post: PostType }) => {
   );
 };
 
-export default React.memo(Post);
+export default Post;
 

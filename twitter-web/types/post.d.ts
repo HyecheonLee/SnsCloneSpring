@@ -7,5 +7,10 @@ export type PostType = {
   updatedAt: string,
   postedBy: UserType,
   userLike: boolean,
-  likeCnt: number
+  postStatus: PostStatusType | null
+}
+export type PostStatusType = {
+  postId?: number,
+  likeCnt: number,
+  replyCnt: number
 }
