@@ -9,6 +9,7 @@ import ReplyContainer from './ReplyContainer'
 import { apiV1Reply } from '../../utils/apiUtils'
 import { ApiResponseType } from '../../types/api'
 import { ReplyType } from '../../types/reply'
+import { modalActions } from '../../store/modal'
 
 interface IProps {
 }
@@ -16,83 +17,100 @@ interface IProps {
 
 const ReplyModal: React.FC<IProps> = ({...props}) => {
 
-  const {show, post} = useSelector(state => state.reply)
+    const {show, post} = useSelector(state => state.reply)
 
-  const [hasNext, setHasNext] = useState(false);
+    const [hasNext, setHasNext] = useState(false);
 
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
-  const [replies, setReplies] = useState<ReplyType[]>([]);
+    const [replies, setReplies] = useState<ReplyType[]>([]);
 
-  const repliesFetch = (replyId?: number) => {
-    let lastReplyId = 0;
+    const {removeModal, showLoading} = modalActions
 
-    if (replyId !== undefined) {
-      lastReplyId = replyId
-    } else {
-      if (replies.length > 0) {
-        lastReplyId = replies[replies.length - 1].id
+    useEffect(() => {
+      if (show) {
+        repliesFetch()
+      } else {
+        setReplies([])
       }
-    }
+    }, [show]);
 
-    console.log("replayId:", replyId, "lastReplyId:", lastReplyId);
-
-    apiV1Reply.get<ApiResponseType<ReplyType[]>>(`/post/${post?.id}?replyId=${lastReplyId}`)
-      .then(value => {
-        return value.data
-      })
-      .then(value => {
-        if (value) {
-          if (value.data.length < 5) {
-            setHasNext(false)
-          } else {
-            setHasNext(true)
-          }
-          setReplies(prevState => {
-            if (lastReplyId === 0) {
-              return [...value.data]
-            } else {
-              return [...prevState, ...value.data]
-            }
-          });
+    const getLastReplyId = (replyId: number | undefined) => {
+      let lastReplyId = 0;
+      if (replyId !== undefined) {
+        lastReplyId = replyId
+      } else {
+        if (replies.length > 0) {
+          lastReplyId = replies[replies.length - 1].id
         }
-      });
-  }
-
-  useEffect(() => {
-    if (show) {
-      repliesFetch()
-    }
-  }, [show]);
-
-  const handleClose = () => {
-    const {closeReply} = replyActions;
-    dispatch(closeReply())
-  };
-
-
-  return (<>
-    <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Reply</Modal.Title>
-      </Modal.Header>
-      {post &&
-      <Modal.Body className="pb-0">
-        <ReplyPost post={post}/>
-        <hr/>
-        <ReplyForm post={post} fetch={repliesFetch}/>
-        <hr/>
-        <ReplyContainer replies={replies}/>
-      </Modal.Body>
       }
-      {<Modal.Footer>
-        <button disabled={!hasNext}
-                className={`${hasNext ? "text-primary" : "text-second"} w-100`}
-                onClick={e => repliesFetch()}>더보기
-        </button>
-      </Modal.Footer>}
-    </Modal>
-  </>);
-};
+      return lastReplyId
+    }
+
+    const repliesFetch = async (replyId?: number) => {
+      await dispatch(showLoading());
+      const lastReplyId = getLastReplyId(replyId)
+
+      await apiV1Reply.get<ApiResponseType<ReplyType[]>>(`/post/${post?.id}?replyId=${lastReplyId}`)
+        .then(value => {
+          return value.data
+        })
+        .then(value => {
+          dispatch(removeModal())
+          if (value) {
+            setHasNext(value.data.length >= 5)
+            setReplies(prevState => {
+              if (lastReplyId === 0) {
+                return [...value.data]
+              } else {
+                return [...prevState, ...value.data]
+              }
+            });
+          }
+        });
+    }
+
+    const handleClose = () => {
+      const {closeReply} = replyActions;
+      dispatch(closeReply())
+    };
+
+    const deleteReply = (id: number) => {
+      apiV1Reply.delete(`/${id}`)
+        .then(value => {
+          setReplies(prevState => {
+            const newReplies = replies.filter(reply => reply.id !== id)
+            return [...newReplies]
+          });
+        });
+    }
+
+
+    return (<>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Reply</Modal.Title>
+        </Modal.Header>
+        {post &&
+        <Modal.Body className="pb-0">
+          <ReplyPost post={post}/>
+          <hr/>
+          <ReplyForm post={post} fetch={repliesFetch}/>
+          {replies.length > 0 &&
+          <>
+            <hr/>
+            <ReplyContainer replies={replies} deleteReply={deleteReply}/>
+          </>}
+        </Modal.Body>}
+        <Modal.Footer>
+          <button disabled={!hasNext}
+                  className={`${hasNext ? "text-primary" : "text-second"} w-100`}
+                  onClick={e => repliesFetch()}>더보기
+          </button>
+        </Modal.Footer>
+      </Modal>
+    </>);
+  }
+;
 
 export default ReplyModal;

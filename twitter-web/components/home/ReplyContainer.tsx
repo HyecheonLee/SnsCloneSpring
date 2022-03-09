@@ -1,18 +1,21 @@
 import React from "react";
 import { ReplyType } from '../../types/reply'
-import { dayjs } from '../../utils/DayjsUtils'
 import Reply from "./Reply";
 
 interface IProps {
   replies: ReplyType[]
+  deleteReply: (id: number) => void
 }
 
 const ReplyContainer: React.FC<IProps> = ({...props}) => {
-  const {replies} = props;
+  const {replies, deleteReply} = props;
 
-  return (<div className="pb-3" style={{maxHeight: "300px", overflowY: "auto"}}>
+  return (<div style={{maxHeight: "300px", overflowY: "auto"}}>
     {replies.map(reply => {
-      return <Reply key={`reply_${reply.id}`} reply={reply}/>
+      return <div key={`reply_${reply.id}`}>
+        <Reply reply={reply} deleteReply={deleteReply}/>
+        <hr/>
+      </div>
     })}
   </div>);
 };

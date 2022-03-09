@@ -7,6 +7,7 @@ import { useSelector } from '../../store'
 import { useDispatch } from 'react-redux'
 import { replyActions } from '../../store/reply'
 import { PostType } from '../../types/post'
+import { modalActions } from '../../store/modal'
 
 interface IProps {
   post: PostType
@@ -31,16 +32,15 @@ const ReplyForm: React.FC<IProps> = ({...props}) => {
 
   const [enabled, setEnabled] = useState(false);
 
-  const handleClose = () => {
-    const {closeReply} = replyActions;
-    dispatch(closeReply())
-  };
+  const {showLoading, removeModal} = modalActions
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
+    await dispatch(showLoading(""));
     apiV1Reply.post("", {
       postId: post?.id,
       ...data
     }).then(value => {
+      dispatch(removeModal())
       if (value.ok) {
         reset({
           content: ""

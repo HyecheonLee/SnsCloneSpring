@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface ModalReduxState {
   type: "loading" | "",
-  message: string,
+  message?: string,
   isShow: boolean,
 }
 
@@ -15,7 +15,7 @@ const modal = createSlice({
   name: "modal",
   initialState,
   reducers: {
-    showLoading(state, action: PayloadAction<string>) {
+    showLoading(state, action: PayloadAction<string|undefined>) {
       state.message = action.payload
       state.isShow = true
       state.type = "loading"
