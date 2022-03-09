@@ -39,7 +39,7 @@ const PostsContainer = () => {
   return (
     <div className="container">
       {posts.map((post) => {
-        return <Post key={post.id} post={post}/>
+        return <Post key={`post_${post.id}`} post={post}/>
       })}
       {hasNext &&
       <button onClick={nextClickHandler}

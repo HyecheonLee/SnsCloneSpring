@@ -22,3 +22,10 @@ export const apiV1Post = create({
   headers,
   withCredentials: true
 });
+
+export const apiV1ReplyUrl = '/api/v1/reply'
+export const apiV1Reply = create({
+  baseURL: domain + apiV1ReplyUrl,
+  headers,
+  withCredentials: true
+})

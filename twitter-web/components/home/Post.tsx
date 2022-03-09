@@ -3,6 +3,8 @@ import Image from 'next/image'
 import { PostType } from '../../types/post'
 import { apiV1Post, domain } from '../../utils/apiUtils'
 import { dayjs } from '../../utils/DayjsUtils';
+import { useDispatch } from 'react-redux'
+import { replyActions } from '../../store/reply'
 
 
 const postLike = async (id: number) => {
@@ -22,7 +24,7 @@ const Post = ({post}: { post: PostType }) => {
 
   const timeDiff = dayjs(post.createdAt).fromNow();
   const [like, setLike] = useState(post.userLike);
-
+  let dispatch = useDispatch()
 
   const likeButton = useCallback(async (e: any) => {
     const nextLike = !like;
@@ -41,7 +43,12 @@ const Post = ({post}: { post: PostType }) => {
       setLike(currentLike);
     }
   }, [like]);
+  const showReply = () => {
+    const {showReply} = replyActions
+    dispatch(showReply(post))
+  }
 
+  let replyCnt = post.postStatus?.replyCnt
 
   return (
     <div className="post" data-id="${postData._id}">
@@ -67,9 +74,14 @@ const Post = ({post}: { post: PostType }) => {
           </div>
           <div className="d-flex text-center">
             <div className="flex-fill d-flex align-items-center">
-              <button>
+              <button onClick={showReply}
+                      className={`${(replyCnt && replyCnt > 0) ? "active" : "text-black-50"}`}>
                 <i className="rounded-circle p-1 fas fa-comment"></i>
               </button>
+              <span
+                className={`${(replyCnt && replyCnt > 0) ? "active" : "text-black-50"}`}>
+                {post.postStatus?.replyCnt || ""}
+              </span>
             </div>
             <div className="flex-fill d-flex align-items-center">
               <button>

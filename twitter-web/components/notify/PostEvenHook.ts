@@ -36,7 +36,12 @@ const usePostEvent = () => {
         setPosts(prevState => {
           const newPosts = prevState.map(post => {
             if (post.id === data.postId) {
-              post.postStatus = data
+              return {
+                ...post,
+                postStatus: {
+                  ...data
+                }
+              }
             }
             return post
           })

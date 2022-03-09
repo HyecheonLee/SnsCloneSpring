@@ -4,6 +4,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useSelector as useReduxSelector, } from 'react-redux'
 import auth from "./auth";
 import modal from './modal'
+import reply from './reply'
 
 declare module 'react-redux' {
   interface DefaultRootState extends RootState {
@@ -12,7 +13,8 @@ declare module 'react-redux' {
 
 const rootReducer = combineReducers({
   auth: auth.reducer,
-  modal: modal.reducer
+  modal: modal.reducer,
+  reply: reply.reducer
 })
 
 const reducer = (state: any, action: { type: string, payload: any }) => {

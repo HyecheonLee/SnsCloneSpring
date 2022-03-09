@@ -16,7 +16,9 @@ const PostForm = () => {
     handleSubmit,
   } = useForm<FormData>();
   let {user} = useSelector(state => state.auth)
+
   const [enable, setEnabled] = useState<boolean>(false);
+
   useEffect(() => {
     enableSubmit(getValues("content"));
   }, []);
@@ -46,6 +48,7 @@ const PostForm = () => {
     let content = e.currentTarget.value
     enableSubmit(content)
   }
+
   return (
     <div className="d-flex border-bottom border-5 flex-shrink-0 p-3">
       <div>
