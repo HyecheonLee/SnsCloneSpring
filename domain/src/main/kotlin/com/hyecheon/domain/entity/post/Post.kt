@@ -44,6 +44,20 @@ class Post(
 		postStatus?.unLike()
 	}
 
+	fun reply() {
+		if (postStatus == null) {
+			postStatus = PostStatus(this)
+		}
+		postStatus?.reply()
+	}
+
+	fun unReply() {
+		if (postStatus == null) {
+			postStatus = PostStatus(this)
+		}
+		postStatus?.unReply()
+	}
+
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false

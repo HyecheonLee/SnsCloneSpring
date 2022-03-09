@@ -2,8 +2,9 @@ package com.hyecheon.domain.entity.reply
 
 import com.hyecheon.domain.entity.BaseEntity
 import com.hyecheon.domain.entity.post.Post
-import javax.persistence.Entity
-import javax.persistence.ManyToOne
+import com.hyecheon.domain.entity.user.User
+import org.springframework.data.annotation.CreatedBy
+import javax.persistence.*
 
 /**
  * User: hyecheon lee
@@ -12,9 +13,14 @@ import javax.persistence.ManyToOne
  */
 @Entity
 class Reply(
+	@Lob
+	var content: String,
+
+	) : BaseEntity() {
+
+	@CreatedBy
+	var createdBy: String? = null
+
 	@ManyToOne
-	val post: Post,
-) : BaseEntity() {
-
-
+	lateinit var post: Post
 }

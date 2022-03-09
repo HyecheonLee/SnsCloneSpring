@@ -33,4 +33,16 @@ class PostStatus(
 		}
 		likeCnt
 	}
+
+	fun reply() {
+		replyCnt++
+		replyCnt
+	}
+
+	fun unReply() {
+		if (replyCnt >= 1) {
+			replyCnt--
+		}
+		replyCnt
+	}
 }

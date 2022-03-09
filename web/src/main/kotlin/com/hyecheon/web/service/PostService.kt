@@ -1,9 +1,11 @@
 package com.hyecheon.web.service
 
-import com.hyecheon.domain.entity.post.*
+import com.hyecheon.domain.entity.post.Post
+import com.hyecheon.domain.entity.post.PostLikeRepository
+import com.hyecheon.domain.entity.post.PostRepository
+import com.hyecheon.domain.entity.post.PostStatus
 import com.hyecheon.domain.entity.user.UserRepository
 import com.hyecheon.web.dto.post.PostRespDto
-import com.hyecheon.web.dto.post.PostStatusDto
 import com.hyecheon.web.utils.getAuthToken
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -43,34 +45,12 @@ class PostService(
 
 		val postedBy = loggedUser()
 		newSavedPost.postedBy = postedBy
-		applicationEventPublisher.publishEvent(PostRespDto.Model.of(newSavedPost))
+		applicationEventPublisher.publishEvent(PostRespDto.of(newSavedPost))
 		newSavedPost.id!!
 	}
 
 	fun findById(id: Long) = run {
 		postRepository.findById(id).orElseThrow { RuntimeException("") }
-	}
-
-	@Transactional
-	fun like(postId: Long) {
-		val post = postRepository.findById(postId).orElseThrow { RuntimeException("") }
-		val loggedUser = loggedUser()
-		if (!postLikeRepository.existsByUserAndPost(loggedUser, post)) {
-			post.like()
-			postLikeRepository.save(PostLike(loggedUser, post))
-			applicationEventPublisher.publishEvent(PostStatusDto.of(post))
-		}
-	}
-
-	@Transactional
-	fun unLike(postId: Long) = run {
-		val post = postRepository.findById(postId).orElseThrow { RuntimeException("") }
-		val loggedUser = loggedUser()
-		if (postLikeRepository.existsByUserAndPost(loggedUser, post)) {
-			post.unLike()
-			postLikeRepository.deleteByUserAndPost(loggedUser, post)
-			applicationEventPublisher.publishEvent(PostStatusDto.of(post))
-		}
 	}
 
 	fun loggedUser() = run {

@@ -15,6 +15,11 @@ object Constant {
 	const val POST = "posts"
 	const val POST_API = "${API_V1}/${POST}"
 
+
 	const val NOTIFY = "notify"
 	const val NOTIFY_API = "${API_V1}/${NOTIFY}"
+
+	const val REPLY = "reply"
+	const val REPLY_V1_API = "${API_V1}/${REPLY}"
+
 }

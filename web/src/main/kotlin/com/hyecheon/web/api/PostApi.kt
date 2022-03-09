@@ -5,6 +5,7 @@ import com.hyecheon.domain.exception.LoggedNotException
 import com.hyecheon.web.dto.post.PostReqDto
 import com.hyecheon.web.dto.post.PostRespDto
 import com.hyecheon.web.dto.web.ResponseDto
+import com.hyecheon.web.service.LikeService
 import com.hyecheon.web.service.PostService
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(Constant.POST_API)
 class PostApi(
 	private val postService: PostService,
+	private val likeService: LikeService,
 
 	) {
 
@@ -29,24 +31,24 @@ class PostApi(
 		@RequestParam("postId") postId: Long,
 	) = run {
 		val posts = postService.findAll(if (postId <= 0) Long.MAX_VALUE else postId)
-		val data = posts.map { PostRespDto.Model.of(it) }
+		val data = posts.map { PostRespDto.of(it) }
 		ResponseEntity.ok(ResponseDto(data = data))
 	}
 
 	@PostMapping("/{postId}/like")
 	fun like(@PathVariable postId: Long) = run {
-		postService.like(postId)
+		likeService.like(postId)
 	}
 
 	@DeleteMapping("/{postId}/unlike")
 	fun unlike(@PathVariable postId: Long) = run {
-		postService.unLike(postId)
+		likeService.unLike(postId)
 	}
 
 	@PostMapping
 	fun create(@RequestBody post: PostReqDto.New) = run {
 		val newPostId = postService.new(post.toEntity())
-		val model = PostRespDto.Model.of(postService.findById(newPostId))
+		val model = PostRespDto.of(postService.findById(newPostId))
 		ResponseEntity.ok(
 			ResponseDto(data = model)
 		)

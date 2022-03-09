@@ -22,11 +22,9 @@ object PostRespDto {
 		var postedBy: UserRespDto.Model? = null,
 		var userLike: Boolean = false,
 		var postStatus: PostStatusDto? = null,
-	) {
-		companion object {
-			fun of(post: Post) = run {
-				converter.toModel(post)
-			}
-		}
+	)
+
+	fun of(post: Post) = run {
+		converter.toModel(post)
 	}
 }
