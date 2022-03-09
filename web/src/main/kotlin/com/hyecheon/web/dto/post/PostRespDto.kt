@@ -21,7 +21,7 @@ object PostRespDto {
 		var updatedAt: LocalDateTime? = null,
 		var postedBy: UserRespDto.Model? = null,
 		var userLike: Boolean = false,
-		var likeCnt: Long = 0,
+		var postStatus: PostStatusDto? = null,
 	) {
 		companion object {
 			fun of(post: Post) = run {

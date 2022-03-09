@@ -2,8 +2,8 @@ package com.hyecheon.web.service
 
 import com.hyecheon.web.api.NotifyApi
 import com.hyecheon.web.dto.post.PostRespDto
-import com.hyecheon.web.event.PostEvent
-import com.hyecheon.web.utils.getAuthToken
+import com.hyecheon.web.dto.post.PostStatusDto
+import com.hyecheon.web.dto.web.NotifyDto
 import io.undertow.util.CopyOnWriteMap
 import org.slf4j.LoggerFactory
 import org.springframework.context.event.EventListener
@@ -20,27 +20,19 @@ import java.util.concurrent.CopyOnWriteArraySet
 @Service
 class NotifyService {
 	private val log = LoggerFactory.getLogger(this::class.java)
-	val emitterMap: MutableMap<String, SseEmitter> = CopyOnWriteMap()
+
+	val emitterSet: MutableSet<SseEmitter> = CopyOnWriteArraySet()
 
 	fun getEmitter(type: String) = run {
-		val authToken = getAuthToken()
-
-		if (emitterMap.containsKey(authToken.username)) {
-			log.info("이미 생성된 emitter 삭제");
-			emitterMap[authToken.username]?.complete()
-			emitterMap.remove(authToken.username)
-		}
-
 		val emitter = SseEmitter(NotifyApi.SSE_SESSION_TIMEOUT)
-
-		emitterMap[authToken.username!!] = emitter
+		emitterSet.add(emitter)
 
 		emitter.onTimeout {
-			emitterMap.remove(authToken.username)
+			emitterSet.remove(emitter)
 			emitter.complete()
 		}
 		emitter.onCompletion {
-			emitterMap.remove(authToken.username)
+			emitterSet.remove(emitter)
 			emitter.complete()
 		}
 
@@ -49,11 +41,26 @@ class NotifyService {
 
 	@Async
 	@EventListener
-	fun onPostEvent(postEvent: PostRespDto.Model) = run {
-		log.info("post event : {}", postEvent)
-		emitterMap.values.forEach {
+	fun onPostEvent(post: PostRespDto.Model) = run {
+		log.info("post event : {}", post)
+		val notify = NotifyDto("post", post)
+		emitterSet.forEach {
 			try {
-				it.send(postEvent)
+				it.send(notify)
+			} catch (e: Exception) {
+				log.error("send error ${e.message}")
+			}
+		}
+	}
+
+	@Async
+	@EventListener
+	fun onStatusEvent(postStatus: PostStatusDto) = run {
+		log.info("post status event : {}", postStatus)
+		val notify = NotifyDto("postStatus", postStatus)
+		emitterSet.forEach {
+			try {
+				it.send(notify)
 			} catch (e: Exception) {
 				log.error("send error ${e.message}")
 			}

@@ -24,18 +24,24 @@ class Post(
 	@JoinColumn(name = "username", referencedColumnName = "username")
 	var postedBy: User? = null
 
-	var likeCnt: Long = 0
-
 	@Transient
 	var userLike: Boolean = false
 
-	fun postLike() = run {
-		likeCnt++
+	@OneToOne(mappedBy = "post", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+	var postStatus: PostStatus? = null
+
+	fun like() = run {
+		if (postStatus == null) {
+			postStatus = PostStatus(this)
+		}
+		postStatus?.like()
 	}
 
-	fun postUnLike() = run {
-		if (likeCnt > 0)
-			likeCnt--
+	fun unLike() = run {
+		if (postStatus == null) {
+			postStatus = PostStatus(this)
+		}
+		postStatus?.unLike()
 	}
 
 	override fun equals(other: Any?): Boolean {

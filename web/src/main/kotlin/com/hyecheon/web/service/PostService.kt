@@ -1,17 +1,11 @@
 package com.hyecheon.web.service
 
-import com.hyecheon.domain.entity.post.Post
-import com.hyecheon.domain.entity.post.PostLike
-import com.hyecheon.domain.entity.post.PostLikeRepository
-import com.hyecheon.domain.entity.post.PostRepository
-import com.hyecheon.domain.entity.user.AuthToken
+import com.hyecheon.domain.entity.post.*
 import com.hyecheon.domain.entity.user.UserRepository
-import com.hyecheon.domain.exception.LoggedNotException
 import com.hyecheon.web.dto.post.PostRespDto
-import com.hyecheon.web.event.PostEvent
+import com.hyecheon.web.dto.post.PostStatusDto
 import com.hyecheon.web.utils.getAuthToken
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional
  * Email: rainbow880616@gmail.com
  * Date: 2022/02/27
  */
-@Transactional
+@Transactional(readOnly = true)
 @Service
 class PostService(
 	private val postRepository: PostRepository,
@@ -42,8 +36,11 @@ class PostService(
 		pagePost
 	}
 
+	@Transactional
 	fun new(post: Post) = run {
 		val newSavedPost = postRepository.save(post)
+		newSavedPost.postStatus = PostStatus(newSavedPost)
+
 		val postedBy = loggedUser()
 		newSavedPost.postedBy = postedBy
 		applicationEventPublisher.publishEvent(PostRespDto.Model.of(newSavedPost))
@@ -59,8 +56,9 @@ class PostService(
 		val post = postRepository.findById(postId).orElseThrow { RuntimeException("") }
 		val loggedUser = loggedUser()
 		if (!postLikeRepository.existsByUserAndPost(loggedUser, post)) {
-			post.postLike()
+			post.like()
 			postLikeRepository.save(PostLike(loggedUser, post))
+			applicationEventPublisher.publishEvent(PostStatusDto.of(post))
 		}
 	}
 
@@ -69,8 +67,9 @@ class PostService(
 		val post = postRepository.findById(postId).orElseThrow { RuntimeException("") }
 		val loggedUser = loggedUser()
 		if (postLikeRepository.existsByUserAndPost(loggedUser, post)) {
-			post.postUnLike()
+			post.unLike()
 			postLikeRepository.deleteByUserAndPost(loggedUser, post)
+			applicationEventPublisher.publishEvent(PostStatusDto.of(post))
 		}
 	}
 
