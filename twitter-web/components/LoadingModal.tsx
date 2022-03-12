@@ -1,8 +1,8 @@
 import React from "react";
 import Portal from './Portal'
-import { Bars } from 'react-loading-icons'
 import { Modal } from 'react-bootstrap'
 import { useSelector } from '../store'
+import Loading from './Loading'
 
 
 const LoadingModal = () => {
@@ -15,9 +15,7 @@ const LoadingModal = () => {
         keyboard={false}
         centered>
         <Modal.Body className="text-center">
-          <Bars fill={"#06bcee"}/>
-          <div className="display-2"
-               style={{color: "#06bcee"}}>{modal.message || "Loading..."}</div>
+          <Loading message={modal.message}/>
         </Modal.Body>
       </Modal>
     </Portal>);

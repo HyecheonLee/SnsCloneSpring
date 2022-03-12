@@ -3,7 +3,7 @@ import { PostType } from '../types/post'
 
 interface ReplyReduxState {
   show: boolean,
-  post?: PostType
+  post?: PostType,
 }
 
 const initialState: ReplyReduxState = {

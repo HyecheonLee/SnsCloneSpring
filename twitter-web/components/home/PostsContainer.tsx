@@ -1,47 +1,56 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { apiV1Post } from '../../utils/apiUtils'
 import { ApiResponseType } from '../../types/api'
 import { PostType } from '../../types/post'
 import Post from './Post'
-import usePostEvent from '../notify/PostEvenHook'
+import { useAppDispatch, useSelector } from '../../store'
+import { postActions } from '../../store/post'
+import modal from '../../store/modal'
 
 const PostsContainer = () => {
-  const {setPosts, posts} = usePostEvent()
-  const [postId, setPostId] = useState(0)
-  const [hasNext, setHasNext] = useState(false);
-
+  const dispatch = useAppDispatch()
+  const {posts, hasNext} = useSelector(state => state.post)
+  const {fetchPosts} = postActions
   useEffect(() => {
-    fetchPost()
+    fetchPost();
   }, []);
 
-  function resultPost(value: PostType[] | null) {
-    if (value) {
-      setPosts(prevState => [...prevState, ...value]);
-      const postType = value[value.length - 1]
-      setPostId(postType.id);
-    }
-    if (!value || value.length < 10) setHasNext(false);
-    else setHasNext(true);
-  }
-
   function fetchPost() {
+    dispatch(modal.actions.showLoading())
+    let postId = 0
+    if (posts.length > 0) {
+      postId = posts[posts.length - 1].id
+    }
     apiV1Post.get<ApiResponseType<PostType[]>>(`?postId=${postId}&size=10`)
       .then(value => value.data?.data as PostType[])
       .then(value => {
-        resultPost(value);
-      });
+        if (!value) {
+          value = []
+        }
+        dispatch(fetchPosts(value));
+        dispatch(modal.actions.removeModal());
+      }).catch(reason => {
+      dispatch(modal.actions.removeModal());
+    })
   }
 
   const deletePost = async (id: number) => {
-    await apiV1Post.delete("/" + id)
+    await dispatch(modal.actions.showLoading())
+    await apiV1Post.delete("/" + id).then(value => {
+      if (value.ok) {
+        dispatch(postActions.deletePost(id))
+      }
+    })
+    await dispatch(modal.actions.removeModal());
   }
 
-  const nextClickHandler = () => {
-    fetchPost()
+  const nextClickHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    await fetchPost();
   }
 
   return (
-    <div className="container">
+    <div className="container p-0">
       {posts.map((post) => {
         return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
       })}

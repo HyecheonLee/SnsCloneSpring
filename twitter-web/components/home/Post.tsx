@@ -6,7 +6,14 @@ import { dayjs } from '../../utils/DayjsUtils';
 import { useDispatch } from 'react-redux'
 import { replyActions } from '../../store/reply'
 import { useSelector } from '../../store'
+import { useRouter } from 'next/router'
+import { postActions } from '../../store/post'
 
+
+interface IProps {
+  post: PostType,
+  deletePost: (id: number) => void
+}
 
 const postLike = async (id: number) => {
   return await apiV1Post.post(`/${id}/like`).then(value => {
@@ -20,18 +27,17 @@ const postUnLike = async (id: number) => {
 }
 
 
-const Post = ({
-                post,
-                deletePost
-              }: { post: PostType, deletePost: (id: number) => void }) => {
+const Post: React.FC<IProps> = ({post, deletePost}) => {
   const {postedBy} = post
 
   const timeDiff = dayjs(post.createdAt).fromNow();
   const [like, setLike] = useState(post.userLike);
   const {user} = useSelector(state => state.auth)
   let dispatch = useDispatch()
+  const router = useRouter()
 
-  const likeButton = useCallback(async (e: any) => {
+  const likeButton = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     const nextLike = !like;
     const currentLike = like;
 
@@ -48,14 +54,27 @@ const Post = ({
       setLike(currentLike);
     }
   }, [like]);
-  const showReply = () => {
+
+  const showReply = (e: any) => {
+    e.stopPropagation();
     const {showReply} = replyActions
     dispatch(showReply(post))
   }
-  let replyCnt = post.postStatus?.replyCnt
+
+  const onDeleteBtnClickHandler = (e: any) => {
+    e.stopPropagation();
+    deletePost(post.id)
+  }
+  const onClickHandler = async (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    dispatch(postActions.setCurrentPost(post))
+    await router.push(`/post/${post.id}`)
+  }
+
+  const replyCnt = post.postStatus?.replyCnt
 
   return (
-    <div className="post" data-id="${postData._id}">
+    <div className="post" data-id="${postData._id}" onClick={onClickHandler}>
       <div className="d-flex">
         <div>
           <Image
@@ -101,7 +120,7 @@ const Post = ({
                 className={`${like ? "active" : "text-black-50"}`}>{post.postStatus?.likeCnt || 0}</span>
             </div>
             {user?.id === postedBy.id && <div className={"position-absolute end-0"}>
-              <button onClick={e => deletePost(post.id)}>
+              <button onClick={onDeleteBtnClickHandler}>
                 <i className="rounded-circle p-1 fas fa-trash"/>
               </button>
             </div>}

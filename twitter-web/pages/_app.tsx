@@ -6,6 +6,7 @@ import { wrapper } from '../store'
 import Auth from '../components/Auth'
 import { useRouter } from 'next/router'
 import LoadingModal from '../components/LoadingModal'
+import LiveEvent from '../components/notify/LiveEvent'
 
 function MyApp({Component, pageProps}: AppProps) {
   let router = useRouter()
@@ -19,8 +20,10 @@ function MyApp({Component, pageProps}: AppProps) {
     </>
   }
   return <Auth>
-    <Component {...pageProps} />
-    <LoadingModal/>
+    <LiveEvent>
+      <Component {...pageProps} />
+      <LoadingModal/>
+    </LiveEvent>
   </Auth>
 }
 

@@ -1,20 +1,28 @@
-import { combineReducers } from 'redux'
+import { Action, combineReducers } from 'redux'
 import { createWrapper, HYDRATE } from 'next-redux-wrapper'
-import { configureStore } from '@reduxjs/toolkit'
-import { TypedUseSelectorHook, useSelector as useReduxSelector, } from 'react-redux'
+import { configureStore, ThunkAction } from '@reduxjs/toolkit'
+import {
+  TypedUseSelectorHook,
+  useDispatch,
+  useSelector as useReduxSelector,
+} from 'react-redux'
 import auth from "./auth";
 import modal from './modal'
 import reply from './reply'
+import post from './post'
+import { store } from 'next/dist/build/output/store'
 
 declare module 'react-redux' {
   interface DefaultRootState extends RootState {
   }
 }
 
+
 const rootReducer = combineReducers({
   auth: auth.reducer,
   modal: modal.reducer,
-  reply: reply.reducer
+  reply: reply.reducer,
+  post: post.reducer
 })
 
 const reducer = (state: any, action: { type: string, payload: any }) => {
@@ -30,15 +38,20 @@ const reducer = (state: any, action: { type: string, payload: any }) => {
   return rootReducer(state, action);
 }
 
-export type RootState = ReturnType<typeof rootReducer>
-
 const initStore = () => {
   return configureStore({
-    reducer,
+    reducer: rootReducer,
     devTools: true
   })
 }
 
+export type RootState = ReturnType<typeof rootReducer>
+
+export type AppDispatch = typeof store.dispatch
+export const useAppDispatch = () => useDispatch<AppDispatch>() // Export a hook that can be reused to resolve types
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
+export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
+
+
 export const wrapper = createWrapper(initStore)
 
-export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector;

@@ -1,17 +1,16 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { useState } from "react";
 import Image from 'next/image'
-import { apiV1Post, apiV1Reply, domain } from '../../utils/apiUtils'
-import { Button } from 'react-bootstrap'
+import { apiV1Post, domain } from '../../utils/apiUtils'
 import { useForm } from 'react-hook-form'
 import { useSelector } from '../../store'
 import { useDispatch } from 'react-redux'
 import { replyActions } from '../../store/reply'
 import { PostType } from '../../types/post'
 import { modalActions } from '../../store/modal'
+import { Button } from 'react-bootstrap'
 
 interface IProps {
   post: PostType
-  fetch: (replyId: number) => void
 }
 
 interface FormData {
@@ -22,22 +21,19 @@ const ReplyForm: React.FC<IProps> = ({...props}) => {
   const {
     register,
     reset,
-    getValues,
     handleSubmit,
   } = useForm<FormData>();
   let dispatch = useDispatch()
   let {post} = props;
 
   const auth = useSelector(state => state.auth)
-
   const [enabled, setEnabled] = useState(false);
 
   const {showLoading, removeModal} = modalActions
 
   const onSubmit = async (data: FormData) => {
     await dispatch(showLoading(""));
-    apiV1Reply.post("", {
-      postId: post?.id,
+    apiV1Post.post(`/${post.id}/reply`, {
       ...data
     }).then(value => {
       dispatch(removeModal())
@@ -46,10 +42,15 @@ const ReplyForm: React.FC<IProps> = ({...props}) => {
           content: ""
         });
         setEnabled(false);
-        props.fetch(0);
+        const {closeReply} = replyActions;
+        handleClose();
       }
     })
   }
+  const handleClose = () => {
+    const {closeReply} = replyActions;
+    dispatch(closeReply())
+  };
 
   function enableSubmit(content: string) {
     if (content.trim().length === 0) {
@@ -78,7 +79,11 @@ const ReplyForm: React.FC<IProps> = ({...props}) => {
       <div className="textareaContainer">
         <form onSubmit={handleSubmit(onSubmit)}>
           <textarea {...register("content")} onChange={onContentChange}></textarea>
-          <div className="d-flex justify-content-end">
+          <div className={"d-flex justify-content-end"}>
+            <Button variant="danger" className="text-white mx-3" type={"button"}
+                    onClick={handleClose}>
+              Close
+            </Button>
             <Button variant="primary" className="text-white" type={"submit"}
                     disabled={!enabled}>
               Reply

@@ -11,3 +11,8 @@ export type ErrorType = {
   status: number
   timestamp: string
 }
+
+export type EventType<T> = {
+  type: string,
+  data: T
+}
