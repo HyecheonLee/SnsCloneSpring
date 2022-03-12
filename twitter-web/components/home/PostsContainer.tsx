@@ -6,6 +6,8 @@ import Post from './Post'
 import { useAppDispatch, useSelector } from '../../store'
 import { postActions } from '../../store/post'
 import modal from '../../store/modal'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import Loading from '../Loading'
 
 const PostsContainer = () => {
   const dispatch = useAppDispatch()
@@ -16,7 +18,6 @@ const PostsContainer = () => {
   }, []);
 
   function fetchPost() {
-    dispatch(modal.actions.showLoading())
     let postId = 0
     if (posts.length > 0) {
       postId = posts[posts.length - 1].id
@@ -28,10 +29,7 @@ const PostsContainer = () => {
           value = []
         }
         dispatch(fetchPosts(value));
-        dispatch(modal.actions.removeModal());
-      }).catch(reason => {
-      dispatch(modal.actions.removeModal());
-    })
+      })
   }
 
   const deletePost = async (id: number) => {
@@ -44,19 +42,17 @@ const PostsContainer = () => {
     await dispatch(modal.actions.removeModal());
   }
 
-  const nextClickHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    await fetchPost();
-  }
-
   return (
     <div className="container p-0">
-      {posts.map((post) => {
-        return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
-      })}
-      {hasNext &&
-      <button onClick={nextClickHandler}
-              className={"btn w-100 btn-info btn-lg text-white"}>다음</button>}
+      <InfiniteScroll
+        dataLength={posts.length} //This is important field to render the next data
+        next={fetchPost}
+        hasMore={hasNext}
+        loader={<Loading width={50} height={50} fontSize={16}/>}>
+        {posts.map((post) => {
+          return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
+        })}
+      </InfiniteScroll>
     </div>
   );
 };

@@ -7,6 +7,8 @@ import { PostType } from '../../types/post'
 import { replyActions } from '../../store/reply'
 import { useAppDispatch, useSelector } from '../../store'
 import { postActions } from '../../store/post'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import Loading from '../Loading'
 
 interface IProps {
   postId: number
@@ -60,19 +62,22 @@ const ReplyContainer: React.FC<IProps> = ({...props}) => {
 
     if (replies.length === 0) {
       return <div
-        className={"w-100 h-100 text-center p-5"}>
+        className={"w-100 text-center p-5"}>
         <h1 className={"display-1 fw-bold"}> has no data</h1>
       </div>
     }
 
     return <>
       <div className="container p-0">
-        {replies.map((post) => {
-          return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
-        })}
-        {hasNextReplies &&
-        <button onClick={nextClickHandler}
-                className={"btn w-100 btn-info btn-lg text-white"}>다음</button>}
+        <InfiniteScroll
+          dataLength={replies.length} //This is important field to render the next data
+          next={fetchReply}
+          hasMore={hasNextReplies}
+          loader={<Loading width={50} height={50} fontSize={16}/>}>
+          {replies.map((post) => {
+            return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
+          })}
+        </InfiniteScroll>
       </div>
     </>
   }

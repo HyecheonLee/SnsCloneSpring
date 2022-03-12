@@ -17,6 +17,9 @@ const Index: React.FC<IProps> = ({...props}) => {
   const postId = parseInt(router.query.id as string, 10)
   const {currentPost} = useSelector(state => state.post)
   const dispatch = useAppDispatch()
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (!currentPost) {
