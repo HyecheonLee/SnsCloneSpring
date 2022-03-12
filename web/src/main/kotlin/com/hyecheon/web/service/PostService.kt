@@ -1,12 +1,9 @@
 package com.hyecheon.web.service
 
-import com.hyecheon.domain.entity.post.Post
-import com.hyecheon.domain.entity.post.PostLikeRepository
-import com.hyecheon.domain.entity.post.PostRepository
-import com.hyecheon.domain.entity.post.PostStatus
-import com.hyecheon.domain.entity.reply.ReplyRepository
+import com.hyecheon.domain.entity.post.*
 import com.hyecheon.domain.entity.user.UserRepository
 import com.hyecheon.web.dto.post.PostRespDto
+import com.hyecheon.web.dto.post.PostStatusDto
 import com.hyecheon.web.dto.web.NotifyDto
 import com.hyecheon.web.exception.IdNotExistsException
 import com.hyecheon.web.utils.getAuthToken
@@ -29,16 +26,27 @@ class PostService(
 ) {
 
 	fun findAll(postId: Long) = run {
-		val pagePost = postRepository.findTop10ByIdLessThanOrderByIdDesc(postId)
+		val posts = postRepository.findTop10ByIdLessThanOrderByIdDesc(postId)
+		setPostLike(posts)
+		posts
+	}
+
+	fun findAllByParentId(parentPostId: Long, postId: Long) = run {
+		val parentPost = postRepository.getById(parentPostId)
+		val posts = postRepository.findTop10ByParentPostAndIdLessThanOrderByIdDesc(parentPost, postId);
+		setPostLike(posts)
+		posts
+	}
+
+	private fun setPostLike(posts: List<Post>) {
 		val loggedUser = loggedUser()
-		val postIds = pagePost.mapNotNull { post -> post.id }
+		val postIds = posts.mapNotNull { post -> post.id }
 		val postLike = postLikeRepository.findAllByUserAndPostIdIn(loggedUser, postIds)
-		pagePost.forEach { post ->
+		posts.forEach { post ->
 			if (postLike.any { postLike -> post.id == postLike.post.id }) {
 				post.userLike = true
 			}
 		}
-		pagePost
 	}
 
 	@Transactional
@@ -48,18 +56,14 @@ class PostService(
 
 		val postedBy = loggedUser()
 		newSavedPost.postedBy = postedBy
-		applicationEventPublisher.publishEvent(PostRespDto.of(newSavedPost))
+		applicationEventPublisher.publishEvent(NotifyDto("newPost", PostRespDto.of(newSavedPost)))
 		newSavedPost.id!!
 	}
 
 	fun findById(id: Long) = run {
-		postRepository.findById(id).orElseThrow { RuntimeException("") }
+		postRepository.findById(id).orElseThrow { IdNotExistsException("id[${id}] not exists") }
 	}
 
-	fun loggedUser() = run {
-		val authToken = getAuthToken()
-		userRepository.getById(authToken.userId!!)
-	}
 
 	@Transactional
 	fun deleteById(id: Long) {
@@ -67,5 +71,41 @@ class PostService(
 		postLikeRepository.deleteAllByPost(post)
 		postRepository.delete(post)
 		applicationEventPublisher.publishEvent(NotifyDto("deletePost", id))
+	}
+
+	@Transactional
+	fun reply(postId: Long, reply: Post) = run {
+		new(reply)
+		val post = postRepository.findById(postId).orElseThrow { IdNotExistsException("post id not exists") }
+		post.reply(reply)
+		applicationEventPublisher.publishEvent(NotifyDto("updatedPostStatus", PostStatusDto.of(post)))
+		reply.id!!
+	}
+
+	@Transactional
+	fun like(postId: Long) {
+		val post = postRepository.findById(postId).orElseThrow { RuntimeException("") }
+		val loggedUser = loggedUser()
+		if (!postLikeRepository.existsByUserAndPost(loggedUser, post)) {
+			post.like()
+			postLikeRepository.save(PostLike(loggedUser, post))
+			applicationEventPublisher.publishEvent(NotifyDto("updatedPostStatus", PostStatusDto.of(post)))
+		}
+	}
+
+	@Transactional
+	fun unLike(postId: Long) = run {
+		val post = postRepository.findById(postId).orElseThrow { RuntimeException("") }
+		val loggedUser = loggedUser()
+		if (postLikeRepository.existsByUserAndPost(loggedUser, post)) {
+			post.unLike()
+			postLikeRepository.deleteByUserAndPost(loggedUser, post)
+			applicationEventPublisher.publishEvent(NotifyDto("updatedPostStatus", PostStatusDto.of(post)))
+		}
+	}
+
+	fun loggedUser() = run {
+		val authToken = getAuthToken()
+		userRepository.getById(authToken.userId!!)
 	}
 }

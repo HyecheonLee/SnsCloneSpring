@@ -27,7 +27,6 @@ class ReplyService(
 	fun new(postId: Long, reply: Reply) = run {
 		val post = postRepository.findById(postId).orElseThrow { IdNotExistsException("post id not exists") }
 		reply.post = post
-		post.reply()
 		applicationEventPublisher.publishEvent(PostStatusDto.of(post))
 		replyRepository.save(reply)
 	}

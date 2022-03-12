@@ -1,10 +1,8 @@
 package com.hyecheon.domain.entity.post
 
 import com.hyecheon.domain.entity.BaseEntity
-import com.hyecheon.domain.entity.reply.Reply
 import com.hyecheon.domain.entity.user.User
 import org.hibernate.Hibernate
-import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import javax.persistence.*
 
@@ -31,8 +29,13 @@ class Post(
 	@OneToOne(mappedBy = "post", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
 	var postStatus: PostStatus? = null
 
-	@OneToMany(mappedBy = "post", cascade = [CascadeType.ALL])
-	var replies: MutableSet<Reply> = mutableSetOf()
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	var parentPost: Post? = null
+
+	@OneToMany(mappedBy = "parentPost", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+	var replies: MutableSet<Post> = mutableSetOf()
+
 
 	fun like() = run {
 		if (postStatus == null) {
@@ -41,7 +44,6 @@ class Post(
 		postStatus?.like()
 	}
 
-
 	fun unLike() = run {
 		if (postStatus == null) {
 			postStatus = PostStatus(this)
@@ -49,11 +51,14 @@ class Post(
 		postStatus?.unLike()
 	}
 
-	fun reply() {
+	fun reply(reply: Post) {
 		if (postStatus == null) {
 			postStatus = PostStatus(this)
 		}
 		postStatus?.reply()
+
+		reply.parentPost = this
+		this.replies.add(reply)
 	}
 
 	fun unReply() {

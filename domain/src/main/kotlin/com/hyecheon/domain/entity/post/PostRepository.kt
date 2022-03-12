@@ -1,7 +1,5 @@
 package com.hyecheon.domain.entity.post
 
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -22,7 +20,10 @@ interface PostRepository : JpaRepository<Post, Long> {
 	fun findTop10ByIdLessThanOrderByIdDesc(id: Long): List<Post>
 
 
-	@EntityGraph(attributePaths = ["postedBy", "postedBy.roles"], type = EntityGraph.EntityGraphType.LOAD)
+	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
+	fun findTop10ByParentPostAndIdLessThanOrderByIdDesc(parentPost: Post, id: Long): List<Post>
+
+	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
 	override fun findById(id: Long): Optional<Post>
 
 	@Modifying
