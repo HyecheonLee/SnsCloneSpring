@@ -5,9 +5,10 @@ import { PostType } from '../../types/post'
 import Post from './Post'
 import { useAppDispatch, useSelector } from '../../store'
 import { postActions } from '../../store/post'
-import modal from '../../store/modal'
+import { modalActions } from '../../store/modal'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Loading from '../Loading'
+import DeletePostModal from '../modal/DeletePostModal'
 
 const PostsContainer = () => {
   const dispatch = useAppDispatch()
@@ -33,27 +34,28 @@ const PostsContainer = () => {
   }
 
   const deletePost = async (id: number) => {
-    await dispatch(modal.actions.showLoading())
-    await apiV1Post.delete("/" + id).then(value => {
-      if (value.ok) {
-        dispatch(postActions.deletePost(id))
-      }
-    })
-    await dispatch(modal.actions.removeModal());
+    dispatch(modalActions.showModal({
+      type: "deletePost",
+      postId: id,
+    }));
+
   }
 
   return (
-    <div className="container p-0">
-      <InfiniteScroll
-        dataLength={posts.length} //This is important field to render the next data
-        next={fetchPost}
-        hasMore={hasNext}
-        loader={<Loading width={50} height={50} fontSize={16}/>}>
-        {posts.map((post) => {
-          return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
-        })}
-      </InfiniteScroll>
-    </div>
+    <>
+      <div className="container p-0">
+        <InfiniteScroll
+          dataLength={posts.length} //This is important field to render the next data
+          next={fetchPost}
+          hasMore={hasNext}
+          loader={<Loading width={50} height={50} fontSize={16}/>}>
+          {posts.map((post) => {
+            return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
+          })}
+        </InfiniteScroll>
+      </div>
+      <DeletePostModal/>
+    </>
   );
 };
 

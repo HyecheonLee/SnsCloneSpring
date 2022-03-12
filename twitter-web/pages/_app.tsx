@@ -5,7 +5,7 @@ import type { AppProps } from 'next/app'
 import { wrapper } from '../store'
 import Auth from '../components/Auth'
 import { useRouter } from 'next/router'
-import LoadingModal from '../components/LoadingModal'
+import LoadingModal from '../components/modal/LoadingModal'
 import LiveEvent from '../components/notify/LiveEvent'
 
 function MyApp({Component, pageProps}: AppProps) {

@@ -1,8 +1,8 @@
 import React from "react";
-import Portal from './Portal'
+import Portal from '../Portal'
 import { Modal } from 'react-bootstrap'
-import { useSelector } from '../store'
-import Loading from './Loading'
+import { useSelector } from '../../store'
+import Loading from '../Loading'
 
 
 const LoadingModal = () => {

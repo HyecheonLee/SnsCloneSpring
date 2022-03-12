@@ -91,9 +91,14 @@ const Post: React.FC<IProps> = ({post, deletePost}) => {
               className="fw-bold text-decoration-none">{postedBy.firstName + " " + postedBy.lastName}</a>
             <span className="text-muted">@{postedBy.username}</span>
             <span className="text-muted mx-2">{timeDiff}</span>
+            {user?.id === postedBy.id && <div className={"position-absolute end-0"}>
+              <button onClick={onDeleteBtnClickHandler}>
+                <i className="rounded-circle p-1 fas fa-times"/>
+              </button>
+            </div>}
           </div>
           <div>
-            <span>{post.content}</span>
+            <span className={"h3"}>{post.content}</span>
           </div>
           <div className="d-flex text-center">
             <div className="flex-fill d-flex align-items-center">
@@ -119,11 +124,6 @@ const Post: React.FC<IProps> = ({post, deletePost}) => {
               <span
                 className={`${like ? "active" : "text-black-50"}`}>{post.postStatus?.likeCnt || 0}</span>
             </div>
-            {user?.id === postedBy.id && <div className={"position-absolute end-0"}>
-              <button onClick={onDeleteBtnClickHandler}>
-                <i className="rounded-circle p-1 fas fa-trash"/>
-              </button>
-            </div>}
           </div>
         </div>
       </div>
