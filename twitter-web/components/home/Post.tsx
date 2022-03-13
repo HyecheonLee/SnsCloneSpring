@@ -8,6 +8,7 @@ import { replyActions } from '../../store/reply'
 import { useSelector } from '../../store'
 import { useRouter } from 'next/router'
 import { postActions } from '../../store/post'
+import Link from 'next/link';
 
 
 interface IProps {
@@ -87,8 +88,10 @@ const Post: React.FC<IProps> = ({post, deletePost}) => {
         </div>
         <div className="d-flex flex-column flex-fill ps-3 position-relative">
           <div className={"d-flex align-items-center"}>
-            <a
-              className="fw-bold text-decoration-none">{postedBy.firstName + " " + postedBy.lastName}</a>
+            <Link href={`/profile/${postedBy.username}`}>
+              <a onClick={e => e.stopPropagation()}
+                 className="fw-bold text-decoration-none">{postedBy.firstName + " " + postedBy.lastName}</a>
+            </Link>
             <span className="text-muted mx-2">@{postedBy.username}</span>
             <span className="text-muted mx-2 flex-fill">{timeDiff}</span>
             {user?.id === postedBy.id && <span>

@@ -13,6 +13,7 @@ function postEvent(event: EventType<any>, dispatch: any) {
   if (event.type === "newPost") {
     let data = event.data as PostType;
     dispatch(newPost(data));
+
   }
   if (event.type === "deletePost") {
     const postId = event.data as number

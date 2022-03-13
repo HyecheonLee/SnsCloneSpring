@@ -1,5 +1,5 @@
 import React from "react";
-import NavBar from '../home/NavBar'
+import NavBar from './NavBar'
 import ReplyModal from '../reply/ReplyModal'
 
 interface IProps {
@@ -16,7 +16,7 @@ const Layout: React.FC<IProps> = ({...props}) => {
             <div className="px-3">
               <h6 className={"text-black-50 display-6 fw-bold"}>{props.title}</h6>
             </div>
-            <hr/>
+            <hr className={"mb-0"}/>
             {props.children}
           </div>
           <div className={"d-none d-md-block col-md-2 col-lg-4"}>

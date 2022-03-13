@@ -8,7 +8,6 @@ import { postActions } from '../../store/post'
 import { modalActions } from '../../store/modal'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Loading from '../Loading'
-import DeletePostModal from '../modal/DeletePostModal'
 
 const PostsContainer = () => {
   const dispatch = useAppDispatch()
@@ -36,7 +35,17 @@ const PostsContainer = () => {
   const deletePost = async (id: number) => {
     dispatch(modalActions.showModal({
       type: "deletePost",
-      postId: id,
+      onClose: () => {
+        dispatch(modalActions.removeModal())
+      },
+      onClick: () => {
+        apiV1Post.delete("/" + id).then(value => {
+          if (value.ok) {
+            dispatch(postActions.deletePost(id))
+          }
+        });
+        dispatch(modalActions.removeModal());
+      }
     }));
   }
 

@@ -11,6 +11,7 @@ import modal from './modal'
 import reply from './reply'
 import post from './post'
 import { store } from 'next/dist/build/output/store'
+import profile from './profile'
 
 declare module 'react-redux' {
   interface DefaultRootState extends RootState {
@@ -22,7 +23,8 @@ const rootReducer = combineReducers({
   auth: auth.reducer,
   modal: modal.reducer,
   reply: reply.reducer,
-  post: post.reducer
+  post: post.reducer,
+  profile: profile.reducer,
 })
 
 const reducer = (state: any, action: { type: string, payload: any }) => {
@@ -40,7 +42,10 @@ const reducer = (state: any, action: { type: string, payload: any }) => {
 
 const initStore = () => {
   return configureStore({
-    reducer: rootReducer,
+    reducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+      serializableCheck: false,
+    }),
     devTools: true
   })
 }
