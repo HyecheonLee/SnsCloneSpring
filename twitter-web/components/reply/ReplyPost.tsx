@@ -15,7 +15,7 @@ const ReplyPost: React.FC<IProps> = ({...props}) => {
   const timeDiff = dayjs(post.createdAt).fromNow();
 
   return (<>
-    <div className="d-flex">
+    <div className="d-flex p-3">
       <div>
         <Image
           className={"rounded-circle bg-white"}

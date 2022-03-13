@@ -27,10 +27,8 @@ const ReplyModal: React.FC<IProps> = ({...props}) => {
         <Modal.Title>Reply</Modal.Title>
       </Modal.Header>
       {post &&
-      <Modal.Body className="pb-0">
-        <div className="d-flex flex-shrink-0 p-1">
-          <ReplyPost post={post}/>
-        </div>
+      <Modal.Body className={"p-0"}>
+        <ReplyPost post={post}/>
         <hr/>
         <ReplyForm post={post}/>
       </Modal.Body>}

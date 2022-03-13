@@ -38,7 +38,6 @@ const PostsContainer = () => {
       type: "deletePost",
       postId: id,
     }));
-
   }
 
   return (
@@ -54,7 +53,6 @@ const PostsContainer = () => {
           })}
         </InfiniteScroll>
       </div>
-      <DeletePostModal/>
     </>
   );
 };

@@ -89,13 +89,13 @@ const Post: React.FC<IProps> = ({post, deletePost}) => {
           <div className={"d-flex align-items-center"}>
             <a
               className="fw-bold text-decoration-none">{postedBy.firstName + " " + postedBy.lastName}</a>
-            <span className="text-muted">@{postedBy.username}</span>
-            <span className="text-muted mx-2">{timeDiff}</span>
-            {user?.id === postedBy.id && <div className={"position-absolute end-0"}>
+            <span className="text-muted mx-2">@{postedBy.username}</span>
+            <span className="text-muted mx-2 flex-fill">{timeDiff}</span>
+            {user?.id === postedBy.id && <span>
               <button onClick={onDeleteBtnClickHandler}>
                 <i className="rounded-circle p-1 fas fa-times"/>
               </button>
-            </div>}
+            </span>}
           </div>
           <div>
             <span className={"h3"}>{post.content}</span>

@@ -65,8 +65,8 @@ const ReplyForm: React.FC<IProps> = ({...props}) => {
     enableSubmit(content)
   }
 
-  return (<>
-    <div className="d-flex flex-shrink-0 p-1">
+  return (<form onSubmit={handleSubmit(onSubmit)}>
+    <div className="d-flex flex-shrink-0 px-3 ">
       <div>
         {auth && auth.user?.profilePic &&
         <Image className={"rounded-circle bg-white"}
@@ -76,23 +76,24 @@ const ReplyForm: React.FC<IProps> = ({...props}) => {
                alt="Picture of the author"
                width={50} height={50}/>}
       </div>
-      <div className="textareaContainer">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <textarea {...register("content")} onChange={onContentChange}></textarea>
-          <div className={"d-flex justify-content-end"}>
-            <Button variant="danger" className="text-white mx-3" type={"button"}
-                    onClick={handleClose}>
-              Close
-            </Button>
-            <Button variant="primary" className="text-white" type={"submit"}
-                    disabled={!enabled}>
-              Reply
-            </Button>
-          </div>
-        </form>
+      <div className="textareaContainer pb-3 position-relative">
+
+        <textarea {...register("content")} onChange={onContentChange}></textarea>
+
       </div>
     </div>
-  </>);
+    <hr/>
+    <div className={"d-flex justify-content-end m-3"}>
+      <Button variant="danger" className="text-white mx-3" type={"button"}
+              onClick={handleClose}>
+        Close
+      </Button>
+      <Button variant="primary" className="text-white" type={"submit"}
+              disabled={!enabled}>
+        Reply
+      </Button>
+    </div>
+  </form>);
 };
 
 export default ReplyForm;

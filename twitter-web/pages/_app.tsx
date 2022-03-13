@@ -7,6 +7,8 @@ import Auth from '../components/Auth'
 import { useRouter } from 'next/router'
 import LoadingModal from '../components/modal/LoadingModal'
 import LiveEvent from '../components/notify/LiveEvent'
+import DeletePostModal from '../components/modal/DeletePostModal'
+import React from 'react'
 
 function MyApp({Component, pageProps}: AppProps) {
   let router = useRouter()
@@ -23,6 +25,7 @@ function MyApp({Component, pageProps}: AppProps) {
     <LiveEvent>
       <Component {...pageProps} />
       <LoadingModal/>
+      <DeletePostModal/>
     </LiveEvent>
   </Auth>
 }

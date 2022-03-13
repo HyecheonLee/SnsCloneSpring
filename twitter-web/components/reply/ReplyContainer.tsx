@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import Post from '../home/Post'
-import modal from '../../store/modal'
+import modal, { modalActions } from '../../store/modal'
 import { apiV1Post } from '../../utils/apiUtils'
 import { ApiResponseType } from '../../types/api'
 import { PostType } from '../../types/post'
-import { replyActions } from '../../store/reply'
 import { useAppDispatch, useSelector } from '../../store'
 import { postActions } from '../../store/post'
 import InfiniteScroll from 'react-infinite-scroll-component'
@@ -47,18 +46,12 @@ const ReplyContainer: React.FC<IProps> = ({...props}) => {
     }
 
     const deletePost = async (id: number) => {
-      await dispatch(modal.actions.showLoading())
-      await apiV1Post.delete("/" + id).then(value => {
-        if (value.ok) {
-          dispatch(postActions.deletePost(id))
-        }
-      })
-      await dispatch(modal.actions.removeModal());
+      dispatch(modalActions.showModal({
+        type: "deletePost",
+        postId: id,
+      }));
     }
 
-    const nextClickHandler = () => {
-      fetchReply();
-    }
 
     if (replies.length === 0) {
       return <div
