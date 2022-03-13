@@ -8,6 +8,7 @@ import com.hyecheon.web.dto.web.NotifyDto
 import com.hyecheon.web.exception.IdNotExistsException
 import com.hyecheon.web.utils.getAuthToken
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,10 +27,26 @@ class PostService(
 ) {
 
 	fun findAll(postId: Long) = run {
-		val posts = postRepository.findTop10ByIdLessThanOrderByIdDesc(postId)
+		val posts = postRepository.findTop10ByParentPostIsNullAndIdLessThanOrderByIdDesc(postId)
 		setPostLike(posts)
 		posts
 	}
+
+	fun findAllPostByPostedBy(username: String, postId: Long) = run {
+		val postedBy = userRepository.findByUsername(username).orElseThrow { UsernameNotFoundException("") }
+		val posts = postRepository.findTop10ByPostedByAndParentPostIsNullAndIdLessThanOrderByIdDesc(postedBy, postId)
+		setPostLike(posts)
+		posts
+	}
+
+	fun findAllRepliesByPostedBy(username: String, postId: Long) = run {
+		val postedBy = userRepository.findByUsername(username).orElseThrow { UsernameNotFoundException("") }
+		val posts =
+			postRepository.findTop10ByPostedByAndParentPostIsNotNullAndIdLessThanOrderByIdDesc(postedBy, postId)
+		setPostLike(posts)
+		posts
+	}
+
 
 	fun findAllByParentId(parentPostId: Long, postId: Long) = run {
 		val parentPost = postRepository.getById(parentPostId)

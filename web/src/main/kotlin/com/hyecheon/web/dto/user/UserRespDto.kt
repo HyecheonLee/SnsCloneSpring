@@ -26,9 +26,7 @@ object UserRespDto {
 		var profilePic: String? = null,
 		var createdAt: LocalDateTime? = null,
 		var updatedAt: LocalDateTime? = null,
-	) {
-		companion object {
-			fun of(user: User) = converter.toModel(user)
-		}
-	}
+	)
+
+	fun of(user: User) = UserRespDto.converter.toModel(user)
 }

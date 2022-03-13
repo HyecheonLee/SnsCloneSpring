@@ -1,5 +1,6 @@
 package com.hyecheon.domain.entity.post
 
+import com.hyecheon.domain.entity.user.User
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -17,11 +18,17 @@ interface PostRepository : JpaRepository<Post, Long> {
 	override fun findAll(): MutableList<Post>
 
 	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
-	fun findTop10ByIdLessThanOrderByIdDesc(id: Long): List<Post>
+	fun findTop10ByParentPostIsNullAndIdLessThanOrderByIdDesc(id: Long): List<Post>
 
+	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
+	fun findTop10ByPostedByAndParentPostIsNullAndIdLessThanOrderByIdDesc(postedBy: User, id: Long): List<Post>
 
 	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
 	fun findTop10ByParentPostAndIdLessThanOrderByIdDesc(parentPost: Post, id: Long): List<Post>
+
+	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
+	fun findTop10ByPostedByAndParentPostIsNotNullAndIdLessThanOrderByIdDesc(postedBy: User, id: Long): List<Post>
+
 
 	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
 	override fun findById(id: Long): Optional<Post>

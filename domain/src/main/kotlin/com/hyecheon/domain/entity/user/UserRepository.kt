@@ -9,5 +9,5 @@ import java.util.*
  * Date: 2022/02/26
  */
 interface UserRepository : JpaRepository<User, Long> {
-	fun findByUsername(userName: String): Optional<User>
+	fun findByUsername(username: String): Optional<User>
 }

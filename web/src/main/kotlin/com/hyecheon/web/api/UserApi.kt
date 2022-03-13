@@ -10,7 +10,6 @@ import com.hyecheon.web.service.UserService
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.net.URI
 import javax.security.auth.login.LoginException
@@ -35,7 +34,7 @@ class UserApi(
 		val username = token.get().username ?: throw LoginException("로그인을 해주세요.")
 		val loggedUser = userService.findByUsername(username)
 		ResponseEntity.ok(
-			ResponseDto(data = UserRespDto.Model.of(loggedUser))
+			ResponseDto(data = UserRespDto.of(loggedUser))
 		)
 	}
 
@@ -53,10 +52,10 @@ class UserApi(
 			.build<Any>()
 	}
 
-	@GetMapping("/{id}")
-	fun findById(@PathVariable id: Long) = run {
-		userService.findById(id)
-	}
+//	@GetMapping("/{id}")
+//	fun findById(@PathVariable id: Long) = run {
+//		userService.findById(id)
+//	}
 
 	@PostMapping("/join")
 	fun join(@RequestBody user: UserReqDto.Join) = run {
@@ -77,5 +76,11 @@ class UserApi(
 		ResponseEntity.ok()
 			.header(HttpHeaders.SET_COOKIE, responseCookie.toString())
 			.body(ResponseDto(data = mapOf("authToken" to authToken)))
+	}
+
+	@GetMapping("/{username}")
+	fun getByUsername(@PathVariable username: String) = run {
+		val user = userService.findByUsername(username)
+		ResponseDto(data = UserRespDto.of(user))
 	}
 }

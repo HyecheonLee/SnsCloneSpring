@@ -2,6 +2,7 @@ package com.hyecheon.web.exception
 
 import com.hyecheon.web.dto.web.ErrorDto
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -20,7 +21,6 @@ class ExceptionHandler {
 	@ExceptionHandler(Exception::class)
 	fun allException(e: Exception, request: HttpServletRequest, webRequest: WebRequest) = run {
 		val errorRespDto = ErrorDto.of(request)
-
-		ResponseEntity.ok(errorRespDto)
+		ResponseEntity(errorRespDto, HttpStatus.BAD_REQUEST)
 	}
 }

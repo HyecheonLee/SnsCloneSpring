@@ -57,4 +57,5 @@ class UserService(
 	fun findById(id: Long) {
 		userRepository.findById(id).orElseThrow { IdNotExistsException("사용자 id[${id}] 가 존재하지 않습니다.") }
 	}
+
 }

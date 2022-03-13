@@ -18,8 +18,15 @@ import java.net.URI
 class PostApi(private val postService: PostService) {
 
 	@GetMapping
-	fun get(@RequestParam("postId") postId: Long) = run {
-		val posts = postService.findAll(if (postId <= 0) Long.MAX_VALUE else postId)
+	fun get(
+		@RequestParam("postId") postId: Long,
+		@RequestParam("postedBy", required = false) postedBy: String? = null,
+	) = run {
+		val posts = if (postedBy == null) {
+			postService.findAll(if (postId <= 0) Long.MAX_VALUE else postId)
+		} else {
+			postService.findAllPostByPostedBy(postedBy, if (postId <= 0) Long.MAX_VALUE else postId)
+		}
 		val data = posts.map { PostRespDto.of(it) }
 		ResponseEntity.ok(ResponseDto(data = data))
 	}
@@ -31,8 +38,21 @@ class PostApi(private val postService: PostService) {
 	}
 
 	@GetMapping("/{id}/replies")
-	fun getPost(@PathVariable id: Long, @RequestParam postId: Long) = run {
+	fun getPost(
+		@PathVariable id: Long,
+		@RequestParam postId: Long,
+	) = run {
 		val posts = postService.findAllByParentId(id, if (postId <= 0) Long.MAX_VALUE else postId)
+		val data = posts.map { PostRespDto.of(it) }
+		ResponseEntity.ok(ResponseDto(data = data))
+	}
+
+	@GetMapping("/replies")
+	fun getPost(
+		@RequestParam postedBy: String,
+		@RequestParam postId: Long,
+	) = run {
+		val posts = postService.findAllRepliesByPostedBy(postedBy, if (postId <= 0) Long.MAX_VALUE else postId)
 		val data = posts.map { PostRespDto.of(it) }
 		ResponseEntity.ok(ResponseDto(data = data))
 	}
