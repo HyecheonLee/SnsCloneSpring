@@ -1,15 +1,37 @@
 import React from "react";
 import Image from 'next/image'
-import { domain } from '../../utils/apiUtils'
-import { UserType } from '../../types/user'
+import { apiV1User, domain } from '../../utils/apiUtils'
 import Link from "next/link";
+import { useAppDispatch, useSelector } from '../../store'
+import auth from '../../store/auth'
+import { profileActions } from '../../store/profile'
 
 interface IProps {
-  user: UserType
+
 }
 
 const ProfileHeader: React.FC<IProps> = ({...props}) => {
-  const {user} = props
+  const {user} = useSelector(state => state.profile)
+  const dispatch = useAppDispatch()
+  const following = () => {
+    if (user?.followInfo?.isFollowing) {
+      apiV1User.delete(`${user?.id}/unFollowing`)
+        .then(value => {
+          if (value.ok) {
+            dispatch(profileActions.setIsFollow(false))
+          }
+        });
+    } else {
+      apiV1User.post(`${user?.id}/following`)
+        .then(value => {
+          if (value.ok) {
+            dispatch(profileActions.setIsFollow(true))
+          }
+        });
+    }
+  }
+  if (!user) return null
+
   return (<div className={"container p-0 m-0"}>
     <div className={"bg-primary w-100 position-relative"} style={{height: 180}}>
       <div className={"ms-3 position-absolute"}
@@ -28,8 +50,9 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
          style={{padding: "5px 15px"}}>
         <i className={"fas fa-envelope"}/>
       </a>
-      <a className={"rounded-pill ms-3 fw-bold btn btn-outline-primary active"}>
-        Following
+      <a onClick={following}
+         className={"rounded-pill ms-3 fw-bold btn btn-outline-primary active"}>
+        {user.followInfo?.isFollowing ? "UnFollowing" : "Following"}
       </a>
       <style jsx>{`
         .btn-outline-primary:hover {
@@ -51,13 +74,15 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
       <div>
         <Link href={`/profile/${user.username}/following`}>
           <a className={"me-2 text-underline-hover"}>
-            <span className={"fw-bold text-black"}>0&nbsp;&nbsp;</span>
+            <span
+              className={"fw-bold text-black"}>{user.followInfo?.followStatus.followingCnt}&nbsp;&nbsp;</span>
             <span className={"text-muted"}>Following</span>
           </a>
         </Link>
         <Link href={`/profile/${user.username}/followers`}>
           <a className={"me-2 text-underline-hover"}>
-            <span className={"fw-bold text-black"}>0&nbsp;&nbsp;</span>
+            <span
+              className={"fw-bold text-black"}>{user.followInfo?.followStatus.followerCnt}&nbsp;&nbsp;</span>
             <span className={"text-muted"}>Followers</span>
           </a>
         </Link>

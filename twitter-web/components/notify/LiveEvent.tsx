@@ -3,6 +3,7 @@ import { PostStatusType, PostType } from '../../types/post'
 import { useAppDispatch } from '../../store'
 import { postActions } from '../../store/post'
 import { EventType } from '../../types/api'
+import { profileActions } from '../../store/profile'
 
 interface IProps {
 }
@@ -50,7 +51,11 @@ const LiveEvent: React.FC<IProps> = ({...props}) => {
 
     source.onmessage = (e) => {
       const event = JSON.parse(e.data);
-      postEvent(event, dispatch)
+      postEvent(event, dispatch);
+      console.log(event);
+      if (event.type === "followStatus") {
+        dispatch(profileActions.setFollowStatus(event.data))
+      }
     }
 
     source.onerror = (e) => {

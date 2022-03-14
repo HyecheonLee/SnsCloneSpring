@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { PostType } from '../types/post'
+import { FollowInfoType, FollowStatusType, UserType } from '../types/user'
 
 interface ProfileReduxState {
-  username?: string,
+  user?: UserType,
   posts: PostType[],
   hasNextPost: boolean,
   replies: PostType[],
@@ -19,8 +20,8 @@ const profile = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    setUsername(state, action: PayloadAction<string>) {
-      state.username = action.payload
+    setUser(state, action: PayloadAction<UserType>) {
+      state.user = action.payload
     },
     fetchPost(state, action: PayloadAction<PostType[]>) {
       const newPosts = [...action.payload, ...state.posts]
@@ -32,8 +33,18 @@ const profile = createSlice({
       state.hasNextReply = action.payload.length >= 10;
       state.replies = newPosts.sort((a, b) => b.id - a.id)
     },
+    setFollowStatus(state, action: PayloadAction<FollowInfoType>) {
+      if (state.user && state.user.followInfo && state.user.id === action.payload.userId) {
+        state.user.followInfo.followStatus = action.payload.followStatus
+      }
+    },
+    setIsFollow(state, action: PayloadAction<boolean>) {
+      if (state.user && state.user.followInfo) {
+        state.user.followInfo.isFollowing = action.payload
+      }
+    },
     clear(state) {
-      state.username = undefined
+      state.user = undefined
       state = initialState
     }
   }

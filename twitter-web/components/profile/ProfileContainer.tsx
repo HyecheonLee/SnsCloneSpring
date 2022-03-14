@@ -5,7 +5,7 @@ import ProfilePost from './ProfilePost'
 import ProfileReply from './ProfileReply'
 import { useRouter } from 'next/router'
 import { UserType } from '../../types/user'
-import { useAppDispatch } from '../../store'
+import { useAppDispatch, useSelector } from '../../store'
 import { apiV1User } from '../../utils/apiUtils'
 import { ApiResponseType, ErrorType } from '../../types/api'
 import { modalActions } from '../../store/modal'
@@ -17,26 +17,25 @@ interface IProps {
 
 const ProfileContainer: React.FC<IProps> = ({...props}) => {
   const router = useRouter()
-  const [user, setUser] = useState<UserType>();
   const username = router.query.username as string
   const [tab, setTab] = useState("post");
   const dispatch = useAppDispatch()
+  const {user} = useSelector(state => state.profile)
   useEffect(() => {
-    dispatch(profileActions.setUsername(username))
     fetchUser()
     return () => {
       dispatch(profileActions.clear())
     }
   }, [username]);
 
+
   function fetchUser() {
     apiV1User.get<ApiResponseType<UserType> | ErrorType>(`${username}`)
       .then(response => {
         if (response.ok) {
           const resp = response.data as ApiResponseType<UserType>
-          setUser(resp.data);
+          dispatch(profileActions.setUser(resp.data))
         } else {
-          console.log(response);
           dispatch(modalActions.showModal({
             type: "confirm",
             title: "사용자 오류",
@@ -60,7 +59,7 @@ const ProfileContainer: React.FC<IProps> = ({...props}) => {
   }
 
   return (<>
-    <ProfileHeader user={user}/>
+    <ProfileHeader/>
     <ProfileTab tab={tab} setTab={setTab}/>
     <ProfilePost tab={tab}/>
     <ProfileReply tab={tab}/>

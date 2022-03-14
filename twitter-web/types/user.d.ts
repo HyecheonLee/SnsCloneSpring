@@ -7,5 +7,17 @@ export type UserType = {
   roles: string[],
   profilePic: string,
   createdAt: string
-  updatedAt: string
+  updatedAt: string,
+  followInfo?: FollowInfoType
+}
+
+export type FollowInfoType = {
+  userId: number
+  followStatus: FollowStatusType,
+  isFollowing?: boolean
+}
+
+export type FollowStatusType = {
+  followingCnt: number,
+  followerCnt: number
 }
