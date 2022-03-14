@@ -26,6 +26,19 @@ data class AuthToken(
 					else Optional.empty()
 				} ?: Optional.empty()
 		}
+
+		fun getLoggedToken() = run {
+			val optional = Optional.ofNullable(SecurityContextHolder.getContext())
+				.map { obj: SecurityContext -> obj.authentication }
+				.flatMap { authentication ->
+					val principal = authentication.principal
+					if (principal is AuthToken) Optional.of(principal)
+					else Optional.empty()
+				} ?: Optional.empty()
+
+			if (optional.isEmpty) throw RuntimeException("로그인 토큰이 없습니다.")
+			optional.get()
+		}
 	}
 
 	fun createToken() = run {

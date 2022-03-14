@@ -92,6 +92,7 @@ class PostService(
 
 	@Transactional
 	fun reply(postId: Long, reply: Post) = run {
+		reply.isReply = true
 		new(reply)
 		val post = postRepository.findById(postId).orElseThrow { IdNotExistsException("post id not exists") }
 		post.reply(reply)

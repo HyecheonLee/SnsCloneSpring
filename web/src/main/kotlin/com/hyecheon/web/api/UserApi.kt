@@ -6,6 +6,7 @@ import com.hyecheon.web.config.AppProperty
 import com.hyecheon.web.dto.user.UserReqDto
 import com.hyecheon.web.dto.user.UserRespDto
 import com.hyecheon.web.dto.web.ResponseDto
+import com.hyecheon.web.service.FollowService
 import com.hyecheon.web.service.UserService
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
@@ -25,6 +26,7 @@ import javax.security.auth.login.LoginException
 class UserApi(
 	private val userService: UserService,
 	private val appProperty: AppProperty,
+	private val followService: FollowService,
 ) {
 
 	@GetMapping("/me")
@@ -52,11 +54,6 @@ class UserApi(
 			.build<Any>()
 	}
 
-//	@GetMapping("/{id}")
-//	fun findById(@PathVariable id: Long) = run {
-//		userService.findById(id)
-//	}
-
 	@PostMapping("/join")
 	fun join(@RequestBody user: UserReqDto.Join) = run {
 		val userId = userService.join(user.toEntity())
@@ -81,6 +78,20 @@ class UserApi(
 	@GetMapping("/{username}")
 	fun getByUsername(@PathVariable username: String) = run {
 		val user = userService.findByUsername(username)
-		ResponseDto(data = UserRespDto.of(user))
+		val followInfo = followService.getFollowInfo(user)
+		ResponseDto(data = UserRespDto.of(user, followInfo))
+	}
+
+
+	@PostMapping("/{id}/following")
+	fun following(@PathVariable id: Long) = run {
+		followService.following(id)
+		ResponseDto(data = "success")
+	}
+
+	@DeleteMapping("/{id}/unFollowing")
+	fun unFollowing(@PathVariable id: Long) = run {
+		followService.unFollowing(id)
+		ResponseDto(data = "success")
 	}
 }

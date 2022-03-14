@@ -36,6 +36,7 @@ class Post(
 	@OneToMany(mappedBy = "parentPost", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
 	var replies: MutableSet<Post> = mutableSetOf()
 
+	var isReply: Boolean = false
 
 	fun like() = run {
 		if (postStatus == null) {
@@ -56,7 +57,6 @@ class Post(
 			postStatus = PostStatus(this)
 		}
 		postStatus?.reply()
-
 		reply.parentPost = this
 		this.replies.add(reply)
 	}
