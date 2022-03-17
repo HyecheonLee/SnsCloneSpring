@@ -82,6 +82,29 @@ class UserApi(
 		ResponseDto(data = UserRespDto.of(user, followInfo))
 	}
 
+	@GetMapping("/{username}/following")
+	fun following(@PathVariable username: String, @RequestParam(required = false) lastId: Long? = null) = run {
+		val follow = if (lastId == null || lastId <= 0) followService.followingByUsername(username)
+		else followService.followingByUsername(username, lastId)
+		val data = follow.map { following ->
+			//쿼리가 10개씩 나간다... 나중에 최적화 필요할듯?
+			val followInfo = followService.getFollowInfo(following.toUser)
+			UserRespDto.of(following.toUser, followInfo)
+		}
+		ResponseDto(data = data)
+	}
+
+	@GetMapping("/{username}/follower")
+	fun follower(@PathVariable username: String, @RequestParam(required = false) lastId: Long? = null) = run {
+		val follow = if (lastId == null || lastId <= 0) followService.followerByUsername(username)
+		else followService.followerByUsername(username, lastId)
+		val data = follow.map { following ->
+			//쿼리가 10개씩 나간다... 나중에 최적화 필요할듯?
+			val followInfo = followService.getFollowInfo(following.toUser)
+			UserRespDto.of(following.toUser, followInfo)
+		}
+		ResponseDto(data = data)
+	}
 
 	@PostMapping("/{id}/following")
 	fun following(@PathVariable id: Long) = run {

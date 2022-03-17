@@ -15,30 +15,24 @@ import javax.persistence.*
  * Date: 2022/03/14
  */
 // 나를 구독한 사람들
-@EntityListeners(AuditingEntityListener::class)
-@IdClass(FollowId::class)
 @Entity
 class Follower(
-
-	@Id @Column(name = "from_user_id")
-	var from: Long = 0,
-	@Id @Column(name = "to_user_id")
-	var to: Long = 0,
-) {
-
-
-	@CreatedDate
-	var createdAt: LocalDateTime? = null
+	@OneToOne
+	@JoinColumn(name = "from_user_id")
+	var fromUser: User,
+	@OneToOne
+	@JoinColumn(name = "to_user_id")
+	var toUser: User,
+) : BaseEntity() {
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
 		other as Follower
 
-		return from == other.from
-				&& to == other.to
+		return id != null && id == other.id
 	}
 
-	override fun hashCode(): Int = Objects.hash(from, to);
+	override fun hashCode(): Int = javaClass.hashCode()
 
 }

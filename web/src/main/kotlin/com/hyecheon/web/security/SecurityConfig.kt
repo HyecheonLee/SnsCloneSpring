@@ -56,6 +56,7 @@ class SecurityConfig(
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
 	}
 
+
 	@Bean
 	fun corsConfigurationSource() = run {
 		val configuration = CorsConfiguration().apply {
