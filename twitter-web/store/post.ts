@@ -43,6 +43,7 @@ const post = createSlice({
       state.hasNext = action.payload.length >= 10;
       state.posts = newPosts.sort((a, b) => b.id - a.id)
     },
+
     deletePost(state: PostReduxState, action: PayloadAction<number>) {
       state.posts = state.posts.filter(value => value.id !== action.payload)
       const postId = action.payload
@@ -50,6 +51,7 @@ const post = createSlice({
         state.replies = state.replies.filter(value => value.id !== action.payload)
       }
     },
+
     updateStatus(state, action: PayloadAction<{ postId: number, status: PostStatusType }>) {
       const {postId, status} = action.payload
       state.posts = state.posts.map(post => {

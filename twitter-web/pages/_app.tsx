@@ -10,6 +10,7 @@ import LiveEvent from '../components/notify/LiveEvent'
 import DeletePostModal from '../components/modal/DeletePostModal'
 import React from 'react'
 import ConfirmModal from '../components/modal/ConfirmModal'
+import PhotoUploadModal from '../components/modal/PhotoUploadModal'
 
 function MyApp({Component, pageProps}: AppProps) {
   let router = useRouter()

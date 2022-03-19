@@ -47,8 +47,16 @@ const ReplyContainer: React.FC<IProps> = ({...props}) => {
 
     const deletePost = async (id: number) => {
       dispatch(modalActions.showModal({
-        type: "deletePost",
-        postId: id,
+        type: "confirm",
+        title: "게시물 삭제",
+        message: "게시물을 삭제하시겠습니까?",
+        onClick: () => {
+          apiV1Post.delete(`/${id}`)
+          dispatch(modal.actions.removeModal());
+        },
+        onClose: () => {
+          dispatch(modal.actions.removeModal());
+        }
       }));
     }
 
@@ -56,7 +64,7 @@ const ReplyContainer: React.FC<IProps> = ({...props}) => {
     if (replies.length === 0) {
       return <div
         className={"w-100 text-center p-5"}>
-        <h1 className={"display-1 fw-bold"}> has no data</h1>
+        <h1 className={"display-2 fw-bold"}>데이터가 없습니다.</h1>
       </div>
     }
 

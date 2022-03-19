@@ -1,11 +1,10 @@
 import React from "react";
 import Image from 'next/image'
-import { apiV1User, domain } from '../../utils/apiUtils'
+import { domain } from '../../utils/apiUtils'
 import Link from "next/link";
 import { useAppDispatch, useSelector } from '../../store'
-import auth from '../../store/auth'
-import { profileActions } from '../../store/profile'
 import { userFollowing } from '../../apis/userApis'
+import { modalActions } from '../../store/modal'
 
 interface IProps {
 
@@ -13,10 +12,21 @@ interface IProps {
 
 const ProfileHeader: React.FC<IProps> = ({...props}) => {
   const {user} = useSelector(state => state.profile)
+  const auth = useSelector(state => state.auth)
   const dispatch = useAppDispatch()
 
   const following = () => {
     user && userFollowing(user, dispatch)
+  }
+  const uploadModal = () => {
+    dispatch(modalActions.showModal({
+      type: "photoUpload",
+      title: `프로필 사진 업로드 `,
+      message: "프로필 사진을 올려주세요",
+      onClose: () => {
+        dispatch(modalActions.removeModal())
+      }
+    }));
   }
 
   if (!user) return null
@@ -32,6 +42,29 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
           src={`${domain}${user?.profilePic}`}
           alt="user profile image"
           width={132} height={132}/>
+        {auth.user?.id === user.id &&
+        <>
+          <button onClick={uploadModal}
+                  className={"camera position-absolute top-0 start-0 d-flex align-items-center justify-content-center w-100 h-100"}>
+            <i className={"fas fa-camera fa-3x bg-transparent"}/>
+          </button>
+          <style jsx>{`
+            .camera {
+              border-radius: 50%;
+              opacity: 0;
+              background: rgba(0, 0, 0, 0.5);
+            }
+
+            .camera i {
+              color: #6c757d;
+            }
+
+            .camera:hover {
+              opacity: 1;
+            }
+          `}</style>
+        </>
+        }
       </div>
     </div>
     <div className={"text-end p-3"} style={{minHeight: 66}}>

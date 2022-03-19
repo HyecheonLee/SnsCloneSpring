@@ -2,7 +2,7 @@ import { apiV1User } from '../utils/apiUtils'
 import { profileActions } from '../store/profile'
 import { UserType } from '../types/user'
 
-export const userFollowing =async (user: UserType, dispatch: (actions: any) => void) => {
+export const userFollowing = async (user: UserType, dispatch: (actions: any) => void) => {
   if (user?.followInfo?.isFollowing) {
     await apiV1User.delete(`${user?.id}/unFollowing`)
       .then(value => {
@@ -19,3 +19,5 @@ export const userFollowing =async (user: UserType, dispatch: (actions: any) => v
       });
   }
 }
+
+

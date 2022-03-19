@@ -2,7 +2,6 @@ import React from "react";
 import { useAppDispatch, useSelector } from '../../store'
 import Portal from '../Portal'
 import { Button, Modal } from 'react-bootstrap'
-import { modalActions } from '../../store/modal'
 import { useRouter } from 'next/router'
 
 interface IProps {
@@ -11,8 +10,6 @@ interface IProps {
 const ConfirmModal: React.FC<IProps> = ({...props}) => {
 
   const modal = useSelector(state => state.modal)
-  const dispatch = useAppDispatch()
-  const router = useRouter()
 
   const handleClose = () => {
     modal.onClose && modal.onClose()
@@ -36,8 +33,14 @@ const ConfirmModal: React.FC<IProps> = ({...props}) => {
           <p>{modal?.message}</p>
         </Modal.Body>
         <Modal.Footer>
+          {modal.onClose &&
+          <Button variant={"secondary"} color={"white"} className={"text-white"}
+                  onClick={handleClose}>취소</Button>
+          }
+          {modal.onClick &&
           <Button variant={"primary"} color={"white"} className={"text-white"}
                   onClick={handleClick}>확인</Button>
+          }
         </Modal.Footer>
       </Modal>
     </Portal>);

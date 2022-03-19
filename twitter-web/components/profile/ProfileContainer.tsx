@@ -11,6 +11,7 @@ import { ApiResponseType, ErrorType } from '../../types/api'
 import { modalActions } from '../../store/modal'
 import Loading from '../Loading'
 import { profileActions } from '../../store/profile'
+import PhotoUploadModal from '../modal/PhotoUploadModal'
 
 interface IProps {
 }
@@ -63,6 +64,7 @@ const ProfileContainer: React.FC<IProps> = ({...props}) => {
     <ProfileTab tab={tab} setTab={setTab}/>
     <ProfilePost tab={tab}/>
     <ProfileReply tab={tab}/>
+    <PhotoUploadModal/>
   </>);
 };
 

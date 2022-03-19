@@ -4,6 +4,7 @@ import { useAppDispatch } from '../../store'
 import { postActions } from '../../store/post'
 import { EventType } from '../../types/api'
 import { profileActions } from '../../store/profile'
+import { UserType } from '../../types/user'
 
 interface IProps {
 }
@@ -16,10 +17,12 @@ function postEvent(event: EventType<any>, dispatch: any) {
     dispatch(newPost(data));
 
   }
+
   if (event.type === "deletePost") {
     const postId = event.data as number
     dispatch(deletePost(postId));
   }
+
   if (event.type === "updatedPostStatus") {
     const data = event.data as PostStatusType;
     data.postId && dispatch(updateStatus({
@@ -52,9 +55,11 @@ const LiveEvent: React.FC<IProps> = ({...props}) => {
     source.onmessage = (e) => {
       const event = JSON.parse(e.data);
       postEvent(event, dispatch);
-      console.log(event);
       if (event.type === "followStatus") {
         dispatch(profileActions.setFollowStatus(event.data))
+      }
+      if (event.type === "user") {
+        dispatch(profileActions.setUser(event.data))
       }
     }
 

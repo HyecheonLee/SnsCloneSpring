@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-type ModalType = "loading" | "deletePost" | "confirm" | ""
+type ModalType = "loading" | "deletePost" | "confirm" | "photoUpload" | ""
 
 interface ModalReduxState {
   type: ModalType,
