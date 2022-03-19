@@ -26,17 +26,15 @@ interface PostRepository : JpaRepository<Post, Long> {
 	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
 	fun findTop10ByParentPostAndIdLessThanOrderByIdDesc(parentPost: Post, id: Long): List<Post>
 
-	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
-	fun findTop10ByPostedByAndParentPostIsNotNullAndIdLessThanOrderByIdDesc(postedBy: User, id: Long): List<Post>
-
+	fun findTop10ByPostedByAndIsReplyIsTrueAndIdLessThanOrderByIdDesc(postedBy: User, id: Long): List<Post>
 
 	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
 	override fun findById(id: Long): Optional<Post>
 
 
 	@Modifying
-	@Query(nativeQuery = true, value = "delete from posts where parent_post_id =:id")
-	fun mDeleteByParentPostId(id: Long)
+	@Query(nativeQuery = true, value = "update posts set parent_post_id=null where parent_post_id= :parentPostId")
+	fun mUpdateParentPostNull(parentPostId: Long)
 
 	@Modifying
 	@Query(nativeQuery = true, value = "delete from posts where id  = :id")

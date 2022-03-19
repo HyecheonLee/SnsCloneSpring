@@ -6,6 +6,7 @@ import com.hyecheon.web.config.AppProperty
 import com.hyecheon.web.dto.user.UserReqDto
 import com.hyecheon.web.dto.user.UserRespDto
 import com.hyecheon.web.dto.web.ResponseDto
+import com.hyecheon.web.service.FileService
 import com.hyecheon.web.service.FollowService
 import com.hyecheon.web.service.UserService
 import org.springframework.http.HttpHeaders
@@ -25,8 +26,9 @@ import javax.security.auth.login.LoginException
 @RequestMapping(USER_API)
 class UserApi(
 	private val userService: UserService,
-	private val appProperty: AppProperty,
+	private val fileService: FileService,
 	private val followService: FollowService,
+	private val appProperty: AppProperty,
 ) {
 
 	@GetMapping("/me")

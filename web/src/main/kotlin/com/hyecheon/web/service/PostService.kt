@@ -44,7 +44,7 @@ class PostService(
 	fun findAllRepliesByPostedBy(username: String, postId: Long) = run {
 		val postedBy = userRepository.findByUsername(username).orElseThrow { UsernameNotFoundException("") }
 		val posts =
-			postRepository.findTop10ByPostedByAndParentPostIsNotNullAndIdLessThanOrderByIdDesc(postedBy, postId)
+			postRepository.findTop10ByPostedByAndIsReplyIsTrueAndIdLessThanOrderByIdDesc(postedBy, postId)
 		setPostLike(posts)
 		posts
 	}
@@ -97,7 +97,7 @@ class PostService(
 		if (post.isReply) {
 			post.parentPost?.unReply()
 		}
-
+		postRepository.mUpdateParentPostNull(id)
 		postRepository.deleteById(id)
 
 		applicationEventPublisher.publishEvent(NotifyDto("deletePost", id))
