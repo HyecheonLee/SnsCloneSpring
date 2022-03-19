@@ -1,11 +1,13 @@
 package com.hyecheon.web.service
 
 import com.hyecheon.domain.entity.post.*
+import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.domain.entity.user.UserRepository
 import com.hyecheon.web.dto.post.PostRespDto
 import com.hyecheon.web.dto.post.PostStatusDto
 import com.hyecheon.web.dto.web.NotifyDto
 import com.hyecheon.web.exception.IdNotExistsException
+import com.hyecheon.web.exception.UnAuthorizationException
 import com.hyecheon.web.utils.getAuthToken
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -84,6 +86,11 @@ class PostService(
 	@Transactional
 	fun deleteById(id: Long) {
 		val post = postRepository.findById(id).orElseThrow { IdNotExistsException("id[${id}] not exists") }
+		val authToken = AuthToken.getLoggedToken()
+
+		if (post.postedBy?.id != authToken.userId) {
+			throw UnAuthorizationException("권한이 없습니다.")
+		}
 
 		postLikeRepository.deleteByPost(post)
 
