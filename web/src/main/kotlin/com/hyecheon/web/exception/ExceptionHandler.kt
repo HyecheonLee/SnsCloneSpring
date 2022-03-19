@@ -21,6 +21,7 @@ class ExceptionHandler {
 	@ExceptionHandler(Exception::class)
 	fun allException(e: Exception, request: HttpServletRequest, webRequest: WebRequest) = run {
 		val errorRespDto = ErrorDto.of(request)
+		log.error("error {}", e.message, e)
 		ResponseEntity(errorRespDto, HttpStatus.BAD_REQUEST)
 	}
 }

@@ -29,11 +29,10 @@ class Post(
 	@OneToOne(mappedBy = "post", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
 	var postStatus: PostStatus? = null
 
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	var parentPost: Post? = null
 
-	@OneToMany(mappedBy = "parentPost", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+	@OneToMany(mappedBy = "parentPost", fetch = FetchType.LAZY)
 	var replies: MutableSet<Post> = mutableSetOf()
 
 	var isReply: Boolean = false

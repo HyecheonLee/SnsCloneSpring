@@ -56,7 +56,6 @@ class UserApi(
 
 	@PostMapping("/join")
 	fun join(@RequestBody user: UserReqDto.Join) = run {
-		val userId = userService.join(user.toEntity())
 		ResponseEntity.created(URI.create("/${USER_API}/me"))
 	}
 

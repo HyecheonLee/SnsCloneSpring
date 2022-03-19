@@ -31,6 +31,7 @@ object UserRespDto {
 	)
 
 	fun of(user: User) = converter.toModel(user)
+
 	fun of(user: User, followInfoDto: FollowInfoDto) = run {
 		val model = converter.toModel(user)
 		model.followInfo = followInfoDto

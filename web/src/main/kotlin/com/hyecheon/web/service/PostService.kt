@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class PostService(
 	private val postRepository: PostRepository,
-	private val userRepository: UserRepository,
 	private val postLikeRepository: PostLikeRepository,
+	private val userRepository: UserRepository,
 	private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
@@ -81,12 +81,18 @@ class PostService(
 		postRepository.findById(id).orElseThrow { IdNotExistsException("id[${id}] not exists") }
 	}
 
-
 	@Transactional
 	fun deleteById(id: Long) {
-		val post = postRepository.findById(id).orElseThrow { IdNotExistsException("postId not exists") }
-		postLikeRepository.deleteAllByPost(post)
-		postRepository.delete(post)
+		val post = postRepository.findById(id).orElseThrow { IdNotExistsException("id[${id}] not exists") }
+
+		postLikeRepository.deleteByPost(post)
+
+		if (post.isReply) {
+			post.parentPost?.unReply()
+		}
+
+		postRepository.deleteById(id)
+
 		applicationEventPublisher.publishEvent(NotifyDto("deletePost", id))
 	}
 

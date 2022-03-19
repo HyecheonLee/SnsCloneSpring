@@ -33,11 +33,12 @@ interface PostRepository : JpaRepository<Post, Long> {
 	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
 	override fun findById(id: Long): Optional<Post>
 
-	@Modifying
-	@Query("insert into post_like(user_id,post_id) values (:userId , :postId)", nativeQuery = true)
-	fun mPostLike(userId: Long, postId: Long)
 
 	@Modifying
-	@Query("delete from post_like where user_id = :userId and post_id = :postId", nativeQuery = true)
-	fun mPostUnLike(userId: Long, postId: Long)
+	@Query(nativeQuery = true, value = "delete from posts where parent_post_id =:id")
+	fun mDeleteByParentPostId(id: Long)
+
+	@Modifying
+	@Query(nativeQuery = true, value = "delete from posts where id  = :id")
+	fun mDeleteById(id: Long)
 }

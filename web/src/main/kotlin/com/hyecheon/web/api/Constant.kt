@@ -22,4 +22,6 @@ object Constant {
 	const val REPLY = "reply"
 	const val REPLY_V1_API = "${API_V1}/${REPLY}"
 
+	const val FILE = "file"
+	const val FILE_V1_API = "${API_V1}/${FILE}"
 }
