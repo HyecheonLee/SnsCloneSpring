@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAppDispatch, useSelector } from '../../store'
 import auth from '../../store/auth'
 import { profileActions } from '../../store/profile'
+import { userFollowing } from '../../apis/userApis'
 
 interface IProps {
 
@@ -13,23 +14,11 @@ interface IProps {
 const ProfileHeader: React.FC<IProps> = ({...props}) => {
   const {user} = useSelector(state => state.profile)
   const dispatch = useAppDispatch()
+
   const following = () => {
-    if (user?.followInfo?.isFollowing) {
-      apiV1User.delete(`${user?.id}/unFollowing`)
-        .then(value => {
-          if (value.ok) {
-            dispatch(profileActions.setIsFollow(false))
-          }
-        });
-    } else {
-      apiV1User.post(`${user?.id}/following`)
-        .then(value => {
-          if (value.ok) {
-            dispatch(profileActions.setIsFollow(true))
-          }
-        });
-    }
+    user && userFollowing(user, dispatch)
   }
+
   if (!user) return null
 
   return (<div className={"container p-0 m-0"}>

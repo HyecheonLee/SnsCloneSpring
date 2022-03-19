@@ -1,17 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { UserType } from '../../../types/user'
 import Image from 'next/image'
 import { domain } from '../../../utils/apiUtils'
 import Link from 'next/link'
-import { useSelector } from '../../../store'
+import { useAppDispatch, useSelector } from '../../../store'
+import { userFollowing } from '../../../apis/userApis'
 
 interface IProps {
   user: UserType
 }
 
 const UserProfile: React.FC<IProps> = ({...props}) => {
-  const {user} = props
   const auth = useSelector(state => state.auth)
+  const {user} = props;
+  const [isFollowing, setIsFollowing] = useState<boolean>(user.followInfo?.isFollowing || false);
+  const dispatch: any = useAppDispatch()
+  const following = async () => {
+    await userFollowing(user, dispatch)
+    setIsFollowing(prevState => !prevState)
+  }
+
   return (<div className="post">
     <div className="d-flex">
       <div>
@@ -35,8 +43,9 @@ const UserProfile: React.FC<IProps> = ({...props}) => {
       <div>
         {auth.user?.id !== user.id &&
         < a
+          onClick={following}
           className={"rounded-pill ms-3 fw-bold btn btn-outline-primary"}>
-          {user.followInfo?.isFollowing ? "UnFollowing" : "Following"}
+          {isFollowing ? "UnFollowing" : "Following"}
         </a>
         }
       </div>
