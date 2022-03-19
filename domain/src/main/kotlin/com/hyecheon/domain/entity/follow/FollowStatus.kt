@@ -1,9 +1,7 @@
 package com.hyecheon.domain.entity.follow
 
-import com.hyecheon.domain.entity.user.User
 import javax.persistence.Entity
 import javax.persistence.Id
-import javax.persistence.OneToOne
 
 /**
  * User: hyecheon lee
