@@ -13,9 +13,7 @@ interface IProps {
 const PhotoUploadModal: React.FC<IProps> = ({...props}) => {
 
   const modal = useSelector(state => state.modal)
-  const {user} = useSelector(state => state.auth)
-  const router = useRouter()
-  const [image, setImage] = useState(`${domain}${user?.profilePic}`);
+  const [image, setImage] = useState("");
   const [cropper, setCropper] = useState<any>();
 
   const handleClose = () => {
@@ -26,9 +24,7 @@ const PhotoUploadModal: React.FC<IProps> = ({...props}) => {
     if (cropper && cropper.getCroppedCanvas()) {
       const canvas = cropper.getCroppedCanvas()
       const url = canvas.toDataURL()
-      await apiV1File.post("/profile", {imageFile: url})
-      router.reload()
-      handleClose()
+      modal.onClick && modal.onClick(url)
     } else {
       alert("업로드한 이미지가 없습니다.")
     }
@@ -68,10 +64,9 @@ const PhotoUploadModal: React.FC<IProps> = ({...props}) => {
                      onChange={onChange}/>
             </div>
             <Cropper
-              style={{height: 400, width: "100%"}}
+              style={{maxHeight: 400, width: "100%"}}
               zoomTo={0.5}
               initialAspectRatio={1}
-              preview=".img-preview"
               src={image}
               viewMode={1}
               minCropBoxHeight={10}

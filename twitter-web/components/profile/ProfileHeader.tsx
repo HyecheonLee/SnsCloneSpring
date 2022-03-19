@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from 'next/image'
-import { domain } from '../../utils/apiUtils'
+import { apiV1File, domain } from '../../utils/apiUtils'
 import Link from "next/link";
 import { useAppDispatch, useSelector } from '../../store'
 import { userFollowing } from '../../apis/userApis'
 import { modalActions } from '../../store/modal'
+import { useRouter } from 'next/router'
+import { ApiResponseType } from '../../types/api'
+import { UploadFileType } from '../../types/uploadFile'
 
 interface IProps {
 
@@ -13,26 +16,98 @@ interface IProps {
 const ProfileHeader: React.FC<IProps> = ({...props}) => {
   const {user} = useSelector(state => state.profile)
   const auth = useSelector(state => state.auth)
+  const [bgList, setBgList] = useState<UploadFileType[]>([]);
+  useEffect(() => {
+    fetchBg()
+  }, []);
+
+  const router = useRouter()
   const dispatch = useAppDispatch()
 
   const following = () => {
     user && userFollowing(user, dispatch)
   }
-  const uploadModal = () => {
+
+  const uploadBgModal = () => {
+    dispatch(modalActions.showModal({
+      type: "photoUpload",
+      title: `배경 사진 업로드 `,
+      message: "배경 사진을 올려주세요",
+      onClose: () => {
+        dispatch(modalActions.removeModal())
+      },
+      onClick: async (imageBase64: String) => {
+        await apiV1File.post("/images", {
+          imageFile: imageBase64,
+          fileType: "bg"
+        })
+        await fetchBg()
+        dispatch(modalActions.removeModal())
+      }
+    }));
+  }
+
+  const uploadProfileModal = () => {
     dispatch(modalActions.showModal({
       type: "photoUpload",
       title: `프로필 사진 업로드 `,
       message: "프로필 사진을 올려주세요",
       onClose: () => {
         dispatch(modalActions.removeModal())
+      },
+      onClick: async (imageBase64: String) => {
+        await apiV1File.post("/profile", {imageFile: imageBase64})
+        router.reload()
       }
     }));
   }
 
+  const fetchBg = async () => {
+    await apiV1File.get<ApiResponseType<UploadFileType[]>>(`/bg`)
+      .then(value => value.data)
+      .then(value => {
+        setBgList(value?.data || [])
+      });
+
+  }
+
   if (!user) return null
 
+  console.log(bgList);
+
   return (<div className={"container p-0 m-0"}>
-    <div className={"bg-primary w-100 position-relative"} style={{height: 180}}>
+    <div className={"w-100 position-relative"} style={{height: 180}}>
+      <div className={"bg w-100 h-100 position-absolute"}
+           style={{
+             backgroundColor: "rgba(0,0,0,0.5)",
+             backgroundPosition: "center",
+             backgroundSize: "cover",
+             backgroundRepeat: "no-repeat",
+             backgroundImage: `${bgList.length > 0 ? `url("${domain}${bgList[0].path}")` : ""}`
+           }}>
+        {auth.user?.id === user.id && <>
+          <button onClick={uploadBgModal}
+                  className={"camera position-absolute top-0 start-0 d-flex align-items-center justify-content-center w-100 h-100"}>
+            <i className={"fas fa-camera fa-3x bg-transparent"}/>
+          </button>
+          <style jsx>{`
+            .camera {
+              opacity: 0;
+              background: rgba(0, 0, 0, 0.5);
+            }
+
+            .camera i {
+              color: #6c757d;
+            }
+
+            .camera:hover {
+              opacity: 1;
+            }
+          `}</style>
+        </>
+        }
+      </div>
+
       <div className={"ms-3 position-absolute"}
            style={{height: "132px", width: "132px", bottom: "-66px"}}>
         <Image
@@ -42,9 +117,8 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
           src={`${domain}${user?.profilePic}`}
           alt="user profile image"
           width={132} height={132}/>
-        {auth.user?.id === user.id &&
-        <>
-          <button onClick={uploadModal}
+        {auth.user?.id === user.id && <>
+          <button onClick={uploadProfileModal}
                   className={"camera position-absolute top-0 start-0 d-flex align-items-center justify-content-center w-100 h-100"}>
             <i className={"fas fa-camera fa-3x bg-transparent"}/>
           </button>
