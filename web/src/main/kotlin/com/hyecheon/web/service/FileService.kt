@@ -39,7 +39,6 @@ class FileService(
 		val userFilename = createUserFilename(fileReq.extension)
 		writeFile(userFilename, base64ToBinary(fileReq.base64))
 		user.profilePic = userFilename
-		applicationEventPublisher.publishEvent(NotifyDto("user", UserRespDto.of(user)))
 	}
 
 	private fun writeFile(filename: String, binary: ByteArray) {
