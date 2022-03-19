@@ -67,28 +67,33 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
         }
       </div>
     </div>
-    <div className={"text-end p-3"} style={{minHeight: 66}}>
-      <a className={"rounded-pill ms-3 btn btn-outline-primary"}
-         style={{padding: "5px 15px"}}>
-        <i className={"fas fa-envelope"}/>
-      </a>
-      <a onClick={following}
-         className={"rounded-pill ms-3 fw-bold btn btn-outline-primary active"}>
-        {user.followInfo?.isFollowing ? "UnFollowing" : "Following"}
-      </a>
-      <style jsx>{`
-        .btn-outline-primary:hover {
-          background-color: #9BD1F9;
-          color: white;
-        }
 
-        .btn-outline-primary.active {
-          color: white;
+    <div className={"text-end p-3"} style={{minHeight: 66}}>
+      {user.id !== auth.user?.id && <>
+        <a className={"rounded-pill ms-3 btn btn-outline-primary"}
+           style={{padding: "5px 15px"}}>
+          <i className={"fas fa-envelope"}/>
+        </a>
+        <a onClick={following}
+           className={"rounded-pill ms-3 fw-bold btn btn-outline-primary active"}>
+          {user.followInfo?.isFollowing ? "UnFollowing" : "Following"}
+        </a>
+        <style jsx>{`
+          .btn-outline-primary:hover {
+            background-color: #9BD1F9;
+            color: white;
+          }
+
+          .btn-outline-primary.active {
+            color: white;
+          }
+        `
         }
-      `
+        </style>
+      </>
       }
-      </style>
     </div>
+
     <div className={"d-flex flex-column p-3"}>
       <span>{user.firstName} {user.lastName}</span>
       <span>@{user.username}</span>

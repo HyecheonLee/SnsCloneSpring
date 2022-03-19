@@ -12,7 +12,8 @@ const NavBar = () => {
     const {logout} = authActions
     await apiV1User.delete("/me")
     await router.push("/user/login")
-    dispatch(logout())
+    await dispatch(logout())
+    await router.reload()
   }
 
   return (

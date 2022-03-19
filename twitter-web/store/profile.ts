@@ -22,6 +22,10 @@ const profile = createSlice({
   reducers: {
     setUser(state, action: PayloadAction<UserType>) {
       state.user = action.payload
+      state.posts = []
+      state.hasNextPost = false
+      state.replies = []
+      state.hasNextReply = false
     },
     fetchPost(state, action: PayloadAction<PostType[]>) {
       const newPosts = [...action.payload, ...state.posts]
@@ -33,7 +37,7 @@ const profile = createSlice({
       state.hasNextReply = action.payload.length >= 10;
       state.replies = newPosts.sort((a, b) => b.id - a.id)
     },
-    setFollowStatus(state, action: PayloadAction<FollowInfoType>) { 
+    setFollowStatus(state, action: PayloadAction<FollowInfoType>) {
       if (state.user && state.user.followInfo && state.user.id === action.payload.userId) {
         state.user.followInfo.followStatus = action.payload.followStatus
       }

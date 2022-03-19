@@ -5,6 +5,7 @@ import { Button, Modal } from 'react-bootstrap'
 import { Cropper } from 'react-cropper'
 import "cropperjs/dist/cropper.css";
 import { apiV1File, domain } from '../../utils/apiUtils'
+import { useRouter } from 'next/router'
 
 interface IProps {
 }
@@ -13,6 +14,7 @@ const PhotoUploadModal: React.FC<IProps> = ({...props}) => {
 
   const modal = useSelector(state => state.modal)
   const {user} = useSelector(state => state.auth)
+  const router = useRouter()
   const [image, setImage] = useState(`${domain}${user?.profilePic}`);
   const [cropper, setCropper] = useState<any>();
 
@@ -25,6 +27,7 @@ const PhotoUploadModal: React.FC<IProps> = ({...props}) => {
       const canvas = cropper.getCroppedCanvas()
       const url = canvas.toDataURL()
       await apiV1File.post("/profile", {imageFile: url})
+      router.reload()
       handleClose()
     } else {
       alert("업로드한 이미지가 없습니다.")

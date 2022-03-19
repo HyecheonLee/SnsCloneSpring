@@ -23,6 +23,7 @@ const ProfileContainer: React.FC<IProps> = ({...props}) => {
   const dispatch = useAppDispatch()
   const {user} = useSelector(state => state.profile)
   useEffect(() => {
+    dispatch(profileActions.clear())
     fetchUser()
     return () => {
       dispatch(profileActions.clear())
