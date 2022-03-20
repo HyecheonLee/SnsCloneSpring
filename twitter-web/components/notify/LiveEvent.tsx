@@ -4,7 +4,6 @@ import { useAppDispatch } from '../../store'
 import { postActions } from '../../store/post'
 import { EventType } from '../../types/api'
 import { profileActions } from '../../store/profile'
-import { UserType } from '../../types/user'
 
 interface IProps {
 }
@@ -30,7 +29,6 @@ function postEvent(event: EventType<any>, dispatch: any) {
       status: data
     }));
   }
-
 }
 
 const LiveEvent: React.FC<IProps> = ({...props}) => {
@@ -55,6 +53,10 @@ const LiveEvent: React.FC<IProps> = ({...props}) => {
     source.onmessage = (e) => {
       const event = JSON.parse(e.data);
       postEvent(event, dispatch);
+      if (event.type === "updatedPost") {
+        dispatch(profileActions.updatedPost(event.data))
+        dispatch(postActions.updatePost(event.data))
+      }
       if (event.type === "followStatus") {
         dispatch(profileActions.setFollowStatus(event.data))
       }

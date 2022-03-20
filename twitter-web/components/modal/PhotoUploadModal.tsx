@@ -4,8 +4,6 @@ import Portal from '../Portal'
 import { Button, Modal } from 'react-bootstrap'
 import { Cropper } from 'react-cropper'
 import "cropperjs/dist/cropper.css";
-import { apiV1File, domain } from '../../utils/apiUtils'
-import { useRouter } from 'next/router'
 
 interface IProps {
 }
@@ -64,7 +62,7 @@ const PhotoUploadModal: React.FC<IProps> = ({...props}) => {
                      onChange={onChange}/>
             </div>
             <Cropper
-              style={{maxHeight: 400, width: "100%"}}
+              style={{maxHeight: 400}}
               zoomTo={0.5}
               initialAspectRatio={1}
               src={image}

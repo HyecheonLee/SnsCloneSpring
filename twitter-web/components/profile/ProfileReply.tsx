@@ -59,16 +59,30 @@ const ProfileReply: React.FC<IProps> = ({...props}) => {
     }));
   }
 
-  return <InfiniteScroll
-    className={`${props.tab !== "reply" && "d-none"}`}
-    dataLength={replies.length} //This is important field to render the next data
-    next={fetchReply}
-    hasMore={hasNextReply}
-    loader={<Loading width={50} height={50} fontSize={16}/>}>
-    {replies.map((post) => {
-      return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
-    })}
-  </InfiniteScroll>;
+  const pins = replies.filter(post => post.postStatus?.isPin)
+
+  return <>
+    {
+      pins.map(post => {
+        if (!post.postStatus?.isPin) return null
+        return <Post key={`reply_pin_${post.id}`} post={post} deletePost={deletePost}/>
+      })
+    }
+    {pins && pins.length > 0 &&
+    <hr className={"m-0"}
+        style={{height: "10px", width: "100%", background: "#6c757d"}}/>}
+
+    <InfiniteScroll
+      className={`${props.tab !== "reply" && "d-none"}`}
+      dataLength={replies.length} //This is important field to render the next data
+      next={fetchReply}
+      hasMore={hasNextReply}
+      loader={<Loading width={50} height={50} fontSize={16}/>}>
+      {replies.map((post) => {
+        return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
+      })}
+    </InfiniteScroll>
+  </>
 };
 
 export default ProfileReply;

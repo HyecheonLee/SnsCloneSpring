@@ -17,7 +17,7 @@ const NavBar = () => {
   }
 
   return (
-    <div className="vh-100 col-2 position-sticky top-0 border-end">
+    <div className="vh-100 col-2 position-sticky top-0">
       <nav
         className="d-flex flex-column display-6 text-muted justify-content-center">
         <Link href={"/"}>

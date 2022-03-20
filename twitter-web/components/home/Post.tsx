@@ -9,6 +9,7 @@ import { useSelector } from '../../store'
 import { useRouter } from 'next/router'
 import { postActions } from '../../store/post'
 import Link from 'next/link';
+import { modalActions } from '../../store/modal'
 
 
 interface IProps {
@@ -71,7 +72,36 @@ const Post: React.FC<IProps> = ({post, deletePost}) => {
     dispatch(postActions.setCurrentPost(post))
     await router.push(`/post/${post.id}`)
   }
-
+  const onPinClickHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    dispatch(modalActions.showModal({
+      type: "confirm",
+      title: "게시물을 고정하겠습니까?",
+      message: "이 게시물은 당신의 프로필 위에 나타납니다.",
+      onClick: async () => {
+        await apiV1Post.post(`/${post.id}/pin`)
+        await dispatch(modalActions.removeModal())
+      },
+      onClose: () => {
+        dispatch(modalActions.removeModal())
+      }
+    }))
+  }
+  const onUnPinClickHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    dispatch(modalActions.showModal({
+      type: "confirm",
+      title: "게시물 고정을 해지 하겠습니까?",
+      message: "이 게시물은 당신의 프로필 위에서 사라집니다.",
+      onClick: async () => {
+        await apiV1Post.delete(`/${post.id}/unPin`)
+        await dispatch(modalActions.removeModal())
+      },
+      onClose: () => {
+        dispatch(modalActions.removeModal())
+      }
+    }))
+  }
   const replyCnt = post.postStatus?.replyCnt
 
   return (
@@ -94,11 +124,25 @@ const Post: React.FC<IProps> = ({post, deletePost}) => {
             </Link>
             <span className="text-muted mx-2">@{postedBy.username}</span>
             <span className="text-muted mx-2 flex-fill">{timeDiff}</span>
-            {user?.id === postedBy.id && <span>
+            {user?.id === postedBy.id && <>
+              <span>
+                {post.postStatus?.isPin &&
+                <button onClick={onUnPinClickHandler}>
+                  <i className="rounded-circle p-1 fas fa-thumbtack text-primary"/>
+                </button>
+                }
+                {!post.postStatus?.isPin &&
+                <button onClick={onPinClickHandler}>
+                  <i className="rounded-circle p-1 fas fa-thumbtack"/>
+                </button>
+                }
+            </span>
+              <span>
               <button onClick={onDeleteBtnClickHandler}>
                 <i className="rounded-circle p-1 fas fa-times"/>
               </button>
-            </span>}
+            </span>
+            </>}
           </div>
           <div>
             <span className={"h3"}>{post.content}</span>

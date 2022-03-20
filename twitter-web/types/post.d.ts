@@ -12,5 +12,6 @@ export type PostType = {
 export type PostStatusType = {
   postId?: number,
   likeCnt: number,
-  replyCnt: number
+  replyCnt: number,
+  isPin: boolean,
 }

@@ -63,8 +63,8 @@ const ProfileContainer: React.FC<IProps> = ({...props}) => {
   return (<>
     <ProfileHeader/>
     <ProfileTab tab={tab} setTab={setTab}/>
-    <ProfilePost tab={tab}/>
-    <ProfileReply tab={tab}/>
+    {tab === "post" && <ProfilePost tab={tab}/>}
+    {tab === "reply" && <ProfileReply tab={tab}/>}
     <PhotoUploadModal/>
   </>);
 };

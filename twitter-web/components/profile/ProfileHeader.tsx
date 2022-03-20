@@ -63,7 +63,7 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
   }
 
   const fetchBg = async () => {
-    await apiV1File.get<ApiResponseType<UploadFileType[]>>(`/bg`)
+    await apiV1File.get<ApiResponseType<UploadFileType[]>>(`/${user?.username}/bg`)
       .then(value => value.data)
       .then(value => {
         setBgList(value?.data || [])
@@ -73,18 +73,18 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
 
   if (!user) return null
 
-  console.log(bgList);
-
   return (<div className={"container p-0 m-0"}>
-    <div className={"w-100 position-relative"} style={{height: 180}}>
-      <div className={"bg w-100 h-100 position-absolute"}
-           style={{
-             backgroundColor: "rgba(0,0,0,0.5)",
-             backgroundPosition: "center",
-             backgroundSize: "cover",
-             backgroundRepeat: "no-repeat",
-             backgroundImage: `${bgList.length > 0 ? `url("${domain}${bgList[0].path}")` : ""}`
-           }}>
+    <div className={"w-100 position-relative bg-primary"} style={{height: 180}}>
+      {bgList.length > 0 &&
+      <Image
+        alt='background'
+        loader={({src}) => domain + src}
+        src={`${bgList[0].path}`}
+        layout='fill'
+        objectFit='cover'
+      />
+      }
+      <div className={"bg w-100 h-100 position-absolute"}>
         {auth.user?.id === user.id && <>
           <button onClick={uploadBgModal}
                   className={"camera position-absolute top-0 start-0 d-flex align-items-center justify-content-center w-100 h-100"}>
