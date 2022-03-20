@@ -47,4 +47,6 @@ interface PostRepository : JpaRepository<Post, Long> {
 	@Modifying
 	@Query(nativeQuery = true, value = "delete from posts where id  = :id")
 	fun mDeleteById(id: Long)
+
+	fun findTop10ByContentContainsAndIdIsLessThanOrderByIdDesc(content: String, id: Long): List<Post>
 }

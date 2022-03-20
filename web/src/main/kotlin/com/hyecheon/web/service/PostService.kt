@@ -153,4 +153,11 @@ class PostService(
 		post.unPin()
 		applicationEventPublisher.publishEvent(NotifyDto("updatedPost", PostRespDto.of(post)))
 	}
+
+	fun searchPost(keyword: String, lastId: Long): List<Post> {
+		val posts =
+			postRepository.findTop10ByContentContainsAndIdIsLessThanOrderByIdDesc(keyword, lastId)
+		setPostLike(posts)
+		return posts
+	}
 }

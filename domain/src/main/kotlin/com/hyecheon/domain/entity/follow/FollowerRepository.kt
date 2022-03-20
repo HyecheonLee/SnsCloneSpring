@@ -13,6 +13,8 @@ import org.springframework.data.jpa.repository.Query
  */
 interface FollowerRepository : JpaRepository<Follower, Long> {
 
+	fun deleteByFromUserAndToUser(fromUser: User, toUser: User)
+
 	@EntityGraph(attributePaths = ["toUser"], type = EntityGraph.EntityGraphType.LOAD)
 	fun findTop10ByFromUserAndIdLessThanOrderByIdDesc(fromUser: User, id: Long): List<Follower>
 }

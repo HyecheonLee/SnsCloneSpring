@@ -10,6 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository
  * Date: 2022/03/14
  */
 interface FollowingRepository : JpaRepository<Following, Long> {
+
+	fun deleteByFromUserAndToUser(toUser: User, fromUser: User)
+
 	fun existsByFromUserAndToUser(fromUser: User, toUser: User): Boolean
 
 	@EntityGraph(attributePaths = ["toUser"], type = EntityGraph.EntityGraphType.LOAD)

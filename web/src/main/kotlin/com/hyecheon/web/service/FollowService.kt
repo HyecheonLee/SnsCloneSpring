@@ -70,8 +70,8 @@ class FollowService(
 			return
 		}
 
-		followingRepository.delete(Following(fromUser, toUser))
-		followerRepository.delete(Follower(toUser, fromUser))
+		followingRepository.deleteByFromUserAndToUser(fromUser, toUser)
+		followerRepository.deleteByFromUserAndToUser(toUser, fromUser)
 
 
 		val followStatus =

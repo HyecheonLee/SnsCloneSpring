@@ -58,4 +58,7 @@ class UserService(
 		userRepository.findById(id).orElseThrow { IdNotExistsException("사용자 id[${id}] 가 존재하지 않습니다.") }
 	}
 
+	fun searchByKeyword(keyword: String, lastId: Long): List<User> {
+		return userRepository.findTop10ByUsernameContainsAndIdIsLessThanOrderByIdDesc(keyword, lastId)
+	}
 }

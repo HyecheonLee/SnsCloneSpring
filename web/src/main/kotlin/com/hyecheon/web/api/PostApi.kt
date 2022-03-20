@@ -97,4 +97,11 @@ class PostApi(private val postService: PostService) {
 		postService.unPin(id)
 		ResponseDto(data = "")
 	}
+
+	@GetMapping("/search")
+	fun searchPost(@RequestParam keyword: String, @RequestParam(required = false) lastId: Long = Long.MAX_VALUE) = run {
+		val posts = postService.searchPost(keyword, lastId)
+		val data = posts.map { PostRespDto.of(it) }
+		ResponseEntity.ok(ResponseDto(data = data))
+	}
 }

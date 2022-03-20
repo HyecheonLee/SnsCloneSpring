@@ -118,4 +118,14 @@ class UserApi(
 		followService.unFollowing(id)
 		ResponseDto(data = "success")
 	}
+
+	@GetMapping("/search")
+	fun searchUser(@RequestParam keyword: String, @RequestParam(required = false) lastId: Long = Long.MAX_VALUE) = run {
+		val users = userService.searchByKeyword(keyword, lastId)
+		val data = users.map {
+			val followInfo = followService.getFollowInfo(it)
+			UserRespDto.of(it, followInfo)
+		}
+		ResponseDto(data = data)
+	}
 }
