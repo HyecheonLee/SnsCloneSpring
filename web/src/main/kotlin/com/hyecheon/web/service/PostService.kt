@@ -29,14 +29,14 @@ class PostService(
 ) {
 
 	fun findAll(postId: Long) = run {
-		val posts = postRepository.findTop10ByParentPostIsNullAndIdLessThanOrderByIdDesc(postId)
+		val posts = postRepository.findTop10ByIsReplyIsFalseAndIdLessThanOrderByIdDesc(postId)
 		setPostLike(posts)
 		posts
 	}
 
 	fun findAllPostByPostedBy(username: String, postId: Long) = run {
 		val postedBy = userRepository.findByUsername(username).orElseThrow { UsernameNotFoundException("") }
-		val posts = postRepository.findTop10ByPostedByAndParentPostIsNullAndIdLessThanOrderByIdDesc(postedBy, postId)
+		val posts = postRepository.findTop10ByPostedByAndIsReplyIsFalseAndIdLessThanOrderByIdDesc(postedBy, postId)
 		setPostLike(posts)
 		posts
 	}
@@ -109,7 +109,7 @@ class PostService(
 		new(reply)
 		val post = postRepository.findById(postId).orElseThrow { IdNotExistsException("post id not exists") }
 		post.reply(reply)
-		applicationEventPublisher.publishEvent(NotifyDto("updatedPostStatus", PostStatusDto.of(post)))
+		applicationEventPublisher.publishEvent(NotifyDto("updatedPost", PostRespDto.of(post)))
 		reply.id!!
 	}
 
@@ -120,7 +120,7 @@ class PostService(
 		if (!postLikeRepository.existsByUserAndPost(loggedUser, post)) {
 			post.like()
 			postLikeRepository.save(PostLike(loggedUser, post))
-			applicationEventPublisher.publishEvent(NotifyDto("updatedPostStatus", PostStatusDto.of(post)))
+			applicationEventPublisher.publishEvent(NotifyDto("updatedPost", PostRespDto.of(post)))
 		}
 	}
 
@@ -131,12 +131,26 @@ class PostService(
 		if (postLikeRepository.existsByUserAndPost(loggedUser, post)) {
 			post.unLike()
 			postLikeRepository.deleteByUserAndPost(loggedUser, post)
-			applicationEventPublisher.publishEvent(NotifyDto("updatedPostStatus", PostStatusDto.of(post)))
+			applicationEventPublisher.publishEvent(NotifyDto("updatedPost", PostRespDto.of(post)))
 		}
 	}
 
 	fun loggedUser() = run {
 		val authToken = getAuthToken()
 		userRepository.getById(authToken.userId!!)
+	}
+
+	@Transactional
+	fun pin(id: Long) {
+		val post = postRepository.findById(id).orElseThrow { IdNotExistsException("$id") }
+		post.pin()
+		applicationEventPublisher.publishEvent(NotifyDto("updatedPost", PostRespDto.of(post)))
+	}
+
+	@Transactional
+	fun unPin(id: Long) {
+		val post = postRepository.findById(id).orElseThrow { IdNotExistsException("$id") }
+		post.unPin()
+		applicationEventPublisher.publishEvent(NotifyDto("updatedPost", PostRespDto.of(post)))
 	}
 }

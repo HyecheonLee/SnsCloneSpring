@@ -21,7 +21,15 @@ interface PostRepository : JpaRepository<Post, Long> {
 	fun findTop10ByParentPostIsNullAndIdLessThanOrderByIdDesc(id: Long): List<Post>
 
 	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
+	fun findTop10ByIsReplyIsFalseAndIdLessThanOrderByIdDesc(id: Long): List<Post>
+
+
+	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
 	fun findTop10ByPostedByAndParentPostIsNullAndIdLessThanOrderByIdDesc(postedBy: User, id: Long): List<Post>
+
+	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
+	fun findTop10ByPostedByAndIsReplyIsFalseAndIdLessThanOrderByIdDesc(postedBy: User, id: Long): List<Post>
+
 
 	@EntityGraph(attributePaths = ["postedBy"], type = EntityGraph.EntityGraphType.LOAD)
 	fun findTop10ByParentPostAndIdLessThanOrderByIdDesc(parentPost: Post, id: Long): List<Post>

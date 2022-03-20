@@ -85,8 +85,7 @@ class FileService(
 
 	}
 
-	fun getByType(type: FileType) = run {
-		val (_, username, _) = AuthToken.getLoggedToken()
-		uploadFileRepository.findByTypeAndCreatedByOrderByIdDesc(type, username!!)
+	fun getByUsernameAndType(username: String, type: FileType) = run {
+		uploadFileRepository.findByCreatedByAndTypeOrderByIdDesc(username, type)
 	}
 }

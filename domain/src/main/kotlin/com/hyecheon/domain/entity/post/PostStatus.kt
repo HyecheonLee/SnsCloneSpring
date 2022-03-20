@@ -1,10 +1,7 @@
 package com.hyecheon.domain.entity.post
 
 import com.hyecheon.domain.entity.BaseEntity
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.OneToOne
+import javax.persistence.*
 
 /**
  * User: hyecheon lee
@@ -22,9 +19,21 @@ class PostStatus(
 
 	var replyCnt: Long = 0
 
+	@Column(name = "is_pin")
+	var isPin: Boolean = false
+
+	fun pin() = run {
+		isPin = true
+	}
+
+	fun unPin() = run {
+		isPin = false
+	}
+
 	fun like() = run {
 		likeCnt++
 		likeCnt
+
 	}
 
 	fun unLike() = run {

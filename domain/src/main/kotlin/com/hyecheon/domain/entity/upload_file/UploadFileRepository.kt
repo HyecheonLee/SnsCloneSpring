@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository
  */
 interface UploadFileRepository : JpaRepository<UploadFile, Long> {
 
-	fun findByTypeAndCreatedByOrderByIdDesc(type: FileType, username: String): List<UploadFile>
+	fun findByCreatedByAndTypeOrderByIdDesc(username: String, type: FileType): List<UploadFile>
 
 }

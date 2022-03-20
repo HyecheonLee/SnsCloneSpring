@@ -37,6 +37,20 @@ class Post(
 
 	var isReply: Boolean = false
 
+	fun pin() = run {
+		if (postStatus == null) {
+			postStatus = PostStatus(this)
+		}
+		postStatus?.pin()
+	}
+
+	fun unPin() = run {
+		if (postStatus == null) {
+			postStatus = PostStatus(this)
+		}
+		postStatus?.unPin()
+	}
+
 	fun like() = run {
 		if (postStatus == null) {
 			postStatus = PostStatus(this)

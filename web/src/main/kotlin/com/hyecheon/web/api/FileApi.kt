@@ -29,9 +29,9 @@ class FileApi(
 		ResponseDto(data = "")
 	}
 
-	@GetMapping("/{type}")
-	fun getFilePath(@PathVariable type: FileType) = run {
-		val files = fileService.getByType(type)
+	@GetMapping("/{username}/{type}")
+	fun getFilePath(@PathVariable username: String, @PathVariable type: FileType) = run {
+		val files = fileService.getByUsernameAndType(username, type)
 		ResponseDto(data = files)
 	}
 }

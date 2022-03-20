@@ -84,4 +84,17 @@ class PostApi(private val postService: PostService) {
 	fun newReply(@PathVariable id: Long, @RequestBody reply: PostReqDto.New) = run {
 		postService.reply(id, reply.toEntity())
 	}
+
+
+	@PostMapping("/{id}/pin")
+	fun pin(@PathVariable id: Long) {
+		postService.pin(id)
+		ResponseDto(data = "")
+	}
+
+	@DeleteMapping("/{id}/unPin")
+	fun unPin(@PathVariable id: Long) {
+		postService.unPin(id)
+		ResponseDto(data = "")
+	}
 }
