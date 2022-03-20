@@ -13,8 +13,7 @@ import { modalActions } from '../../store/modal'
 
 
 interface IProps {
-  post: PostType,
-  deletePost: (id: number) => void
+  post: PostType
 }
 
 const postLike = async (id: number) => {
@@ -29,7 +28,7 @@ const postUnLike = async (id: number) => {
 }
 
 
-const Post: React.FC<IProps> = ({post, deletePost}) => {
+const Post: React.FC<IProps> = ({post}) => {
   const {postedBy} = post
 
   const timeDiff = dayjs(post.createdAt).fromNow();
@@ -63,9 +62,22 @@ const Post: React.FC<IProps> = ({post, deletePost}) => {
     dispatch(showReply(post))
   }
 
-  const onDeleteBtnClickHandler = (e: any) => {
+  const onDeleteBtnClickHandler = async (e: any) => {
     e.stopPropagation();
-    deletePost(post.id)
+    dispatch(modalActions.showModal({
+      type: "deletePost",
+      onClose: () => {
+        dispatch(modalActions.removeModal())
+      },
+      onClick: () => {
+        apiV1Post.delete("/" + post.id).then(value => {
+          if (value.ok) {
+            dispatch(postActions.deletePost(post.id))
+          }
+        });
+        dispatch(modalActions.removeModal());
+      }
+    }));
   }
   const onClickHandler = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();

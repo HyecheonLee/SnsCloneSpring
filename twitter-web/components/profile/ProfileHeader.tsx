@@ -173,14 +173,14 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
       <span>@{user.username}</span>
       <span>description</span>
       <div>
-        <Link href={`/profile/${user.username}/following`}>
+        <Link href={`/profile/${user.username}/follow?act=Following`}>
           <a className={"me-2 text-underline-hover"}>
             <span
               className={"fw-bold text-black"}>{user.followInfo?.followStatus.followingCnt}&nbsp;&nbsp;</span>
             <span className={"text-muted"}>Following</span>
           </a>
         </Link>
-        <Link href={`/profile/${user.username}/follower`}>
+        <Link href={`/profile/${user.username}/follow?act=Follower`}>
           <a className={"me-2 text-underline-hover"}>
             <span
               className={"fw-bold text-black"}>{user.followInfo?.followStatus.followerCnt}&nbsp;&nbsp;</span>

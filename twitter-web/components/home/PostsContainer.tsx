@@ -58,7 +58,7 @@ const PostsContainer = () => {
           hasMore={hasNext}
           loader={<Loading width={50} height={50} fontSize={16}/>}>
           {posts.map((post) => {
-            return <Post key={`post_${post.id}`} post={post} deletePost={deletePost}/>
+            return <Post key={`post_${post.id}`} post={post}/>
           })}
         </InfiniteScroll>
       </div>

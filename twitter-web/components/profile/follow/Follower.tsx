@@ -3,7 +3,7 @@ import { apiV1User } from '../../../utils/apiUtils'
 import { useRouter } from 'next/router'
 import { ApiResponseType } from '../../../types/api'
 import { UserType } from '../../../types/user'
-import UserProfile from './UserProfile'
+import UserProfile from '../../user/UserProfile'
 import Loading from '../../Loading'
 import InfiniteScroll from 'react-infinite-scroll-component'
 

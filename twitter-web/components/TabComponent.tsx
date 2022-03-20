@@ -13,7 +13,9 @@ const TabComponent: React.FC<IProps> = ({...props}) => {
       {items.map(item => {
         return <li key={`tab_${item}`}
                    className={`p-3 ${currentTab === item && "active"}`}
-                   onClick={setTab(item)}>
+                   onClick={e => {
+                     setTab(item);
+                   }}>
           <a className={"fw-bold text-muted"}>{item}</a>
         </li>
       })}
@@ -32,6 +34,7 @@ const TabComponent: React.FC<IProps> = ({...props}) => {
         text-align: center;
         cursor: pointer;
         border-bottom: 2px solid #dee2e6;
+        border-top: 2px solid #dee2e6;
       }
 
       li a {
@@ -44,7 +47,7 @@ const TabComponent: React.FC<IProps> = ({...props}) => {
       }
 
       li.active {
-        border-bottom: 3px solid #1fa2f1 !important;
+        border-bottom: 2px solid #1fa2f1 !important;
       }
 
       li.active a {

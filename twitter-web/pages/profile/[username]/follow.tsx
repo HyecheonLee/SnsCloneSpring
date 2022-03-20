@@ -13,11 +13,12 @@ const index: React.FC<IProps> = ({...props}) => {
   const act = router.query.act as string
   const username = router.query.username as string
   const [currentTab, setCurrentTab] = useState(act || "Following");
+
   return (<Layout title={username}>
     <TabComponent items={["Following", "Followers"]} currentTab={currentTab}
                   setTab={setCurrentTab}/>
-    {act === "Following" && <Following/>}
-    {act === "Followers" && <Follower/>}
+    {currentTab === "Following" && <Following/>}
+    {currentTab === "Followers" && <Follower/>}
   </Layout>)
 };
 

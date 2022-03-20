@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { UserType } from '../../../types/user'
+import { UserType } from '../../types/user'
 import Image from 'next/image'
-import { domain } from '../../../utils/apiUtils'
+import { domain } from '../../utils/apiUtils'
 import Link from 'next/link'
-import { useAppDispatch, useSelector } from '../../../store'
-import { userFollowing } from '../../../apis/userApis'
+import { useAppDispatch, useSelector } from '../../store'
+import { userFollowing } from '../../apis/userApis'
 
 interface IProps {
   user: UserType
