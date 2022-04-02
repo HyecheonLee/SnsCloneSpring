@@ -24,4 +24,7 @@ object Constant {
 
 	const val FILE = "file"
 	const val FILE_V1_API = "${API_V1}/${FILE}"
+
+	const val CHAT = "chat"
+	const val CHAT_V1_API = "${API_V1}/${CHAT}"
 }
