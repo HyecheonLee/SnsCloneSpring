@@ -12,7 +12,8 @@ const Layout: React.FC<IProps> = ({...props}) => {
       <div>
         <div className="row">
           <NavBar/>
-          <div className="col-10 col-md-8 col-lg-6 p-0 border-start border-end">
+          <div
+            className="col-10 col-md-8 col-lg-6 p-0 border-start border-end position-relative">
             <div className="px-3">
               <h6 className={"text-black-50 display-6 fw-bold"}>{props.title}</h6>
             </div>

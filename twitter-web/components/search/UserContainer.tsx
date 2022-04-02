@@ -5,6 +5,7 @@ import { UserType } from '../../types/user'
 import UserProfile from '../user/UserProfile'
 import { apiV1User } from '../../utils/apiUtils'
 import { ApiResponseType } from '../../types/api'
+import { searchUser } from '../../apis/userApis'
 
 interface IProps {
   keyword?: string
@@ -17,19 +18,15 @@ const UserContainer: React.FC<IProps> = ({...props}) => {
   useEffect(() => {
     setUsers([]);
     fetchUser()
-
   }, [props.keyword]);
 
-  const fetchUser = () => {
+  const fetchUser = async () => {
     let lastId = Number.MAX_SAFE_INTEGER;
-    apiV1User.get<ApiResponseType<UserType[]>>(`/search?keyword=${props.keyword}&lastId=${lastId}`)
-      .then(value => value.data)
-      .then(value => {
-        if (value) {
-          setUsers(prevState => [...prevState, ...value.data])
-          setHasNext(value.data.length >= 10)
-        }
-      })
+    const value = await searchUser(props.keyword, lastId)
+    if (value) {
+      setUsers(prevState => [...prevState, ...value])
+      setHasNext(value.length >= 10)
+    }
   }
 
   return (<>

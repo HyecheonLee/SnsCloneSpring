@@ -1,6 +1,7 @@
 import { apiV1User } from '../utils/apiUtils'
 import { profileActions } from '../store/profile'
 import { UserType } from '../types/user'
+import { ApiResponseType } from '../types/api'
 
 export const userFollowing = async (user: UserType, dispatch: (actions: any) => void) => {
   if (user?.followInfo?.isFollowing) {
@@ -20,4 +21,10 @@ export const userFollowing = async (user: UserType, dispatch: (actions: any) => 
   }
 }
 
-
+export const searchUser = (keyword?: string, lastId: number = Number.MAX_SAFE_INTEGER) => {
+  return apiV1User.get<ApiResponseType<UserType[]>>(`/search?keyword=${keyword}&lastId=${lastId}`)
+    .then(value => value.data)
+    .then(value => {
+      return value?.data || []
+    })
+}

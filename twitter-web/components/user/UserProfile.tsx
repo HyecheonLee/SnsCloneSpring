@@ -8,6 +8,7 @@ import { userFollowing } from '../../apis/userApis'
 
 interface IProps {
   user: UserType
+  onClick?: Function
 }
 
 const UserProfile: React.FC<IProps> = ({...props}) => {
@@ -19,8 +20,12 @@ const UserProfile: React.FC<IProps> = ({...props}) => {
     await userFollowing(user, dispatch)
     setIsFollowing(prevState => !prevState)
   }
-
-  return (<div className="post">
+  const onClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (props.onClick) {
+      props.onClick(e)
+    }
+  }
+  return (<div className="post" onClick={onClickHandler}>
     <div className="d-flex">
       <div>
         <Image

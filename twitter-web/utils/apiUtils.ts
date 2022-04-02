@@ -33,8 +33,14 @@ export const apiV1Reply = create({
   withCredentials: true
 })
 
-export const apiV1File=create({
+export const apiV1File = create({
   baseURL: domain + '/api/v1/file',
+  headers,
+  withCredentials: true
+})
+
+export const apiV1Chat = create({
+  baseURL: domain + '/api/v1/chat',
   headers,
   withCredentials: true
 })
