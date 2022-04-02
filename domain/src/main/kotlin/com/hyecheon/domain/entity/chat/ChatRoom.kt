@@ -24,6 +24,7 @@ class ChatRoom(
 		inverseJoinColumns = [JoinColumn(name = "user_id")])
 	var users: MutableSet<User> = mutableSetOf()
 
+
 	var lastMessage: String? = null
 
 	fun addUsers(user: User) = run {
