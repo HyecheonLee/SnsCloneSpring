@@ -19,7 +19,7 @@ const NewMessageContainer: React.FC<IProps> = ({...props}) => {
     const createChatRoom = () => {
       dispatch(modalActions.showLoading("채팅방 생성중..."))
       apiV1Chat.post<ApiResponseType<{ chatRoomId: number }>>("/room", {
-        chatRoomName: selected.map(value => value.username).join(","),
+        chatRoomName: [...selected.map(value => value.username), auth.user?.username].join(","),
         groupChat: true,
         userIds: [...selected.map(value => value.id), auth.user?.id]
       }).then(value => {

@@ -1,8 +1,9 @@
 import React from "react";
-import { ChatRoomType } from '../../types/chat'
+import { ChatRoomType } from '../../../types/chat'
 import Image from 'next/image'
-import { domain } from '../../utils/apiUtils'
+import { domain } from '../../../utils/apiUtils'
 import Link from "next/link";
+import { useSelector } from '../../../store'
 
 interface IProps {
   chatRoom: ChatRoomType
@@ -82,9 +83,11 @@ function imgSize(size: number) {
   }
 }
 
-const ChatItem: React.FC<IProps> = ({...props}) => {
+const ChatRoomItem: React.FC<IProps> = ({...props}) => {
     const {chatRoom} = props
-    const tempProfiles = chatRoom.users.map(value => value.profilePic)
+    const auth = useSelector(state => state.auth)
+    const tempProfiles = chatRoom.users.filter(value => value.id !== auth.user?.id)
+      .map(value => value.profilePic)
     let profiles = tempProfiles
     if (tempProfiles.length > 4) {
       profiles = tempProfiles.slice(0, 4)
@@ -92,7 +95,7 @@ const ChatItem: React.FC<IProps> = ({...props}) => {
     return (
       <>
         <Link href={`/messages/${chatRoom.id}`}>
-          <a className="list-group-item list-group-item-action rounded-0 border-end-0 border-top-0 border-start-0 border-bottom-1
+          <a className="py-1 list-group-item list-group-item-action rounded-0 border-end-0 border-top-0 border-start-0 border-bottom-1
          d-flex align-items-center">
             <div className="position-relative me-3" style={{height: `60px`, width: "60px"}}>
               {profiles.map(profile => {
@@ -144,4 +147,4 @@ const ChatItem: React.FC<IProps> = ({...props}) => {
   }
 ;
 
-export default ChatItem;
+export default ChatRoomItem;

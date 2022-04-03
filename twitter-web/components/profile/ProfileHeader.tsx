@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from 'next/image'
-import { apiV1File, domain } from '../../utils/apiUtils'
+import { apiV1Chat, apiV1File, domain } from '../../utils/apiUtils'
 import Link from "next/link";
 import { useAppDispatch, useSelector } from '../../store'
 import { userFollowing } from '../../apis/userApis'
@@ -68,7 +68,18 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
       .then(value => {
         setBgList(value?.data || [])
       });
+  }
 
+  const onClickMsgHandler = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    apiV1Chat.put<ApiResponseType<{ chatRoomId: number }>>("/room", {
+      chatRoomName: [user?.username, auth.user?.username].join(","),
+      groupChat: false,
+      userIds: [user?.id, auth.user?.id]
+    }).then(value => value.data)
+      .then(value => value?.data)
+      .then(async value => {
+        await router.push(`/messages/${value?.chatRoomId}`)
+      })
   }
 
   if (!user) return null
@@ -144,7 +155,8 @@ const ProfileHeader: React.FC<IProps> = ({...props}) => {
 
     <div className={"text-end p-3"} style={{minHeight: 66}}>
       {user.id !== auth.user?.id && <>
-        <a className={"rounded-pill ms-3 btn btn-outline-primary"}
+        <a onClick={onClickMsgHandler}
+           className={"rounded-pill ms-3 btn btn-outline-primary"}
            style={{padding: "5px 15px"}}>
           <i className={"fas fa-envelope"}/>
         </a>

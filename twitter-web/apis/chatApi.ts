@@ -13,3 +13,6 @@ export const fetchChatRooms = async () => {
     .then(value => value.data)
     .then(value => value?.data || [])
 }
+export const patchChatRoom = async (id: number, data: any) => {
+  return await apiV1Chat.patch<ApiResponseType<ChatRoomType>>(`/room/${id}`, data)
+}

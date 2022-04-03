@@ -6,7 +6,7 @@ import Layout from '../../../components/layout/Layout'
 import { useAppDispatch } from '../../../store'
 import { modalActions } from '../../../store/modal'
 import Loading from '../../../components/Loading'
-import ChatRoomContainer from '../../../components/message/ChatRoomContainer'
+import ChatContainer from '../../../components/message/ChatContainer'
 
 interface IProps {
 }
@@ -14,8 +14,8 @@ interface IProps {
 const index: React.FC<IProps> = ({...props}) => {
   const router = useRouter()
   const id = router.query.id as string
-  return (<Layout title="Messages">
-    <ChatRoomContainer id={id}/>
+  return (<Layout title="채팅">
+    <ChatContainer id={id}/>
   </Layout>);
 };
 

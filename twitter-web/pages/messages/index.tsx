@@ -6,7 +6,7 @@ interface IProps {
 }
 
 const index: React.FC<IProps> = ({...props}) => {
-  return (<Layout title={"message"}>
+  return (<Layout title={"채팅목록"}>
     <MessageContainer/>
   </Layout>);
 };
