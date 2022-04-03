@@ -1,6 +1,5 @@
 package com.hyecheon.web.service
 
-import com.hyecheon.web.api.NotifyApi
 import com.hyecheon.web.dto.post.PostRespDto
 import com.hyecheon.web.dto.post.PostStatusDto
 import com.hyecheon.web.dto.web.NotifyDto
@@ -24,18 +23,18 @@ class NotifyService {
 		const val SSE_SESSION_TIMEOUT: Long = 30 * 60 * 1000L
 	}
 
-	val emitterSet: MutableSet<SseEmitter> = CopyOnWriteArraySet()
+	val notifySet: MutableSet<SseEmitter> = CopyOnWriteArraySet()
 
-	fun getEmitter(type: String) = run {
+	fun getNotifyEmitter(type: String) = run {
 		val emitter = SseEmitter(SSE_SESSION_TIMEOUT)
-		emitterSet.add(emitter)
+		notifySet.add(emitter)
 
 		emitter.onTimeout {
-			emitterSet.remove(emitter)
+			notifySet.remove(emitter)
 			emitter.complete()
 		}
 		emitter.onCompletion {
-			emitterSet.remove(emitter)
+			notifySet.remove(emitter)
 			emitter.complete()
 		}
 
@@ -60,7 +59,7 @@ class NotifyService {
 	@EventListener
 	fun <T> onNotifyEvent(notify: NotifyDto<T>) = run {
 		log.info("notify event : {}", notify.type)
-		emitterSet.forEach { eventSend(it, notify) }
+		notifySet.forEach { eventSend(it, notify) }
 	}
 
 	private fun <T> eventSend(emitter: SseEmitter, notify: NotifyDto<T>) {
@@ -68,7 +67,7 @@ class NotifyService {
 			emitter.send(notify)
 		} catch (e: Exception) {
 			log.error("send error ${e.message}", e)
-			emitterSet.remove(emitter);
+			notifySet.remove(emitter);
 		}
 	}
 }

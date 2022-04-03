@@ -14,7 +14,7 @@ import javax.persistence.ManyToMany
  */
 @Entity
 class ChatRoom(
-	var chatRoomName: String = "",
+	var chatRoomName: String? = null,
 	var groupChat: Boolean = false,
 ) : BaseEntity() {
 
@@ -22,12 +22,11 @@ class ChatRoom(
 	@JoinTable(name = "chat_room_user",
 		joinColumns = [JoinColumn(name = "chat_room_id")],
 		inverseJoinColumns = [JoinColumn(name = "user_id")])
-	var users: MutableSet<User> = mutableSetOf()
-
+	var users: MutableSet<User>? = mutableSetOf()
 
 	var lastMessage: String? = null
 
 	fun addUsers(user: User) = run {
-		users.add(user)
+		users?.add(user)
 	}
 }

@@ -14,21 +14,28 @@ import org.mapstruct.factory.Mappers
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
 	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 abstract class ChatConverter {
+	companion object {
+		val converter = Mappers.getMapper(ChatConverter::class.java)
+	}
+
 	private val userConverter = Mappers.getMapper(UserConverter::class.java)
 
 	@Mapping(source = "userIds", target = "users", qualifiedByName = ["id2user"])
 	abstract fun toEntity(chat: ChatRoomReqDto.New): ChatRoom
 
+	@Mapping(source = "userIds", target = "users", qualifiedByName = ["id2user"])
+	abstract fun toEntity(chat: ChatRoomReqDto.Patch): ChatRoom
+
 	@Mapping(source = "users", target = "users", qualifiedByName = ["users2Model"])
 	abstract fun toModel(chatRoom: ChatRoom): ChatRoomRespDto.Model
 
 	@Named("id2user")
-	fun id2User(ids: List<Long>) = run {
-		ids.map { userId ->
+	fun id2User(ids: List<Long>?) = run {
+		ids?.map { userId ->
 			User().apply {
 				id = userId
 			}
-		}.toMutableSet()
+		}?.toMutableSet()
 	}
 
 	@Named("users2Model")
@@ -37,4 +44,8 @@ abstract class ChatConverter {
 			userConverter.toModel(user)
 		}.toMutableSet()
 	}
+
+	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+		nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+	abstract fun patch(source: ChatRoom, @MappingTarget target: ChatRoom)
 }

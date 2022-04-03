@@ -10,6 +10,15 @@ import org.mapstruct.factory.Mappers
 object ChatRoomReqDto {
 	private val converter = Mappers.getMapper(ChatConverter::class.java)
 
+	data class Patch(
+		var chatRoomName: String? = null,
+		var userIds: List<Long>? = null,
+	) {
+		fun toEntity() = run {
+			converter.toEntity(this)
+		}
+	}
+
 	data class New(
 		var chatRoomName: String = "",
 		var groupChat: Boolean = false,
