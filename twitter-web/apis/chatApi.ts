@@ -16,3 +16,12 @@ export const fetchChatRooms = async () => {
 export const patchChatRoom = async (id: number, data: any) => {
   return await apiV1Chat.patch<ApiResponseType<ChatRoomType>>(`/room/${id}`, data)
 }
+
+export const sendMessage = async ({
+                                    chatRoomId,
+                                    message
+                                  }: { chatRoomId: number | string, message: string }) => {
+  return await apiV1Chat.post<ApiResponseType<ChatRoomType>>(`/message`, {
+    chatRoomId, message
+  })
+}

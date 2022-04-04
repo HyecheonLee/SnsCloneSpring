@@ -11,3 +11,10 @@ export type ChatRoomType = {
   createdAt: string,
   updatedAt: string
 }
+export type ChatMessageType = {
+  id: number,
+  message: string,
+  createdBy: string,
+  chatRoomId: number,
+  createdAt: string
+}

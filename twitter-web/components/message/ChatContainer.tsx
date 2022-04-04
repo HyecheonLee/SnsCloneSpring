@@ -1,11 +1,10 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import useSWR from 'swr'
 import { fetchChatRoom } from '../../apis/chatApi'
 import Loading from '../Loading'
 import SendMessage from './chat/SendMessage'
-import Image from 'next/image'
-import { domain } from '../../utils/apiUtils'
 import ChatHeader from './chat/ChatHeader'
+import ChatMessages from './chat/ChatMessages'
 
 interface IProps {
   id: string
@@ -29,8 +28,8 @@ const ChatContainer: React.FC<IProps> = ({...props}) => {
     <div className="d-flex flex-column overflow-scroll"
          style={{height: "calc(100vh - 4rem)"}}>
       <ChatHeader data={data}/>
-      <div className="flex-grow-1 border-bottom p-3 d-flex flex-column overflow-scroll"></div>
-      <SendMessage/>
+      <ChatMessages chatRoomId={id}/>
+      <SendMessage chatRoomId={id}/>
     </div>);
 };
 
