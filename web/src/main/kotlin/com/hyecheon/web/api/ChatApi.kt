@@ -1,9 +1,11 @@
 package com.hyecheon.web.api
 
 import com.hyecheon.web.api.Constant.CHAT_V1_API
+import com.hyecheon.web.dto.chat.ChatMessageDto
 import com.hyecheon.web.dto.chat.ChatRoomReqDto
 import com.hyecheon.web.dto.chat.ChatRoomRespDto
 import com.hyecheon.web.dto.web.ResponseDto
+import com.hyecheon.web.service.ChatMessageService
 import com.hyecheon.web.service.ChatService
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class ChatApi(
 	private val chatService: ChatService,
+	private val chatMessageService: ChatMessageService,
 ) {
 
 	@PostMapping("/room")
@@ -32,6 +35,17 @@ class ChatApi(
 		ResponseDto(data = ChatRoomRespDto.toModel(chatRoom))
 	}
 
+	@GetMapping("/room/{id}/message", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+	fun getChatMessage(@PathVariable id: Long) = run {
+		chatMessageService.getEmitter(id)
+	}
+
+	@PostMapping("/message")
+	fun newChatMsg(@RequestBody msg: ChatMessageDto.New) = run {
+		val chatMsgId = chatMessageService.newChatMsg(msg.toEntity())
+		ResponseDto(data = mapOf("chatMessageId" to chatMsgId))
+	}
+
 	@GetMapping("/room")
 	fun getChatRooms() = run {
 		val chatRooms = chatService.findRoomAllByLoggedUser()
@@ -39,11 +53,6 @@ class ChatApi(
 			.map { ChatRoomRespDto.toModel(it) }
 			.sortedByDescending { it.updatedAt }
 		ResponseDto(data = result)
-	}
-
-	@GetMapping(produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-	fun chat() = run {
-		chatService.getEmitter()
 	}
 
 	@PatchMapping("/room/{id}")

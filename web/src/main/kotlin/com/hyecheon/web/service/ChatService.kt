@@ -49,48 +49,15 @@ class ChatService(
 		return chatRoomUserRepository.findAllByUserId(userId!!)
 	}
 
-	fun newMessage(chatMessage: ChatMessage) = run {
-		chatMessageRepository.save(chatMessage)
-	}
-
-	fun getEmitter() = run {
-		val emitter = SseEmitter(SSE_SESSION_TIMEOUT)
-		val authToken = AuthToken.getLoggedToken()
-		emitterMap[authToken.userId!!] = emitter
-
-		emitter.onTimeout {
-			emitterMap.remove(authToken.userId)
-			emitter.complete()
-		}
-		emitter.onCompletion {
-			emitterMap.remove(authToken.userId)
-			emitter.complete()
-		}
-		emitter
-	}
-
-	@Async
-	@EventListener
-	fun onMessageEvent(message: ChatMessageDto.Model) = run {
-		log.info("chat event : {}", message)
-		val users = message.chatRoom?.users
-		users?.forEach { user ->
-			if (emitterMap.containsKey(user.id)) {
-				val emitter = emitterMap[user.id]
-				try {
-					emitter?.send(message)
-				} catch (e: Exception) {
-					log.error("send error ${e.message}", e)
-					emitterMap.remove(user.id);
-				}
-			}
-		}
-	}
-
 	fun patchRoom(id: Long, source: ChatRoom): ChatRoom = run {
 		val chatRoom = chatRoomRepository.findById(id).orElseThrow { IdNotExistsException("chatRoomId: ${id}") }
 		ChatConverter.converter.patch(source, chatRoom)
 		chatRoom
+	}
+
+	fun newChatMsg(chatMessage: ChatMessage) = run {
+		val msg = chatMessageRepository.save(chatMessage)
+		msg.id
 	}
 
 	fun saveOrFind(chatRoom: ChatRoom): Long {
