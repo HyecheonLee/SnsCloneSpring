@@ -28,7 +28,7 @@ const ChatContainer: React.FC<IProps> = ({...props}) => {
     <div className="d-flex flex-column overflow-scroll"
          style={{height: "calc(100vh - 4rem)"}}>
       <ChatHeader data={data}/>
-      <ChatMessages chatRoomId={id}/>
+      <ChatMessages chatRoom={data} chatRoomId={id}/>
       <SendMessage chatRoomId={id}/>
     </div>);
 };

@@ -10,7 +10,9 @@ const SendMessage: React.FC<IProps> = ({...props}) => {
   const [message, setMessage] = useState("");
 
   const onMessageHandler = async () => {
-    await sendMessage({chatRoomId, message})
+    if (message.trim().length > 0) {
+      await sendMessage({chatRoomId, message})
+    }
     setMessage("")
   }
   const onChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
