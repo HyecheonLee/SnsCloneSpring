@@ -35,7 +35,7 @@ class ChatMessageService(
 	val emitterMap: MutableMap<Long, CopyOnWriteArrayList<SseEmitter>> = CopyOnWriteMap()
 
 	fun getEmitter(chatRoomId: Long) = run {
-		val emitter = SseEmitter(ChatService.SSE_SESSION_TIMEOUT)
+		val emitter = SseEmitter(SSE_SESSION_TIMEOUT)
 		val emitters = emitterMap.getOrDefault(chatRoomId, CopyOnWriteArrayList())
 		emitters.add(emitter)
 		emitterMap[chatRoomId] = emitters
@@ -81,5 +81,9 @@ class ChatMessageService(
 		val msg = chatMessageRepository.save(chatMessage)
 		applicationEventPublisher.publishEvent(ChatMessageDto.toModel(msg))
 		msg.id
+	}
+
+	fun findAllMessage(chatRoomId: Long, lastId: Long) = run {
+		chatMessageRepository.findTop10ByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId, lastId)
 	}
 }

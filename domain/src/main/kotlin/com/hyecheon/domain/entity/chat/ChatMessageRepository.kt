@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository
  * Date: 2022/04/03
  */
 interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
+
+	fun findTop10ByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId: Long, id: Long): List<ChatMessage>
 }

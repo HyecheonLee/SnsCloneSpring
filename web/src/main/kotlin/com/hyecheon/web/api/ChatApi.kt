@@ -35,9 +35,18 @@ class ChatApi(
 		ResponseDto(data = ChatRoomRespDto.toModel(chatRoom))
 	}
 
-	@GetMapping("/room/{id}/message", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-	fun getChatMessage(@PathVariable id: Long) = run {
+	@GetMapping("/room/{id}/message-notify", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+	fun getChatMessageNotify(@PathVariable id: Long) = run {
 		chatMessageService.getEmitter(id)
+	}
+
+	@GetMapping("/room/{id}/message")
+	fun getChatMessage(
+		@PathVariable id: Long,
+		@RequestParam(required = false) lastId: Long = Long.MAX_VALUE,
+	) = run {
+		val messages = chatMessageService.findAllMessage(id, lastId)
+		ResponseDto(data = messages.map(ChatMessageDto::toModel))
 	}
 
 	@PostMapping("/message")
