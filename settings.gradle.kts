@@ -1,2 +1,2 @@
-rootProject.name = "TwitterCloneSpring"
+rootProject.name = "SnsCloneSpring"
 include(":web", "domain")
