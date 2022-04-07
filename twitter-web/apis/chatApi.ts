@@ -1,11 +1,14 @@
 import { apiV1Chat } from '../utils/apiUtils'
-import { ApiResponseType } from '../types/api'
+import { ApiResponseType, ErrorType } from '../types/api'
 import { ChatMessageType, ChatRoomType } from '../types/chat'
 
 export const fetchChatRoom = async (id: string) => {
-  return await apiV1Chat.get<ApiResponseType<ChatRoomType>>(`/room/${id}`)
-    .then(value => value.data)
-    .then(value => value?.data) as ChatRoomType;
+  const resp = await apiV1Chat.get<ApiResponseType<ChatRoomType> | ErrorType<any>>(`/room/${id}`)
+  if (resp.ok) {
+    return resp.data?.data as ChatRoomType
+  } else {
+    throw resp.data
+  }
 }
 
 export const fetchChatRooms = async () => {

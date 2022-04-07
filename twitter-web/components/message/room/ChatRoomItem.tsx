@@ -111,7 +111,9 @@ const ChatRoomItem: React.FC<IProps> = ({...props}) => {
                     loader={({src}) => domain + src}
                     src={`${domain}${profile}`}
                     alt="Picture of the author"
-                    layout={"fill"}/>
+                    height={imgSize(profiles.length)}
+                    width={imgSize(profiles.length)}
+                  />
                 </div>
               })}
               <style jsx>{`

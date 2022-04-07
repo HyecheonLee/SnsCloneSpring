@@ -4,12 +4,13 @@ export type ApiResponseType<T> = {
   message: string
 }
 
-export type ErrorType = {
+export type ErrorType<T> = {
   error: string,
   message: string,
   path: string,
   status: number
-  timestamp: string
+  timestamp: string,
+  data: T
 }
 
 export type EventType<T> = {

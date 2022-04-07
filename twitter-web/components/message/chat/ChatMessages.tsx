@@ -57,7 +57,7 @@ const ChatMessages: React.FC<IProps> = ({...props}) => {
 
   return (
     <EventSourceHook
-      eventUrl={`http://localhost:8080/api/v1/chat/room/${chatRoomId}/message-notify`}
+      eventUrl={`http://localhost:8080/api/v1/event/chat/${chatRoomId}`}
       events={events}>
       <div
         id="scrollableDiv"

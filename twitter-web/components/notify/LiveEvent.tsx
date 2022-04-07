@@ -32,7 +32,7 @@ function postEvent(event: EventType<any>, dispatch: any) {
 }
 
 const LiveEvent: React.FC<IProps> = ({...props}) => {
-  const postEventUrl = `http://localhost:8080/api/v1/notify/post`
+  const postEventUrl = `http://localhost:8080/api/v1/event/notify`
   const dispatch: any = useAppDispatch()
 
   useEffect(() => {
