@@ -2,9 +2,8 @@ package com.hyecheon.web.service
 
 import com.hyecheon.domain.entity.chat.ChatMessage
 import com.hyecheon.domain.entity.chat.ChatMessageRepository
-import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.web.dto.chat.ChatMessageDto
-import com.hyecheon.web.dto.web.NotifyDto
+import com.hyecheon.web.dto.web.EventDto
 import io.undertow.util.CopyOnWriteMap
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
@@ -60,7 +59,7 @@ class ChatMessageService(
 	@EventListener
 	fun onMessageEvent(message: ChatMessageDto.Model) = run {
 		log.info("chat event : {}", message)
-		val sendData = NotifyDto("chatMessage", message)
+		val sendData = EventDto("chatMessage", message)
 		val chatRoomId = message.chatRoomId
 		if (chatRoomId != null) {
 			val emitters = emitterMap.getOrDefault(chatRoomId, CopyOnWriteArrayList())

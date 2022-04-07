@@ -13,24 +13,24 @@ import javax.persistence.*
 @Entity
 class ChatRoomUser {
 
-	@Id
-	@Column(name = "chat_room_id")
-	var chatRoomId: Long? = null
+    @Id
+    @Column(name = "chat_room_id")
+    var chatRoomId: Long? = null
 
-	@Id
-	@Column(name = "user_id")
-	var userId: Long? = null
+    @Id
+    @Column(name = "user_id")
+    var userId: Long? = null
 
-	@MapsId("chat_room_id")
-	@ManyToOne
-	var chatRoom: ChatRoom? = null
+    @ManyToOne
+    @JoinColumn(name = "chat_room_id", updatable = false, insertable = false)
+    var chatRoom: ChatRoom? = null
 
-	@MapsId("user_id")
-	@ManyToOne
-	var user: User? = null
+    @ManyToOne
+    @JoinColumn(name = "user_id", updatable = false, insertable = false)
+    var user: User? = null
 
-	data class Ids(
-		var chatRoomId: Long? = null,
-		var userId: Long? = null,
-	) : Serializable
+    data class Ids(
+        var chatRoomId: Long? = null,
+        var userId: Long? = null,
+    ) : Serializable
 }

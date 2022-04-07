@@ -2,7 +2,7 @@ package com.hyecheon.web.service
 
 import com.hyecheon.web.dto.post.PostRespDto
 import com.hyecheon.web.dto.post.PostStatusDto
-import com.hyecheon.web.dto.web.NotifyDto
+import com.hyecheon.web.dto.web.EventDto
 import org.slf4j.LoggerFactory
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
@@ -45,24 +45,24 @@ class NotifyService {
 	@EventListener
 	fun onPostEvent(post: PostRespDto.Model) = run {
 		log.info("post event : {}", post)
-		onNotifyEvent(NotifyDto("post", post))
+		onNotifyEvent(EventDto("post", post))
 	}
 
 	@Async
 	@EventListener
 	fun onStatusEvent(postStatus: PostStatusDto) = run {
 		log.info("post status event : {}", postStatus)
-		onNotifyEvent(NotifyDto("postStatus", postStatus))
+		onNotifyEvent(EventDto("postStatus", postStatus))
 	}
 
 	@Async
 	@EventListener
-	fun <T> onNotifyEvent(notify: NotifyDto<T>) = run {
+	fun <T> onNotifyEvent(notify: EventDto<T>) = run {
 		log.info("notify event : {}", notify.type)
 		notifySet.forEach { eventSend(it, notify) }
 	}
 
-	private fun <T> eventSend(emitter: SseEmitter, notify: NotifyDto<T>) {
+	private fun <T> eventSend(emitter: SseEmitter, notify: EventDto<T>) {
 		try {
 			emitter.send(notify)
 		} catch (e: Exception) {
