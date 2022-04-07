@@ -3,16 +3,13 @@ package com.hyecheon.web.service
 import com.hyecheon.domain.entity.chat.ChatMessage
 import com.hyecheon.domain.entity.chat.ChatMessageRepository
 import com.hyecheon.web.dto.chat.ChatMessageDto
-import com.hyecheon.web.dto.web.EventDto
-import io.undertow.util.CopyOnWriteMap
+import com.hyecheon.web.event.EventMessage
+import com.hyecheon.web.event.SseEmitterUtils.createSseEmitter
+import com.hyecheon.web.event.SseEvent
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.context.event.EventListener
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
-import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * User: hyecheon lee
@@ -22,67 +19,30 @@ import java.util.concurrent.CopyOnWriteArrayList
 @Transactional
 @Service
 class ChatMessageService(
-	private val chatMessageRepository: ChatMessageRepository,
-	private val applicationEventPublisher: ApplicationEventPublisher,
+    private val chatMessageRepository: ChatMessageRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
-	private val log = LoggerFactory.getLogger(this::class.java)
+    private val log = LoggerFactory.getLogger(this::class.java)
 
-	companion object {
-		const val SSE_SESSION_TIMEOUT: Long = 30 * 60 * 1000L
-	}
+    fun getEmitter(chatRoomId: Long) = run {
+        createSseEmitter(SseEvent.EventType.Chat, makeKey(chatRoomId))
+    }
 
-	val emitterMap: MutableMap<Long, CopyOnWriteArrayList<SseEmitter>> = CopyOnWriteMap()
+    fun newChatMsg(chatMessage: ChatMessage) = run {
+        val msg = chatMessageRepository.save(chatMessage)
 
-	fun getEmitter(chatRoomId: Long) = run {
-		val emitter = SseEmitter(SSE_SESSION_TIMEOUT)
-		val emitters = emitterMap.getOrDefault(chatRoomId, CopyOnWriteArrayList())
-		emitters.add(emitter)
-		emitterMap[chatRoomId] = emitters
-		emitter.onTimeout {
-			emitters.remove(emitter)
-			if (emitters.isEmpty()) {
-				emitterMap.remove(chatRoomId)
-			}
-			emitter.complete()
-		}
-		emitter.onCompletion {
-			emitters.remove(emitter)
-			if (emitters.isEmpty()) {
-				emitterMap.remove(chatRoomId)
-			}
-			emitter.complete()
-		}
-		emitter
-	}
+        applicationEventPublisher.publishEvent(
+            EventMessage("chatMessage", ChatMessageDto.toModel(msg), key = makeKey(msg.id!!))
+        )
 
-	@Async
-	@EventListener
-	fun onMessageEvent(message: ChatMessageDto.Model) = run {
-		log.info("chat event : {}", message)
-		val sendData = EventDto("chatMessage", message)
-		val chatRoomId = message.chatRoomId
-		if (chatRoomId != null) {
-			val emitters = emitterMap.getOrDefault(chatRoomId, CopyOnWriteArrayList())
-			val removes = CopyOnWriteArrayList<SseEmitter>()
-			for (emitter in emitters) {
-				try {
-					emitter?.send(sendData)
-				} catch (e: Exception) {
-					log.error("send error ${e.message}", e)
-					removes.add(emitter)
-				}
-			}
-			emitters.removeAll(removes)
-		}
-	}
+        msg.id
+    }
 
-	fun newChatMsg(chatMessage: ChatMessage) = run {
-		val msg = chatMessageRepository.save(chatMessage)
-		applicationEventPublisher.publishEvent(ChatMessageDto.toModel(msg))
-		msg.id
-	}
+    fun findAllMessage(chatRoomId: Long, lastId: Long) = run {
+        chatMessageRepository.findTop10ByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId, lastId)
+    }
 
-	fun findAllMessage(chatRoomId: Long, lastId: Long) = run {
-		chatMessageRepository.findTop10ByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId, lastId)
-	}
+    private fun makeKey(chatRoomId: Long): String {
+        return "chatRoomId_${chatRoomId}"
+    }
 }

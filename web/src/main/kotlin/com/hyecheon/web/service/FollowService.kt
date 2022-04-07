@@ -5,7 +5,7 @@ import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.domain.entity.user.User
 import com.hyecheon.domain.entity.user.UserRepository
 import com.hyecheon.web.dto.follow.FollowInfoDto
-import com.hyecheon.web.dto.web.EventDto
+import com.hyecheon.web.event.EventMessage
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
@@ -57,8 +57,8 @@ class FollowService(
 			followStatusRepository.findById(toId).orElseGet { followStatusRepository.save(FollowStatus(toId)) }
 		followedStatus.followerCnt = followedStatus.followerCnt + 1
 
-		applicationEventPublisher.publishEvent(EventDto("followStatus", FollowInfoDto(followStatus)))
-		applicationEventPublisher.publishEvent(EventDto("followStatus", FollowInfoDto(followedStatus)))
+		applicationEventPublisher.publishEvent(EventMessage("followStatus", FollowInfoDto(followStatus)))
+		applicationEventPublisher.publishEvent(EventMessage("followStatus", FollowInfoDto(followedStatus)))
 	}
 
 	private fun unfollow(fromId: Long, toId: Long) {
@@ -82,8 +82,8 @@ class FollowService(
 			followStatusRepository.findById(toId).orElseGet { followStatusRepository.save(FollowStatus(toId)) }
 		followedStatus.followerCnt = if (followedStatus.followerCnt > 0) followedStatus.followerCnt - 1 else 0
 
-		applicationEventPublisher.publishEvent(EventDto("followStatus", FollowInfoDto(followStatus)))
-		applicationEventPublisher.publishEvent(EventDto("followStatus", FollowInfoDto(followedStatus)))
+		applicationEventPublisher.publishEvent(EventMessage("followStatus", FollowInfoDto(followStatus)))
+		applicationEventPublisher.publishEvent(EventMessage("followStatus", FollowInfoDto(followedStatus)))
 	}
 
 	fun getFollowInfo(user: User) = run {

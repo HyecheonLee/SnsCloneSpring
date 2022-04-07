@@ -1,0 +1,49 @@
+package com.hyecheon.web.event
+
+import com.hyecheon.domain.entity.user.AuthToken
+import org.slf4j.LoggerFactory
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+
+data class SseEvent(
+    private val sseEmitter: SseEmitter,
+    val type: EventType,
+    val key: String? = null
+) {
+    private val log = LoggerFactory.getLogger(SseEvent::class.java)
+
+    val userId: Long?
+    val username: String?
+    var connected: Boolean = false
+
+    init {
+        val token = AuthToken.getLoggedToken()
+        userId = token.userId
+        username = token.username
+        connectionCheck()
+    }
+
+    enum class EventType {
+        Chat, Notify;
+    }
+
+    fun connectionCheck(): Boolean {
+        return eventSend(EventMessage("connection", "connecting..."))
+    }
+
+    fun <T> sendAble(message: EventMessage<T>): Boolean {
+        return (message.key == null || message.key == key) && connected
+    }
+
+    fun <T> eventSend(message: EventMessage<T>): Boolean {
+        try {
+            sseEmitter.send(message)
+            connected = true
+            return true
+        } catch (e: Exception) {
+            log.error("send error ${e.message}", e)
+            sseEmitter.completeWithError(e)
+            connected = false
+            return false
+        }
+    }
+}
