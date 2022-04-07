@@ -15,17 +15,17 @@ import org.springframework.stereotype.Service
  * Date: 2022/03/04
  */
 @Service
-class NotifyService {
-    private val log = LoggerFactory.getLogger(this::class.java)
+class EventService {
+	private val log = LoggerFactory.getLogger(this::class.java)
 
-    fun getNotifyEmitter(type: SseEvent.EventType, key: String? = null) = run {
-        SseEmitterUtils.createSseEmitter(type, key)
-    }
+	fun getEventEmitter(type: SseEvent.EventType, key: String? = null) = run {
+		SseEmitterUtils.createSseEmitter(type, key)
+	}
 
-    @Async
-    @EventListener
-    fun <T> onEventMessage(event: EventMessage<T>) = run {
-        log.info("received event msg : {} , {}", event.type, event.key)
-        eventSend(event)
-    }
+	@Async
+	@EventListener
+	fun onChatEventMessage(event: EventMessage<*>) = run {
+		log.info("received event msg : {} , {}", event.type, event.key)
+		eventSend(event)
+	}
 }

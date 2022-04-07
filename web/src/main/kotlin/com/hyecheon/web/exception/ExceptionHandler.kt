@@ -21,38 +21,45 @@ import javax.validation.ConstraintViolationException
  */
 @RestControllerAdvice
 class ExceptionHandler {
-    private val log = LoggerFactory.getLogger(this::class.java)
+	private val log = LoggerFactory.getLogger(this::class.java)
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun methodArgumentNotValidException(e: MethodArgumentNotValidException, request: HttpServletRequest) = run {
-        val bindingResult = e.bindingResult
-        val results = bindingResult.fieldErrors.map { ValidErrorDto(it.field, it.rejectedValue, it.defaultMessage) }
-        ErrorDto.of(request, results)
-    }
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(MethodArgumentNotValidException::class)
+	fun methodArgumentNotValidException(e: MethodArgumentNotValidException, request: HttpServletRequest) = run {
+		val bindingResult = e.bindingResult
+		val results = bindingResult.fieldErrors.map { ValidErrorDto(it.field, it.rejectedValue, it.defaultMessage) }
+		ErrorDto.of(request, results)
+	}
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ConstraintViolationException::class)
-    fun validationException(e: ConstraintViolationException, request: HttpServletRequest) = run {
-        val constraintViolations = e.constraintViolations
-        val result = constraintViolations.map {
-            ValidErrorDto(
-                getPropertyName(it.propertyPath.toString()),
-                it.invalidValue,
-                it.message
-            )
-        }
-        ErrorDto.of(request, result)
-    }
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(ConstraintViolationException::class)
+	fun validationException(e: ConstraintViolationException, request: HttpServletRequest) = run {
+		val constraintViolations = e.constraintViolations
+		val result = constraintViolations.map {
+			ValidErrorDto(
+				getPropertyName(it.propertyPath.toString()),
+				it.invalidValue,
+				it.message
+			)
+		}
+		ErrorDto.of(request, result)
+	}
 
-    @ExceptionHandler(Exception::class)
-    fun allException(e: Exception, request: HttpServletRequest, webRequest: WebRequest) = run {
-        val errorRespDto = ErrorDto.of(request)
-        log.error("error {}", e.message, e)
-        ResponseEntity(errorRespDto, HttpStatus.BAD_REQUEST)
-    }
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	@ExceptionHandler(UnAuthorizationException::class)
+	fun unAuthorization(e: UnAuthorizationException, request: HttpServletRequest, webRequest: WebRequest) = run {
+		log.error("error {}", e.message)
+		ErrorDto.of(request, data = e.message)
+	}
 
-    private fun getPropertyName(propertyPath: String): String {
-        return propertyPath.substring(propertyPath.lastIndexOf('.') + 1)
-    }
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(Exception::class)
+	fun allException(e: Exception, request: HttpServletRequest, webRequest: WebRequest) = run {
+		log.error("error {}", e.message, e)
+		ErrorDto.of(request, data = e.message)
+	}
+
+	private fun getPropertyName(propertyPath: String): String {
+		return propertyPath.substring(propertyPath.lastIndexOf('.') + 1)
+	}
 }

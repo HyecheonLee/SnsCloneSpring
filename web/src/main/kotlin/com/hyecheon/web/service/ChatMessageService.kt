@@ -6,6 +6,7 @@ import com.hyecheon.web.dto.chat.ChatMessageDto
 import com.hyecheon.web.event.EventMessage
 import com.hyecheon.web.event.SseEmitterUtils.createSseEmitter
 import com.hyecheon.web.event.SseEvent
+import com.hyecheon.web.utils.makeChatEventKey
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -19,30 +20,21 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @Service
 class ChatMessageService(
-    private val chatMessageRepository: ChatMessageRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher,
+	private val chatMessageRepository: ChatMessageRepository,
+	private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
-    private val log = LoggerFactory.getLogger(this::class.java)
+	private val log = LoggerFactory.getLogger(this::class.java)
 
-    fun getEmitter(chatRoomId: Long) = run {
-        createSseEmitter(SseEvent.EventType.Chat, makeKey(chatRoomId))
-    }
 
-    fun newChatMsg(chatMessage: ChatMessage) = run {
-        val msg = chatMessageRepository.save(chatMessage)
+	fun newChatMsg(chatMessage: ChatMessage) = run {
+		val msg = chatMessageRepository.save(chatMessage)
+		applicationEventPublisher.publishEvent(EventMessage("chatMessage",
+			ChatMessageDto.toModel(msg),
+			key = makeChatEventKey(msg.chatRoomId)))
+		msg.id
+	}
 
-        applicationEventPublisher.publishEvent(
-            EventMessage("chatMessage", ChatMessageDto.toModel(msg), key = makeKey(msg.id!!))
-        )
-
-        msg.id
-    }
-
-    fun findAllMessage(chatRoomId: Long, lastId: Long) = run {
-        chatMessageRepository.findTop10ByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId, lastId)
-    }
-
-    private fun makeKey(chatRoomId: Long): String {
-        return "chatRoomId_${chatRoomId}"
-    }
+	fun findAllMessage(chatRoomId: Long, lastId: Long) = run {
+		chatMessageRepository.findTop10ByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId, lastId)
+	}
 }

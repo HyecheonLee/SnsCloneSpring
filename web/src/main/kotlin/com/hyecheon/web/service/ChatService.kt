@@ -3,16 +3,10 @@ package com.hyecheon.web.service
 import com.hyecheon.domain.entity.chat.*
 import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.web.dto.chat.ChatConverter
-import com.hyecheon.web.dto.chat.ChatMessageDto
 import com.hyecheon.web.exception.IdNotExistsException
-import io.undertow.util.CopyOnWriteMap
 import org.slf4j.LoggerFactory
-import org.springframework.context.event.EventListener
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 /**
  * User: hyecheon lee
@@ -24,15 +18,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 class ChatService(
 	private val chatRoomRepository: ChatRoomRepository,
 	private val chatRoomUserRepository: ChatRoomUserRepository,
-	private val chatMessageRepository: ChatMessageRepository,
 ) {
 	private val log = LoggerFactory.getLogger(this::class.java)
-
-	companion object {
-		const val SSE_SESSION_TIMEOUT: Long = 30 * 60 * 1000L
-	}
-
-	val emitterMap: MutableMap<Long, SseEmitter> = CopyOnWriteMap()
 
 
 	fun createChatRoom(chatRoom: ChatRoom): Long {
@@ -53,11 +40,6 @@ class ChatService(
 		val chatRoom = chatRoomRepository.findById(id).orElseThrow { IdNotExistsException("chatRoomId: ${id}") }
 		ChatConverter.converter.patch(source, chatRoom)
 		chatRoom
-	}
-
-	fun newChatMsg(chatMessage: ChatMessage) = run {
-		val msg = chatMessageRepository.save(chatMessage)
-		msg.id
 	}
 
 	fun saveOrFind(chatRoom: ChatRoom): Long {

@@ -14,9 +14,6 @@ interface ChatRoomUserRepository : JpaRepository<ChatRoomUser, ChatRoomUser.Ids>
 	@EntityGraph(attributePaths = ["chatRoom", "chatRoom.users"], type = EntityGraph.EntityGraphType.LOAD)
 	fun findAllByUserId(userId: Long): List<ChatRoomUser>
 
-	@Query(value = """
-		select count(*) from chat_room_user join chat_room on  chat_room.id = chat_room_user.chat_room_id 
-		where user_id in (:userIds) and chat_room.group_chat = false
-	""", nativeQuery = true)
-	fun getByChatRoomAndUserIds(userIds: List<Long>): Map<String, String>
+	fun existsByUserIdAndChatRoomId(userId: Long, chatRoomId: Long): Boolean
+
 }

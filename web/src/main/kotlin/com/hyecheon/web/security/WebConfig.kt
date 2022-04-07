@@ -22,6 +22,7 @@ class WebConfig(
 			.allowedHeaders("*")
 			.allowedMethods("*")
 			.allowCredentials(true)
+			.allowedOrigins("*")
 			.allowedOrigins(*appProperty.server.hosts.toTypedArray())
 	}
 }

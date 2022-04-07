@@ -9,9 +9,21 @@ import com.hyecheon.domain.exception.LoggedNotException
  * Date: 2022/03/04
  */
 fun getAuthToken() = run {
-    val optionalAuthToken = AuthToken.loggedToken()
-    if (!optionalAuthToken.isPresent) {
-        throw LoggedNotException("로그인을 해주세요")
-    }
-    optionalAuthToken.get()
+	val optionalAuthToken = AuthToken.loggedToken()
+	if (!optionalAuthToken.isPresent) {
+		throw LoggedNotException("로그인을 해주세요")
+	}
+	optionalAuthToken.get()
+}
+
+fun makeEventKey(type: String, id: Long) = run {
+	"${type}-${id}"
+}
+
+fun makeChatEventKey(id: Long) = run {
+	makeEventKey("chatRoomId", id)
+}
+
+fun makeUserEventKey(id: Long) = run {
+	makeEventKey("userId", id)
 }
