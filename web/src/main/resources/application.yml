@@ -37,7 +37,6 @@ spring:
         jdbc:
           batch_size: 1000
         default_batch_fetch_size: 1000
-        implicit_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
         physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
     open-in-view: false
   sleuth:

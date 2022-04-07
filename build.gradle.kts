@@ -11,6 +11,9 @@ plugins {
 	id("org.springframework.boot") version "2.6.3"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 
+	id("org.asciidoctor.convert") version "1.5.8"
+	id("com.epages.restdocs-api-spec") version "0.16.0"
+
 	idea
 }
 
@@ -35,6 +38,10 @@ subprojects {
 
 		plugin("org.springframework.boot")
 		plugin("io.spring.dependency-management")
+
+		plugin("org.asciidoctor.convert")
+		plugin("com.epages.restdocs-api-spec")
+
 	}
 	configurations {
 		compileOnly {
