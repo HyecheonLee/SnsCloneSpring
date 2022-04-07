@@ -24,7 +24,7 @@ spring:
       on-profile: local
   datasource:
     hikari:
-      jdbc-url: jdbc:mariadb://localhost:3306/twitter
+      jdbc-url: jdbc:mariadb://localhost:3306/sns
       username: antte
       password: antte
     driver-class-name: org.mariadb.jdbc.Driver

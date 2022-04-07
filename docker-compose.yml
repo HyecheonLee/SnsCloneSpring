@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  twiteer-spring:
+  sns-spring:
     image: mariadb
     ports:
       - 3306:3306
@@ -9,8 +9,8 @@ services:
       - ./db/conf.d:/etc/mysql/conf.d
       - ./db/data:/var/lib/mysql
       - ./db/initdb.d:/docker-entrypoint-initdb.d
-    env_file: .env
+    env_file: db/.env
     environment:
       TZ: Asia/Seoul
-    restart: always
+    restart: unless-stopped
 
