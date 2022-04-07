@@ -25,7 +25,7 @@ class ExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun methodArgumentNotValidException(e: MethodArgumentNotValidException, request: HttpServletRequest) {
+    fun methodArgumentNotValidException(e: MethodArgumentNotValidException, request: HttpServletRequest) = run {
         val bindingResult = e.bindingResult
         val results = bindingResult.fieldErrors.map { ValidErrorDto(it.field, it.rejectedValue, it.defaultMessage) }
         ErrorDto.of(request, results)
@@ -33,7 +33,7 @@ class ExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException::class)
-    fun validationException(e: ConstraintViolationException, request: HttpServletRequest) {
+    fun validationException(e: ConstraintViolationException, request: HttpServletRequest) = run {
         val constraintViolations = e.constraintViolations
         val result = constraintViolations.map {
             ValidErrorDto(
