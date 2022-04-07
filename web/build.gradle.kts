@@ -9,7 +9,9 @@ dependencies {
         // 종속성 제외 추가
         exclude("org.springframework.boot", "spring-boot-starter-tomcat")
     }
-    implementation("org.springframework.boot:spring-boot-starter-undertow")
+    implementation("org.springframework.boot:spring-boot-starter-undertow") {
+//        exclude("io.undertow", "undertow-websockets-jsr")
+    }
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
