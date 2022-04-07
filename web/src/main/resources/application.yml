@@ -16,6 +16,11 @@ spring:
 server:
   error:
     include-message: always
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
 ---
 
 spring:
@@ -23,10 +28,9 @@ spring:
     activate:
       on-profile: local
   datasource:
-    hikari:
-      jdbc-url: jdbc:mariadb://localhost:3306/sns
-      username: antte
-      password: antte
+    url: jdbc:mariadb://localhost:3306/sns
+    username: antte
+    password: antte
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
