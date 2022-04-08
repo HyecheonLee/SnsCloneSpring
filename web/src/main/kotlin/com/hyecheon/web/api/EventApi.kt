@@ -21,23 +21,23 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(EVENT_V1_API)
 class EventApi(
-	private val eventService: EventService,
+    private val eventService: EventService,
 ) {
 
-	@GetMapping(value = ["/notify"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-	fun notify() = run {
-		eventService.getEventEmitter(SseEvent.EventType.Notify)
-	}
+    @GetMapping(value = ["/notify"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun notify() = run {
+        eventService.createSseEmitter(SseEvent.EventType.Notify)
+    }
 
-	@GetMapping(value = ["/user"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-	fun userEvent() = run {
-		val authToken = AuthToken.getLoggedToken()
-		eventService.getEventEmitter(SseEvent.EventType.User, makeUserEventKey(authToken.userId!!))
-	}
+    @GetMapping(value = ["/user"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun userEvent() = run {
+        val authToken = AuthToken.getLoggedToken()
+        eventService.createSseEmitter(SseEvent.EventType.User, makeUserEventKey(authToken.userId!!))
+    }
 
-	@ChatRoomAuth("chatRoomId")
-	@GetMapping(value = ["/chat/{chatRoomId}"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-	fun chatEvent(@PathVariable chatRoomId: Long) = run {
-		eventService.getEventEmitter(SseEvent.EventType.Chat, makeChatEventKey(chatRoomId))
-	}
+    @ChatRoomAuth("chatRoomId")
+    @GetMapping(value = ["/chat/{chatRoomId}"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun chatEvent(@PathVariable chatRoomId: Long) = run {
+        eventService.createSseEmitter(SseEvent.EventType.Chat, makeChatEventKey(chatRoomId))
+    }
 }
