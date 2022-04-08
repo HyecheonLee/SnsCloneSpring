@@ -4,21 +4,24 @@ import com.hyecheon.web.event.EventMessage
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 
-@Aspect
-@Component
+//@Aspect
+//@Component
 class EventAop {
+	private val log = LoggerFactory.getLogger(this::class.java)
 
-    @AfterReturning(
-        pointcut = "execution(* com.hyecheon.web.api.EventApi.*(..))",
-        returning = "sseEmitter"
-    )
-    fun eventConnection(jp: JoinPoint, sseEmitter: Any) {
-        if (sseEmitter is SseEmitter) {
-            sseEmitter.send(EventMessage("connection", "connecting..."))
-        }
-    }
+	@AfterReturning(
+		pointcut = "execution(* com.hyecheon.web.api.EventApi.*(..))",
+		returning = "sseEmitter"
+	)
+	fun eventConnection(jp: JoinPoint, sseEmitter: Any) {
+		if (sseEmitter is SseEmitter) {
+			log.info("connection...")
+			sseEmitter.send(EventMessage("connection", "connecting..."))
+		}
+	}
 }

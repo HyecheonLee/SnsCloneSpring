@@ -4,12 +4,12 @@ import com.hyecheon.web.dto.web.ErrorDto
 import com.hyecheon.web.dto.web.ValidErrorDto
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
+import java.io.IOException
 import javax.servlet.http.HttpServletRequest
 import javax.validation.ConstraintViolationException
 
@@ -50,6 +50,16 @@ class ExceptionHandler {
 	fun unAuthorization(e: UnAuthorizationException, request: HttpServletRequest, webRequest: WebRequest) = run {
 		log.error("error {}", e.message)
 		ErrorDto.of(request, data = e.message)
+	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(IOException::class)
+	fun ioException(e: IOException, request: HttpServletRequest, webRequest: WebRequest): ErrorDto<String?>? {
+		if (e.message == "Broken pipe") {
+			return null
+		}
+		log.error("error {}", e.message, e)
+		return ErrorDto.of(request, data = e.message)
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
