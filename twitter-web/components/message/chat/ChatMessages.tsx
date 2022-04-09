@@ -53,44 +53,55 @@ const ChatMessages: React.FC<IProps> = ({...props}) => {
           scrollableTarget="scrollableDiv"
         >
           {messages.filter(value => value.message.trim().length > 0).map((value, index) => {
-            let dispTime: boolean = true;
             const nextValue = messages[index - 1]
-            if (!nextValue) dispTime = true
-            else {
-              dispTime = value.createdBy !== nextValue.createdBy
+            const createdAt = dayjs(value.createdAt).format("a hh:mm")
+            let nonDispTime = false
+            if (nextValue) {
+              nonDispTime = value.createdBy === nextValue.createdBy && createdAt == dayjs(nextValue.createdAt).format("a hh:mm")
             }
-            return <div
-              className={`message my-1 ${value.createdBy === auth.user?.username ? "me" : "other"}`}
-              key={value.id}>
-              <div className={"d-flex align-items-start"}>
-                {value.createdBy !== auth.user?.username &&
-                <div
-                  className="rounded-circle bg-white border-1 border-white imgContainer">
-                  <Image
-                    className={"img rounded-circle bg-transparent border-1 border-white p-1"}
-                    unoptimized={true}
-                    loader={({src}) => domain + src}
-                    src={`${domain}${getProfile(value.createdBy)}`}
-                    alt="Picture of the author"
-                    height={45}
-                    width={45}/>
-                </div>
-                }
-                <div className="d-flex flex-column">
+            let dispDay = false
+            if (nextValue) {
+              dispDay = dayjs(nextValue.createdAt).get("day") !== dayjs(value.createdAt).get("day")
+            }
+
+            return <>
+              {dispDay && <div className="text-center">
+                <span
+                  className="text-muted">{dayjs(nextValue.createdAt).format("YYYY/MM/DD")}</span>
+              </div>}
+              <div
+                className={`message my-1 ${value.createdBy === auth.user?.username ? "me" : "other"}`}
+                key={value.id}>
+                <div className={"d-flex align-items-start"}>
                   {value.createdBy !== auth.user?.username &&
-                  <span
-                    className="text-muted d-inline-block mx-1">{value.createdBy}</span>}
-                  <span className="msg mx-1">
+                  <div
+                    className="rounded-circle bg-white border-1 border-white imgContainer">
+                    <Image
+                      className={"img rounded-circle bg-transparent border-1 border-white p-1"}
+                      unoptimized={true}
+                      loader={({src}) => domain + src}
+                      src={`${domain}${getProfile(value.createdBy)}`}
+                      alt="Picture of the author"
+                      height={45}
+                      width={45}/>
+                  </div>
+                  }
+                  <div className="d-flex flex-column">
+                    {value.createdBy !== auth.user?.username &&
+                    <span
+                      className="text-muted d-inline-block mx-1">{value.createdBy}</span>}
+                    <span className="msg mx-1">
                   {value.message}
                 </span>
-                </div>
-                {dispTime && <div
-                  className={`align-self-end ${value.createdBy === auth.user?.username ? "order-first" : "order-last"}`}>
+                  </div>
+                  {!nonDispTime && <div
+                    className={`align-self-end ${value.createdBy === auth.user?.username ? "order-first" : "order-last"}`}>
                   <span
                     className="text-muted">{dayjs(value.createdAt).format("a hh:mm")}</span>
-                </div>}
+                  </div>}
+                </div>
               </div>
-            </div>
+            </>
           })}
 
         </InfiniteScroll>
