@@ -5,4 +5,5 @@ import ko from 'dayjs/locale/ko';
 dayjs.extend(relativeTime);
 dayjs.locale(ko);
 
+
 export { dayjs }

@@ -1,12 +1,13 @@
 import React from "react";
-import { ChatRoomType } from '../../../types/chat'
+import { ChatStatusType } from '../../../types/chat'
 import Image from 'next/image'
 import { domain } from '../../../utils/apiUtils'
 import Link from "next/link";
 import { useSelector } from '../../../store'
+import { dayjs } from '../../../utils/DayjsUtils'
 
 interface IProps {
-  chatRoom: ChatRoomType
+  chatStatus: ChatStatusType
 }
 
 function getTop(size: number, index: number) {
@@ -84,7 +85,8 @@ function imgSize(size: number) {
 }
 
 const ChatRoomItem: React.FC<IProps> = ({...props}) => {
-    const {chatRoom} = props
+    const {chatStatus: {chatRoom}} = props
+    const {chatStatus} = props
     const auth = useSelector(state => state.auth)
     const tempProfiles = chatRoom.users.filter(value => value.id !== auth.user?.id)
       .map(value => value.profilePic)
@@ -141,6 +143,18 @@ const ChatRoomItem: React.FC<IProps> = ({...props}) => {
             <div className="flex-grow-1">
               <div className="fw-bold fs-3">{chatRoom.chatRoomName}</div>
               <div className="text-muted fs-6">{chatRoom.lastMessage}</div>
+            </div>
+            <div className="text-end">
+              <div
+                className="text-muted my-1"
+                style={{fontSize: "12px"}}>
+                {dayjs(chatRoom.updatedAt).fromNow()}
+              </div>
+              <div
+                className="rounded-pill text-white bg-info text-white text-center px-2 d-inline-block my-1"
+                style={{fontSize: "12px"}}>
+                {chatStatus.unCheckCnt <= 0 ? "" : chatStatus.unCheckCnt}
+              </div>
             </div>
           </a>
         </Link>

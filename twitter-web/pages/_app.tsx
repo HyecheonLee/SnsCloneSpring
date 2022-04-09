@@ -10,7 +10,6 @@ import LiveEvent from '../components/notify/LiveEvent'
 import DeletePostModal from '../components/modal/DeletePostModal'
 import React from 'react'
 import ConfirmModal from '../components/modal/ConfirmModal'
-import PhotoUploadModal from '../components/modal/PhotoUploadModal'
 
 function MyApp({Component, pageProps}: AppProps) {
   let router = useRouter()
@@ -23,14 +22,17 @@ function MyApp({Component, pageProps}: AppProps) {
       <LoadingModal/>
     </>
   }
-  return <Auth>
-    <LiveEvent>
-      <Component {...pageProps} />
-      <LoadingModal/>
-      <DeletePostModal/>
-      <ConfirmModal/>
-    </LiveEvent>
-  </Auth>
+
+  return (
+    <Auth>
+      <LiveEvent>
+        <Component {...pageProps} />
+        <LoadingModal/>
+        <DeletePostModal/>
+        <ConfirmModal/>
+      </LiveEvent>
+    </Auth>
+  )
 }
 
 export default wrapper.withRedux(MyApp)

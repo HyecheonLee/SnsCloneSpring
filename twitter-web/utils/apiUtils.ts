@@ -1,6 +1,6 @@
 import { create } from "apisauce";
 
-export const domain = 'http://localhost:8080'
+export const domain = process.env.NEXT_PUBLIC_SERVER_HOST
 
 const headers = {
   Accept: 'application/json'

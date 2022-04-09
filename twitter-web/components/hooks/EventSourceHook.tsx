@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { EventType } from '../../types/api'
 
 
 interface IProps {
@@ -25,8 +26,8 @@ const EventSourceHook: React.FC<IProps> = ({...props}) => {
     }
 
     source.onmessage = (e) => {
-      const result = JSON.parse(e.data);
-      const event = events.get(result.type)
+      const result: EventType<any> = JSON.parse(e.data);
+      const event = events.get(result.kind)
       if (event) {
         event((result.data))
       }

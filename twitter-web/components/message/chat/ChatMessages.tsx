@@ -1,63 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import EventSourceHook from '../../hooks/EventSourceHook'
-import { ChatMessageType, ChatRoomType } from '../../../types/chat'
+import { ChatRoomType } from '../../../types/chat'
 import _ from "lodash";
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { fetchChatMessage } from '../../../apis/chatApi'
 import { useSelector } from '../../../store'
 import { domain } from '../../../utils/apiUtils'
 import Image from 'next/image'
+import { useChatMessage } from './ChatMessageHook'
+import { dayjs } from '../../../utils/DayjsUtils'
 
 
 interface IProps {
   chatRoom: ChatRoomType,
-  chatRoomId: string
 }
 
-const ChatMessages: React.FC<IProps> = ({...props}) => {
-  const {chatRoomId, chatRoom} = props
-  const events = new Map<string, (data: any) => void>();
-  const [messages, setMessages] = useState<ChatMessageType[]>([]);
-  const [hasNext, setHasNext] = useState(false);
-  const auth = useSelector(state => state.auth);
-  const isScroll = (el: HTMLElement | null) => {
-    return (el?.scrollHeight || 0) > (el?.clientHeight || 0)
-  }
-  useEffect(() => {
-    messageFetch()
-  }, [chatRoomId]);
 
-  useEffect(() => {
-    if (hasNext) {
-      const scrollable = document.getElementById("scrollableDiv")
-      if (!isScroll(scrollable)) {
-        messageFetch()
-      }
-    }
-  }, [hasNext, messages.length]);
-  const getProfile = (username: string) => {
-    const result = _.find(chatRoom.users, value => value.username === username)
-    return result?.profilePic
-  }
-  const messageFetch = async () => {
-    let result;
-    if (messages.length > 0) {
-      result = await fetchChatMessage(chatRoomId, messages[messages.length - 1].id)
-    } else {
-      result = await fetchChatMessage(chatRoomId)
-    }
-    setHasNext(result.length >= 10)
-    setMessages([...messages, ...result])
-  }
-  events.set("chatMessage", (data: ChatMessageType) => {
-    setMessages(prevState => {
-      return _.sortBy(_.uniqBy([...prevState, data], "id"), "id").reverse()
-    })
-  })
+const ChatMessages: React.FC<IProps> = ({...props}) => {
+  const {chatRoom} = props
+  const {hasNext, messages, messageFetch, events} = useChatMessage(chatRoom.id)
+
+  const auth = useSelector(state => state.auth);
+
+  const getProfile = useCallback((username: string) => {
+      const result = _.find(chatRoom.users, value => value.username === username)
+      return result?.profilePic
+    },
+    [chatRoom],
+  );
 
   return (
     <EventSourceHook
-      eventUrl={`http://localhost:8080/api/v1/event/chat/${chatRoomId}`}
+      eventUrl={`${domain}/api/v1/event/chat/${chatRoom.id}`}
       events={events}>
       <div
         id="scrollableDiv"
@@ -79,8 +52,13 @@ const ChatMessages: React.FC<IProps> = ({...props}) => {
           loader={<h4>Loading...</h4>}
           scrollableTarget="scrollableDiv"
         >
-
-          {messages.filter(value => value.message.trim().length > 0).map(value => {
+          {messages.filter(value => value.message.trim().length > 0).map((value, index) => {
+            let dispTime: boolean = true;
+            const nextValue = messages[index - 1]
+            if (!nextValue) dispTime = true
+            else {
+              dispTime = value.createdBy !== nextValue.createdBy
+            }
             return <div
               className={`message my-1 ${value.createdBy === auth.user?.username ? "me" : "other"}`}
               key={value.id}>
@@ -106,6 +84,11 @@ const ChatMessages: React.FC<IProps> = ({...props}) => {
                   {value.message}
                 </span>
                 </div>
+                {dispTime && <div
+                  className={`align-self-end ${value.createdBy === auth.user?.username ? "order-first" : "order-last"}`}>
+                  <span
+                    className="text-muted">{dayjs(value.createdAt).format("a hh:mm")}</span>
+                </div>}
               </div>
             </div>
           })}

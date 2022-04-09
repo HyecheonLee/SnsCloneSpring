@@ -14,6 +14,19 @@ export type ErrorType<T> = {
 }
 
 export type EventType<T> = {
-  type: string,
-  data: T
+  kind: EventKindType,
+  data: T,
+  key: string,
+  id: String,
+  lastEventId: number
 }
+
+export type EventKindType =
+  | "updatedPost"
+  | "followStatus"
+  | "user"
+  | "newPost"
+  | "deletePost"
+  | "updatedPostStatus"
+  | "chatMessage"
+  | "chatStatus"
