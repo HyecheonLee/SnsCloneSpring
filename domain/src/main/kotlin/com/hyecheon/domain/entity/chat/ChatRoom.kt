@@ -16,6 +16,7 @@ import javax.persistence.ManyToMany
 class ChatRoom(
 	var chatRoomName: String? = null,
 	var groupChat: Boolean = false,
+	var messageCnt: Long? = null,
 ) : BaseEntity() {
 
 	@ManyToMany

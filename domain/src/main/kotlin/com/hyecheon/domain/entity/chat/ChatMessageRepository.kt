@@ -10,4 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
 
 	fun findTop10ByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId: Long, id: Long): List<ChatMessage>
+	fun countByChatRoomIdAndIdGreaterThan(chatRoomId: Long, id: Long): Long
 }

@@ -1,7 +1,10 @@
 app:
   server:
-    domain: localhost
-    hosts: http://${app.server.domain}:3000, http://localhost:8080
+    scheme: http
+    domain: 192.168.35.159
+    hosts:
+      - ${app.server.scheme}://${app.server.domain}:3000
+      - ${app.server.scheme}://localhost:3000
   jwt:
     secret: antte
     maxAge: 60602430
@@ -51,7 +54,7 @@ spring:
 decorator:
   datasource:
     p6spy:
-      enable-logging: true
+      enable-logging: false
       multiline: true
       logging: slf4j
       log-file: logs/spy.log

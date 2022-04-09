@@ -22,7 +22,8 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
 	""")
 	fun findChatRoomByUsers(userIds: List<Long>): List<ChatRoom>
 
+
 	@Modifying
-	@Query(value = "update ChatRoom c set c.lastMessage = :message where c.id = :chatRoomId")
+	@Query(value = "update ChatRoom c set c.lastMessage = :message , c.messageCnt = c.messageCnt+1 where c.id = :chatRoomId")
 	fun updateLastMsg(chatRoomId: Long, message: String?)
 }

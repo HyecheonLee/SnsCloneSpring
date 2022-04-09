@@ -6,7 +6,6 @@ import com.hyecheon.web.config.AppProperty
 import com.hyecheon.web.dto.user.UserReqDto
 import com.hyecheon.web.dto.user.UserRespDto
 import com.hyecheon.web.dto.web.ResponseDto
-import com.hyecheon.web.service.FileService
 import com.hyecheon.web.service.FollowService
 import com.hyecheon.web.service.UserService
 import org.springframework.http.HttpHeaders
@@ -26,7 +25,6 @@ import javax.security.auth.login.LoginException
 @RequestMapping(USER_API)
 class UserApi(
 	private val userService: UserService,
-	private val fileService: FileService,
 	private val followService: FollowService,
 	private val appProperty: AppProperty,
 ) {
@@ -46,7 +44,7 @@ class UserApi(
 	fun deleteMe() = run {
 		val responseCookie = ResponseCookie.from("authToken", "")
 			.httpOnly(true)
-			.secure(true)
+			.secure(appProperty.server.scheme == "https")
 			.path("/")
 			.maxAge(0)
 			.domain(appProperty.server.domain)
@@ -66,7 +64,7 @@ class UserApi(
 		val authToken = userService.generateToken(user.username ?: "", user.password ?: "")
 		val responseCookie = ResponseCookie.from("authToken", authToken)
 			.httpOnly(true)
-			.secure(true)
+			.secure(appProperty.server.scheme == "https")
 			.path("/")
 			.maxAge(appProperty.jwt.maxAge)
 			.domain(appProperty.server.domain)
