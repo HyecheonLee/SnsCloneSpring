@@ -1,6 +1,7 @@
 package com.hyecheon.web.event
 
 import com.hyecheon.domain.entity.user.AuthToken
+import com.hyecheon.web.event.EventMessage.Kind
 import org.slf4j.LoggerFactory
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.util.*
@@ -29,7 +30,7 @@ data class SseEvent(
 	}
 
 	private fun connectionCheck(): Boolean {
-		return send(EventMessage("connection", "connecting..."))
+		return send(EventMessage(Kind.connection, "connecting..."))
 	}
 
 	private fun <T> sendAble(message: EventMessage<T>): Boolean {
@@ -38,6 +39,7 @@ data class SseEvent(
 
 	fun <T> send(message: EventMessage<T>): Boolean {
 		if (!sendAble(message)) return false
+		log.info("send msg key : {}", message.key)
 		return try {
 			sseEmitter.send(message)
 			connected = true

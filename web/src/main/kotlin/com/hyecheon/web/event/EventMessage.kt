@@ -8,10 +8,21 @@ import java.util.*
  * Date: 2022/03/09
  */
 data class EventMessage<T>(
-	val type: String,
+	val kind: Kind,
 	val data: T,
 	val key: String? = null,
 ) {
 	val id: String = UUID.randomUUID().toString()
-	val createdAt = System.currentTimeMillis()
+	val lastEventId = System.currentTimeMillis()
+
+	enum class Kind {
+		connection,
+		chatMessage,
+		updatedPost,
+		followStatus,
+		user, newPost,
+		deletePost,
+		updatedPostStatus,
+		chatStatus
+	}
 }

@@ -2,6 +2,7 @@ package com.hyecheon.web.dto.chat
 
 import com.hyecheon.domain.dto.user.UserConverter
 import com.hyecheon.domain.entity.chat.ChatMessage
+import com.hyecheon.domain.entity.chat.ChatMessageStatus
 import com.hyecheon.domain.entity.chat.ChatRoom
 import com.hyecheon.domain.entity.user.User
 import org.mapstruct.*
@@ -33,6 +34,8 @@ abstract class ChatConverter {
 	abstract fun toModel(chatRoom: ChatRoom): ChatRoomRespDto.Model
 
 	abstract fun toModel(chatMessage: ChatMessage): ChatMessageDto.Model
+
+	abstract fun toModel(chatMessageStatus: ChatMessageStatus): ChatStatusDto.Model
 
 	@Named("id2user")
 	fun id2User(ids: List<Long>?) = run {

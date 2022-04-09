@@ -1,6 +1,7 @@
 package com.hyecheon.web.aop
 
 import com.hyecheon.web.event.EventMessage
+import com.hyecheon.web.event.EventMessage.Kind
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
@@ -21,7 +22,7 @@ class EventAop {
 	fun eventConnection(jp: JoinPoint, sseEmitter: Any) {
 		if (sseEmitter is SseEmitter) {
 			log.info("connection...")
-			sseEmitter.send(EventMessage("connection", "connecting..."))
+			sseEmitter.send(EventMessage(Kind.connection, "connecting..."))
 		}
 	}
 }

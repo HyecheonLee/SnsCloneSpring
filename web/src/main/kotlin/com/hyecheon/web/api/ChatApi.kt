@@ -5,10 +5,10 @@ import com.hyecheon.web.api.Constant.CHAT_V1_API
 import com.hyecheon.web.dto.chat.ChatMessageDto
 import com.hyecheon.web.dto.chat.ChatRoomReqDto
 import com.hyecheon.web.dto.chat.ChatRoomRespDto
+import com.hyecheon.web.dto.chat.ChatStatusDto
 import com.hyecheon.web.dto.web.ResponseDto
 import com.hyecheon.web.service.ChatMessageService
 import com.hyecheon.web.service.ChatService
-import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
@@ -55,12 +55,16 @@ class ChatApi(
 
 	@GetMapping("/room")
 	fun getChatRooms() = run {
-		val chatRooms = chatService.findRoomAllByLoggedUser()
-		val result = chatRooms.mapNotNull { it.chatRoom }
-			.map { ChatRoomRespDto.toModel(it) }
+		val chatRoomStatus = chatService.findRoomAllByLoggedUser()
+
+		val model = chatRoomStatus
+			.distinctBy { it.id }
+			.map { ChatStatusDto.toModel(it) }
 			.sortedByDescending { it.updatedAt }
-		ResponseDto(data = result)
+
+		ResponseDto(data = model)
 	}
+
 
 	@PatchMapping("/room/{id}")
 	fun chatRoom(@PathVariable id: Long, @RequestBody patchChatRoom: ChatRoomReqDto.Patch) = run {
@@ -74,5 +78,17 @@ class ChatApi(
 		val entity = newChatRoom.toEntity()
 		val chatRoomId = chatService.saveOrFind(entity)
 		ResponseDto(data = mapOf("chatRoomId" to chatRoomId))
+	}
+
+	@PutMapping("/room/{id}/message/{messageId}/checked")
+	fun chatMsgChecked(@PathVariable id: Long, @PathVariable messageId: Long) = run {
+		val statusId = chatMessageService.chatMessageCheck(id, messageId)
+		ResponseDto(data = mapOf("statusId" to statusId))
+	}
+
+	@GetMapping("/room/{id}/status")
+	fun chatStatus(@PathVariable id: Long) = run {
+		val chatStatus = chatMessageService.getChatStatus(id)
+		ResponseDto(data = ChatStatusDto.toModel(chatStatus))
 	}
 }

@@ -24,6 +24,6 @@ fun makeChatEventKey(id: Long) = run {
 	makeEventKey("chatRoomId", id)
 }
 
-fun makeUserEventKey(id: Long) = run {
-	makeEventKey("userId", id)
+fun makeUserEventKey(userId:Long) = run {
+	makeEventKey("userId", userId)
 }

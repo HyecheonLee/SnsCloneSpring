@@ -23,6 +23,7 @@ class AppProperty {
 
 	@ConfigurationProperties("app.server")
 	class Server {
+		var scheme: String = "http"
 		var domain: String = "local"
 		var hosts: List<String> = listOf("http://localhost:3000")
 	}

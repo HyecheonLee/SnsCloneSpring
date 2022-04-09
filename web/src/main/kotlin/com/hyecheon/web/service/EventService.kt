@@ -48,7 +48,7 @@ class EventService {
 	@Async
 	@EventListener
 	fun onChatEventMessage(event: EventMessage<*>) = run {
-		log.info("received event msg : {} , {}", event.type, event.key)
+		log.info("received event msg : {} , {}", event.kind, event.key)
 		eventSend(event)
 	}
 }

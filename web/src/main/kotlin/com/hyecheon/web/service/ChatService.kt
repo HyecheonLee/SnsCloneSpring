@@ -1,6 +1,9 @@
 package com.hyecheon.web.service
 
-import com.hyecheon.domain.entity.chat.*
+import com.hyecheon.domain.entity.chat.ChatMessageStatus
+import com.hyecheon.domain.entity.chat.ChatMessageStatusRepository
+import com.hyecheon.domain.entity.chat.ChatRoom
+import com.hyecheon.domain.entity.chat.ChatRoomRepository
 import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.web.dto.chat.ChatConverter
 import com.hyecheon.web.exception.IdNotExistsException
@@ -17,13 +20,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ChatService(
 	private val chatRoomRepository: ChatRoomRepository,
-	private val chatRoomUserRepository: ChatRoomUserRepository,
+	private val chatMessageStatus: ChatMessageStatusRepository,
 ) {
 	private val log = LoggerFactory.getLogger(this::class.java)
 
 
 	fun createChatRoom(chatRoom: ChatRoom): Long {
 		val result = chatRoomRepository.save(chatRoom)
+		chatMessageStatus.save(ChatMessageStatus(chatRoom = chatRoom))
 		return result.id!!
 	}
 
@@ -31,9 +35,9 @@ class ChatService(
 		return chatRoomRepository.findByIdWithUser(id)
 	}
 
-	fun findRoomAllByLoggedUser(): List<ChatRoomUser> {
-		val (userId, username, role) = AuthToken.getLoggedToken()
-		return chatRoomUserRepository.findAllByUserId(userId!!)
+	fun findRoomAllByLoggedUser() = run {
+		val (userId, username, _) = AuthToken.getLoggedToken()
+		chatMessageStatus.findAllByUsername(username!!)
 	}
 
 	fun patchRoom(id: Long, source: ChatRoom): ChatRoom = run {
@@ -44,11 +48,15 @@ class ChatService(
 
 	fun saveOrFind(chatRoom: ChatRoom): Long {
 		val userIds = chatRoom.users?.mapNotNull { it.id }!!
+
 		val chatRooms = chatRoomRepository.findChatRoomByUsers(userIds)
+
 		if (chatRooms.isEmpty()) {
 			val savedChatRoom = chatRoomRepository.save(chatRoom)
+			chatMessageStatus.save(ChatMessageStatus(chatRoom = savedChatRoom))
 			return savedChatRoom.id!!
 		}
+
 		return chatRooms.first().id!!
 	}
 }

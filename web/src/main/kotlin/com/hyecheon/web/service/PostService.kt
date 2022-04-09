@@ -5,6 +5,7 @@ import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.domain.entity.user.UserRepository
 import com.hyecheon.web.dto.post.PostRespDto
 import com.hyecheon.web.event.EventMessage
+import com.hyecheon.web.event.EventMessage.Kind
 import com.hyecheon.web.exception.IdNotExistsException
 import com.hyecheon.web.exception.UnAuthorizationException
 import com.hyecheon.web.utils.getAuthToken
@@ -74,7 +75,7 @@ class PostService(
 
 		val postedBy = loggedUser()
 		newSavedPost.postedBy = postedBy
-		applicationEventPublisher.publishEvent(EventMessage("newPost", PostRespDto.of(newSavedPost)))
+		applicationEventPublisher.publishEvent(EventMessage(Kind.newPost, PostRespDto.of(newSavedPost)))
 		newSavedPost.id!!
 	}
 
@@ -99,7 +100,7 @@ class PostService(
 		postRepository.mUpdateParentPostNull(id)
 		postRepository.deleteById(id)
 
-		applicationEventPublisher.publishEvent(EventMessage("deletePost", id))
+		applicationEventPublisher.publishEvent(EventMessage(Kind.deletePost, id))
 	}
 
 	@Transactional
@@ -108,7 +109,7 @@ class PostService(
 		new(reply)
 		val post = postRepository.findById(postId).orElseThrow { IdNotExistsException("post id not exists") }
 		post.reply(reply)
-		applicationEventPublisher.publishEvent(EventMessage("updatedPost", PostRespDto.of(post)))
+		applicationEventPublisher.publishEvent(EventMessage(Kind.updatedPost, PostRespDto.of(post)))
 		reply.id!!
 	}
 
@@ -119,7 +120,7 @@ class PostService(
 		if (!postLikeRepository.existsByUserAndPost(loggedUser, post)) {
 			post.like()
 			postLikeRepository.save(PostLike(loggedUser, post))
-			applicationEventPublisher.publishEvent(EventMessage("updatedPost", PostRespDto.of(post)))
+			applicationEventPublisher.publishEvent(EventMessage(Kind.updatedPost, PostRespDto.of(post)))
 		}
 	}
 
@@ -130,7 +131,7 @@ class PostService(
 		if (postLikeRepository.existsByUserAndPost(loggedUser, post)) {
 			post.unLike()
 			postLikeRepository.deleteByUserAndPost(loggedUser, post)
-			applicationEventPublisher.publishEvent(EventMessage("updatedPost", PostRespDto.of(post)))
+			applicationEventPublisher.publishEvent(EventMessage(Kind.updatedPost, PostRespDto.of(post)))
 		}
 	}
 
@@ -143,14 +144,14 @@ class PostService(
 	fun pin(id: Long) {
 		val post = postRepository.findById(id).orElseThrow { IdNotExistsException("$id") }
 		post.pin()
-		applicationEventPublisher.publishEvent(EventMessage("updatedPost", PostRespDto.of(post)))
+		applicationEventPublisher.publishEvent(EventMessage(Kind.updatedPost, PostRespDto.of(post)))
 	}
 
 	@Transactional
 	fun unPin(id: Long) {
 		val post = postRepository.findById(id).orElseThrow { IdNotExistsException("$id") }
 		post.unPin()
-		applicationEventPublisher.publishEvent(EventMessage("updatedPost", PostRespDto.of(post)))
+		applicationEventPublisher.publishEvent(EventMessage(Kind.updatedPost, PostRespDto.of(post)))
 	}
 
 	fun searchPost(keyword: String, lastId: Long): List<Post> {
