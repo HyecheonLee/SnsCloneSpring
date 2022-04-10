@@ -23,6 +23,7 @@ object PostRespDto {
 		var userLike: Boolean = false,
 		var postStatus: PostStatusDto? = null,
 		var relies: MutableSet<Model> = mutableSetOf(),
+		var isReply: Boolean = false,
 	)
 
 	fun of(post: Post) = run {

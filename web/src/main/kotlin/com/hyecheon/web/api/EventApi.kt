@@ -24,7 +24,7 @@ class EventApi(
 	private val eventService: EventService,
 ) {
 
-	@GetMapping(value = ["/notify"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+	@GetMapping(produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
 	fun notify() = run {
 		val authToken = AuthToken.getLoggedToken()
 		eventService.createSseEmitter(SseEvent.EventType.Notify, makeUserEventKey(authToken.userId!!))

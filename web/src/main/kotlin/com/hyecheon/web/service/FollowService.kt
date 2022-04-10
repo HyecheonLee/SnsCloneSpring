@@ -1,10 +1,12 @@
 package com.hyecheon.web.service
 
 import com.hyecheon.domain.entity.follow.*
+import com.hyecheon.domain.entity.notification.NotifyType
 import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.domain.entity.user.User
 import com.hyecheon.domain.entity.user.UserRepository
 import com.hyecheon.web.dto.follow.FollowInfoDto
+import com.hyecheon.web.dto.notification.NotificationDto
 import com.hyecheon.web.event.EventMessage
 import com.hyecheon.web.event.EventMessage.Kind
 import org.springframework.context.ApplicationEventPublisher
@@ -60,8 +62,15 @@ class FollowService(
 
 		applicationEventPublisher.publishEvent(EventMessage(Kind.followStatus,
 			FollowInfoDto(followStatus)))
+
 		applicationEventPublisher.publishEvent(EventMessage(Kind.followStatus,
 			FollowInfoDto(followedStatus)))
+
+		applicationEventPublisher.publishEvent(NotificationDto.New(
+			fromUserId = fromId, toUserId = toId,
+			NotifyType.FOLLOWER, null
+		))
+
 	}
 
 	private fun unfollow(fromId: Long, toId: Long) {
@@ -87,6 +96,7 @@ class FollowService(
 
 		applicationEventPublisher.publishEvent(EventMessage(Kind.followStatus,
 			FollowInfoDto(followStatus)))
+
 		applicationEventPublisher.publishEvent(EventMessage(Kind.followStatus,
 			FollowInfoDto(followedStatus)))
 	}

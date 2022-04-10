@@ -30,6 +30,16 @@ object UserRespDto {
 		var followInfo: FollowInfoDto? = null,
 	)
 
+	@JsonInclude(value = JsonInclude.Include.NON_NULL)
+	data class SimpleModel(
+		var id: Long? = null,
+		var firstName: String? = null,
+		var lastName: String? = null,
+		var username: String? = null,
+		var email: String? = null,
+		var profilePic: String? = null,
+	)
+
 	fun of(user: User) = converter.toModel(user)
 
 	fun of(user: User, followInfoDto: FollowInfoDto) = run {

@@ -22,7 +22,7 @@ data class EventMessage<T>(
 		followStatus,
 		user, newPost,
 		deletePost,
-		updatedPostStatus,
-		chatStatus
+		chatStatus,
+		notify
 	}
 }

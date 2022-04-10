@@ -1,8 +1,10 @@
 package com.hyecheon.web.service
 
+import com.hyecheon.domain.entity.notification.NotifyType
 import com.hyecheon.domain.entity.post.*
 import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.domain.entity.user.UserRepository
+import com.hyecheon.web.dto.notification.NotificationDto
 import com.hyecheon.web.dto.post.PostRespDto
 import com.hyecheon.web.event.EventMessage
 import com.hyecheon.web.event.EventMessage.Kind
@@ -52,7 +54,7 @@ class PostService(
 
 	fun findAllByParentId(parentPostId: Long, postId: Long) = run {
 		val parentPost = postRepository.getById(parentPostId)
-		val posts = postRepository.findTop10ByParentPostAndIdLessThanOrderByIdDesc(parentPost, postId);
+		val posts = postRepository.findTop10ByParentPostAndIdLessThanOrderByIdDesc(parentPost, postId)
 		setPostLike(posts)
 		posts
 	}
@@ -75,7 +77,8 @@ class PostService(
 
 		val postedBy = loggedUser()
 		newSavedPost.postedBy = postedBy
-		applicationEventPublisher.publishEvent(EventMessage(Kind.newPost, PostRespDto.of(newSavedPost)))
+		applicationEventPublisher.publishEvent(EventMessage(Kind.updatedPost, PostRespDto.of(newSavedPost)))
+
 		newSavedPost.id!!
 	}
 
@@ -109,7 +112,17 @@ class PostService(
 		new(reply)
 		val post = postRepository.findById(postId).orElseThrow { IdNotExistsException("post id not exists") }
 		post.reply(reply)
+
 		applicationEventPublisher.publishEvent(EventMessage(Kind.updatedPost, PostRespDto.of(post)))
+
+		/*notify*/
+		applicationEventPublisher.publishEvent(NotificationDto.New(
+			fromUserId = loggedUser().id!!,
+			toUserId = post.postedBy?.id!!,
+			notifyType = NotifyType.REPLY,
+			targetId = reply.id!!
+		))
+
 		reply.id!!
 	}
 
@@ -121,6 +134,14 @@ class PostService(
 			post.like()
 			postLikeRepository.save(PostLike(loggedUser, post))
 			applicationEventPublisher.publishEvent(EventMessage(Kind.updatedPost, PostRespDto.of(post)))
+
+			/*notify*/
+			applicationEventPublisher.publishEvent(NotificationDto.New(
+				fromUserId = loggedUser.id!!,
+				toUserId = post.postedBy?.id!!,
+				notifyType = NotifyType.LIKE,
+				targetId = postId
+			))
 		}
 	}
 

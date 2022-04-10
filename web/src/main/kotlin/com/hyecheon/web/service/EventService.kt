@@ -1,5 +1,6 @@
 package com.hyecheon.web.service
 
+import com.hyecheon.domain.entity.notification.NotificationRepository
 import com.hyecheon.web.event.EventMessage
 import com.hyecheon.web.event.SseEvent
 import org.slf4j.LoggerFactory
@@ -47,8 +48,8 @@ class EventService {
 
 	@Async
 	@EventListener
-	fun onChatEventMessage(event: EventMessage<*>) = run {
-		log.info("received event msg : {} , {}", event.kind, event.key)
+	fun onEventMessage(event: EventMessage<*>) = run {
+		log.info("received event msg {}, {} , {}", event.data, event.kind, event.key)
 		eventSend(event)
 	}
 }

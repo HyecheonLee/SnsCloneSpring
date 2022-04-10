@@ -28,4 +28,8 @@ object Constant {
 	const val CHAT = "chat"
 	const val CHAT_V1_API = "${API_V1}/${CHAT}"
 	const val CHAT_ROOM_V1_API = "${CHAT_V1_API}/room"
+
+
+	const val NOTIFY = "notify"
+	const val NOTIFY_V1_API = "${API_V1}/${NOTIFY}"
 }
