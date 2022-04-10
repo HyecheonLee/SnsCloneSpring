@@ -8,6 +8,7 @@ export type PostType = {
   postedBy: UserType,
   userLike: boolean,
   postStatus: PostStatusType | null
+  isReply: boolean,
 }
 export type PostStatusType = {
   postId?: number,

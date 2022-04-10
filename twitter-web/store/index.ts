@@ -13,6 +13,7 @@ import post from './post'
 import { store } from 'next/dist/build/output/store'
 import profile from './profile'
 import chat from './chat';
+import notify from './notify';
 
 declare module 'react-redux' {
   interface DefaultRootState extends RootState {
@@ -26,7 +27,8 @@ const rootReducer = combineReducers({
   reply: reply.reducer,
   post: post.reducer,
   profile: profile.reducer,
-  chat: chat.reducer
+  chat: chat.reducer,
+  notify: notify.reducer
 })
 
 const reducer = (state: any, action: { type: string, payload: any }) => {

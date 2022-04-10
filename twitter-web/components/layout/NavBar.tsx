@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
 import { authActions } from '../../store/auth'
 import { apiV1User } from '../../utils/apiUtils'
+import { useSelector } from '../../store'
+import { updateNotifyCount } from '../../apis/notifyApi'
+import { notifyActions } from '../../store/notify'
 
 const NavBar = () => {
   let router = useRouter()
-  let dispatch = useDispatch()
+  const notify = useSelector(state => state.notify)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    updateNotifyCount(dispatch)
+  }, []);
+
   const logout = async (e: any) => {
     const {logout} = authActions
     await apiV1User.delete("/me")
@@ -40,8 +49,12 @@ const NavBar = () => {
         </Link>
         <Link href={"/notifications"}>
           <a
-            className="btn rounded-circle d-flex align-items-center justify-content-end">
+            className="btn rounded-circle d-flex align-items-center justify-content-end position-relative">
             <i className="fas fa-bell"/>
+            {notify.count > 0 &&
+            <span style={{top: "12px", left: "42px", fontSize: "10px"}}
+                  className="position-absolute translate-middle badge rounded-circle bg-danger">{notify.count}</span>
+            }
           </a>
         </Link>
         <Link href="/messages">

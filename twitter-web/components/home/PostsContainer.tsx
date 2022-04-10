@@ -31,24 +31,6 @@ const PostsContainer = () => {
         dispatch(fetchPosts(value));
       })
   }
-
-  const deletePost = async (id: number) => {
-    dispatch(modalActions.showModal({
-      type: "deletePost",
-      onClose: () => {
-        dispatch(modalActions.removeModal())
-      },
-      onClick: () => {
-        apiV1Post.delete("/" + id).then(value => {
-          if (value.ok) {
-            dispatch(postActions.deletePost(id))
-          }
-        });
-        dispatch(modalActions.removeModal());
-      }
-    }));
-  }
-
   return (
     <>
       <div className="container p-0">

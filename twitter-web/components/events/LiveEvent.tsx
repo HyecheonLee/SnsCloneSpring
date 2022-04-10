@@ -6,6 +6,9 @@ import { domain } from '../../utils/apiUtils'
 import { fetchChatStatus } from '../../apis/chatApi'
 import { chatActions } from '../../store/chat'
 import { useAppDispatch } from '../../store'
+import { NotifyType } from '../../types/event'
+import { updateNotifyCount } from '../../apis/notifyApi'
+import { notifyActions } from '../../store/notify'
 
 interface IProps {
 }
@@ -14,16 +17,16 @@ const getEvents = (dispatch: any) => {
   const events = new Map<EventKindType, (e: any) => void>()
 
   events.set("updatedPost", (event: any) => {
-    dispatch(profileActions.updatedPost(event.data))
-    dispatch(postActions.updatePost(event.data))
+    dispatch(profileActions.updatedPost(event))
+    dispatch(postActions.updatePost(event))
   });
 
   events.set("followStatus", (event: any) => {
-    dispatch(profileActions.setFollowStatus(event.data))
+    dispatch(profileActions.setFollowStatus(event))
   });
 
   events.set("user", (event: any) => {
-    dispatch(profileActions.setUser(event.data))
+    dispatch(profileActions.setUser(event))
   });
   events.set("newPost", (event: any) => {
     dispatch(postActions.newPost(event));
@@ -45,11 +48,16 @@ const getEvents = (dispatch: any) => {
     dispatch(chatActions.fetchChat(result))
   })
 
+  events.set("notify", (event: NotifyType) => {
+    updateNotifyCount(dispatch)
+    dispatch(notifyActions.eventNotify(event))
+  });
+
   return events;
 }
 
 const LiveEvent: React.FC<IProps> = ({...props}) => {
-  const postEventUrl = `${domain}/api/v1/event/notify`
+  const postEventUrl = `${domain}/api/v1/event`
   const dispatch = useAppDispatch()
   useEffect(() => {
     const events = getEvents(dispatch)

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import _ from 'lodash';
 import { PostStatusType, PostType } from '../types/post'
 
 interface PostReduxState {
@@ -30,12 +31,13 @@ const post = createSlice({
       });
     },
     newPost(state: PostReduxState, action: PayloadAction<PostType>) {
-      const newPosts = [action.payload, ...state.posts]
-      const post = action.payload
-      state.posts = newPosts.sort((a, b) => b.id - a.id)
-      if (state.currentPost?.id == post.id) {
-        const newReplies = [post, ...state.replies]
-        state.replies = newReplies.sort((a, b) => b.id - a.id)
+      const newPost = action.payload
+      if (!newPost.isReply) {
+        const newPosts = [action.payload, ...state.posts]
+        state.posts = _.orderBy(_.uniqBy(newPosts, "id"), ["id"], ["desc"]);
+      } else {
+        const newReplies = [newPost, ...state.replies]
+        state.replies = _.orderBy(_.uniqBy(newReplies, "id"), ["id"], ["desc"]);
       }
     },
     fetchPosts(state: PostReduxState, action: PayloadAction<PostType[]>) {

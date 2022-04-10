@@ -30,3 +30,4 @@ export type EventKindType =
   | "updatedPostStatus"
   | "chatMessage"
   | "chatStatus"
+  | "notify"
