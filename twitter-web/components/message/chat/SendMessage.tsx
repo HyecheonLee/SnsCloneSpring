@@ -16,6 +16,7 @@ const SendMessage: React.FC<IProps> = ({...props}) => {
     setMessage("")
   }
   const onChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    console.log(e.target.value);
     setMessage(e.target.value);
   }
 

@@ -46,62 +46,81 @@ const ChatMessages: React.FC<IProps> = ({...props}) => {
           style={{
             display: 'flex',
             flexDirection: 'column-reverse'
-          }} //To put endMessage and loader to the top.
-          inverse={true} //
+          }}
+          inverse={true}
           hasMore={hasNext}
           loader={<h4>Loading...</h4>}
-          scrollableTarget="scrollableDiv"
-        >
+          scrollableTarget="scrollableDiv">
           {messages.filter(value => value.message.trim().length > 0).map((value, index) => {
             const nextValue = messages[index - 1]
+            const preValue = messages[index + 1]
+
             const createdAt = dayjs(value.createdAt).format("a hh:mm")
-            let nonDispTime = false
-            if (nextValue) {
-              nonDispTime = value.createdBy === nextValue.createdBy && createdAt == dayjs(nextValue.createdAt).format("a hh:mm")
-            }
-            let dispDay = false
-            if (nextValue) {
-              dispDay = dayjs(nextValue.createdAt).get("day") !== dayjs(value.createdAt).get("day")
+
+            let firstMsg: boolean
+            if (!preValue) firstMsg = true
+            else {
+              firstMsg = createdAt !== dayjs(preValue.createdAt).format("a hh:mm") || preValue.createdBy !== value.createdBy
             }
 
-            return <>
-              {dispDay && <div className="text-center">
-                <span
-                  className="text-muted">{dayjs(nextValue.createdAt).format("YYYY/MM/DD")}</span>
-              </div>}
+            let lastMsg: boolean
+
+            if (!nextValue) lastMsg = true
+            else {
+              lastMsg = nextValue.createdBy !== value.createdBy || createdAt !== dayjs(nextValue.createdAt).format("a hh:mm")
+            }
+
+            let dispDay = ""
+            if (preValue && dayjs(preValue.createdAt).get("day") !== dayjs(value.createdAt).get("day")) {
+              dispDay = dayjs(value.createdAt).format("YYYY년 MM월 DD일 (dddd)")
+            }
+            if (!preValue) {
+              dispDay = dayjs(value.createdAt).format("YYYY년 MM월 DD일 (dddd)")
+            }
+
+
+            return <React.Fragment key={`message_${value.id}`}>
               <div
-                className={`message my-1 ${value.createdBy === auth.user?.username ? "me" : "other"}`}
-                key={value.id}>
+                className={`message my-1 ${value.createdBy === auth.user?.username ? "me" : "other"}`}>
                 <div className={"d-flex align-items-start"}>
                   {value.createdBy !== auth.user?.username &&
                   <div
-                    className="rounded-circle bg-white border-1 border-white imgContainer">
-                    <Image
+                    className="rounded-circle bg-white border-1 border-white imgContainer"
+                    style={{width: 40}}>
+                    {firstMsg && <Image
                       className={"img rounded-circle bg-transparent border-1 border-white p-1"}
                       unoptimized={true}
                       loader={({src}) => domain + src}
                       src={`${domain}${getProfile(value.createdBy)}`}
                       alt="Picture of the author"
-                      height={45}
-                      width={45}/>
-                  </div>
-                  }
+                      height={40}
+                      width={40}/>
+                    }
+                  </div>}
                   <div className="d-flex flex-column">
-                    {value.createdBy !== auth.user?.username &&
+                    {value.createdBy !== auth.user?.username && firstMsg &&
                     <span
-                      className="text-muted d-inline-block mx-1">{value.createdBy}</span>}
-                    <span className="msg mx-1">
-                  {value.message}
-                </span>
+                      className="text-muted d-inline-block mx-1">{value.createdBy}</span>
+                    }
+                    <pre
+                      className={` msg my-0 mx-1 ${firstMsg && "first"} ${lastMsg && "last"}`}>{value.message}</pre>
                   </div>
-                  {!nonDispTime && <div
-                    className={`align-self-end ${value.createdBy === auth.user?.username ? "order-first" : "order-last"}`}>
+                  {lastMsg && <div
+                    className={`mx-1 align-self-end ${value.createdBy === auth.user?.username ? "order-first" : "order-last"}`}>
                   <span
-                    className="text-muted">{dayjs(value.createdAt).format("a hh:mm")}</span>
+                    className="text-muted d-inline-block"
+                    style={{fontSize: "10px", width: "50px"}}>{createdAt}</span>
                   </div>}
                 </div>
               </div>
-            </>
+              {dispDay && <div className="text-center d-flex align-items-center">
+                <hr className="flex-grow-1"/>
+                <span
+                  className="text-white mx-3 rounded-pill bg-info px-3">{dispDay}</span>
+                <hr className={"flex-grow-1"}/>
+              </div>
+              }
+            </React.Fragment>
           })}
 
         </InfiniteScroll>
@@ -114,14 +133,30 @@ const ChatMessages: React.FC<IProps> = ({...props}) => {
 
           .msg {
             display: inline-block;
-            border-radius: 10px;
-            padding: 5px;
+            border-radius: 20px;
+            line-height: 1.2;
+            padding: 5px 20px;
+            font-size: 14px;
+            font-weight: 400;
           }
 
           .other .msg {
             background: #eee;
-            color: black;
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+            color: #6c757d;
           }
+
+          .other .msg.first {
+            border-bottom-left-radius: 2px;
+            border-top-left-radius: 18px;
+          }
+
+          .other .msg.last {
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 18px;
+          }
+
 
           .me {
             display: flex;
@@ -130,9 +165,22 @@ const ChatMessages: React.FC<IProps> = ({...props}) => {
           }
 
           .me .msg {
-            background: #0070f3;
+            background: #1fa2f1;
             color: white;
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
           }
+
+          .me .msg.first {
+            border-bottom-right-radius: 2px;
+            border-top-right-radius: 18px;
+          }
+
+          .me .msg.last {
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 18px;
+          }
+
         `}</style>
       </div>
     </EventSourceHook>

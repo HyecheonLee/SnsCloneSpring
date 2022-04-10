@@ -38,11 +38,13 @@ const profile = createSlice({
       state.hasNextReply = action.payload.length >= 10;
       state.replies = newPosts.sort((a, b) => b.id - a.id)
     },
+
     setFollowStatus(state, action: PayloadAction<FollowInfoType>) {
       if (state.user && state.user.followInfo && state.user.id === action.payload.userId) {
         state.user.followInfo.followStatus = action.payload.followStatus
       }
     },
+
     setIsFollow(state, action: PayloadAction<boolean>) {
       if (state.user && state.user.followInfo) {
         state.user.followInfo.isFollowing = action.payload
