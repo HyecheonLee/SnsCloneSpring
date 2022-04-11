@@ -23,6 +23,9 @@ function makeNotifyMsg(notify: NotifyType) {
   if (notifyType === "REPLY") {
     return <span>{notify.fromUser.username} 이 당신의 게시글에 댓글을 남겼습니다.</span>
   }
+  if (notifyType === "NEW_POST") {
+    return <span>{notify.fromUser.username} 이 새로운 게시글을 작성했습니다.</span>
+  }
   return null;
 }
 
@@ -34,12 +37,13 @@ const NotifyItem: React.FC<IProps> = ({...props}) => {
     const result = await checkNotify(notify.id)
     result && dispatch(notifyActions.checkNotify(notify.id))
     result && updateNotifyCount(dispatch)
-    if (notify.notifyType === "LIKE" || notify.notifyType === "REPLY") {
+    if (notify.notifyType === "LIKE" || notify.notifyType === "REPLY" || notify.notifyType === "NEW_POST") {
       await router.push(`/post/${notify.targetId}`)
     }
     if (notify.notifyType === "FOLLOWER") {
       await router.push(`/profile/${notify.fromUser.username}`)
     }
+
   }
 
   return (<>

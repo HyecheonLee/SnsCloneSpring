@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Loading from '../Loading'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useAppDispatch, useSelector } from '../../store'
-import { fetchNotify } from '../../apis/notifyApi'
+import { checkNotifyAll, fetchNotify, updateNotifyCount } from '../../apis/notifyApi'
 import { notifyActions } from '../../store/notify'
 import NotifyItem from './NotifyItem'
 
@@ -14,7 +14,7 @@ const Notifies: React.FC<IProps> = ({...props}) => {
   const dispatch = useAppDispatch()
   const notifies = notify.notifies
   useEffect(() => {
-    fetch()
+    initFetch()
   }, []);
 
   const fetch = async () => {
@@ -26,8 +26,21 @@ const Notifies: React.FC<IProps> = ({...props}) => {
     }
     dispatch(notifyActions.fetch(result));
   }
+  const initFetch = async () => {
+    const result = await fetchNotify()
+    dispatch(notifyActions.init(result));
+  }
+  const allCheckNotifyClickHandler = async () => {
+    await checkNotifyAll()
+    await updateNotifyCount(dispatch)
+  }
 
   return (<>
+    <button disabled={notify.count === 0} className="btn btn-link"
+            onClick={allCheckNotifyClickHandler}
+            style={{position: "absolute", right: "15px", top: "5px"}}>
+      <i className="fas fa fa-check-square fa-2x fw-bolder"/>
+    </button>
     <InfiniteScroll
       dataLength={notifies.length} //This is important field to render the next data
       next={fetch}

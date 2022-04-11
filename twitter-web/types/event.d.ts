@@ -12,4 +12,4 @@ export type NotifyType = {
 }
 
 export type NotifyKindType =
-  | "LIKE" | "FOLLOWER" | "REPLY"
+  | "LIKE" | "FOLLOWER" | "REPLY" | "NEW_POST"

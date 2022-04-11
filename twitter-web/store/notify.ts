@@ -16,6 +16,10 @@ const notify = createSlice({
   name: "notify",
   initialState,
   reducers: {
+    init: (state, action: PayloadAction<NotifyType[]>) => {
+      state.hasNext = action.payload.length >= 10
+      state.notifies = [...action.payload]
+    },
     fetch: (state, action: PayloadAction<NotifyType[]>) => {
       state.hasNext = action.payload.length >= 10
       state.notifies = [...state.notifies, ...action.payload]

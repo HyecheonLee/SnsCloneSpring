@@ -67,6 +67,7 @@ const LiveEvent: React.FC<IProps> = ({...props}) => {
     }
     source.onmessage = (e) => {
       const result: EventType<any> = JSON.parse(e.data);
+      console.log(result.kind, result.data);
       const event = events.get(result.kind)
       if (event) {
         event((result.data))

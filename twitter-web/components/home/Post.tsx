@@ -178,7 +178,7 @@ const Post: React.FC<IProps> = ({post}) => {
             <div className={`flex-fill d-flex align-items-center`}>
               <button onClick={likeButton}
                       className={`mx-1  ${like ? "active" : "text-black-50"}`}>
-                <i className="rounded-circle p-1 fas fa-heart"></i>
+                <i className="rounded-circle p-1 fas fa-heart"/>
               </button>
               <span
                 className={`${like ? "active" : "text-black-50"}`}>{post.postStatus?.likeCnt || 0}</span>

@@ -25,5 +25,9 @@ export const fetchNotify = (lastId: number = Number.MAX_SAFE_INTEGER) => {
     .then(value => value?.data)
     .then(value => {
       return value || []
-    })
+    });
+}
+export const checkNotifyAll = () => {
+  return apiV1.put<ApiResponseType<boolean>>(`/notify/all`)
+    .then(value => value.data)
 }
