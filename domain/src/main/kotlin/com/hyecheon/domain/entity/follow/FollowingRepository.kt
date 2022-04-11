@@ -17,4 +17,6 @@ interface FollowingRepository : JpaRepository<Following, Long> {
 
 	@EntityGraph(attributePaths = ["toUser"], type = EntityGraph.EntityGraphType.LOAD)
 	fun findTop10ByFromUserAndIdLessThanOrderByIdDesc(fromUser: User, id: Long): List<Following>
+
+	fun findAllByToUserId(toUserId: Long): List<Following>
 }

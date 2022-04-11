@@ -1,6 +1,7 @@
 package com.hyecheon.web.service
 
 import com.hyecheon.domain.entity.notification.NotificationRepository
+import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.domain.entity.user.UserRepository
 import com.hyecheon.web.dto.notification.NotificationDto
 import com.hyecheon.web.event.EventMessage
@@ -30,15 +31,16 @@ class NotificationService(
 	@Transactional
 	@EventListener
 	fun onNotificationEvent(new: NotificationDto.New) = run {
-		val exists =
-			notificationRepository.existsByToUserIdAndFromUserIdAndNotifyTypeAndTargetId(
+		val exists = notificationRepository
+			.existsByToUserIdAndFromUserIdAndNotifyTypeAndKeyId(
 				new.toUserId,
 				new.fromUserId,
 				new.notifyType,
-				new.targetId
+				new.keyId
 			)
 
 		if (exists) return@run
+
 		val user = userRepository.findById(new.fromUserId).orElseThrow { IdNotExistsException("사용자 아이디 오류") }
 		val savedEntity = notificationRepository.save(new.toEntity().apply { fromUser = user })
 
@@ -57,6 +59,11 @@ class NotificationService(
 			return true
 		}
 		return false
+	}
+
+	fun checkedAll(): Int {
+		val authToken = AuthToken.getLoggedToken()
+		return notificationRepository.updateAllChecked(authToken.userId!!)
 	}
 
 	fun unCheckedCount(): Long {

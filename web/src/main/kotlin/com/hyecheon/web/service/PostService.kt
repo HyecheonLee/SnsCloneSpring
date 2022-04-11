@@ -1,5 +1,6 @@
 package com.hyecheon.web.service
 
+import com.hyecheon.domain.entity.follow.FollowingRepository
 import com.hyecheon.domain.entity.notification.NotifyType
 import com.hyecheon.domain.entity.post.*
 import com.hyecheon.domain.entity.user.AuthToken
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional
 class PostService(
 	private val postRepository: PostRepository,
 	private val postLikeRepository: PostLikeRepository,
+	private val userFollowingRepository: FollowingRepository,
 	private val userRepository: UserRepository,
 	private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
@@ -77,7 +79,22 @@ class PostService(
 
 		val postedBy = loggedUser()
 		newSavedPost.postedBy = postedBy
-		applicationEventPublisher.publishEvent(EventMessage(Kind.updatedPost, PostRespDto.of(newSavedPost)))
+
+		applicationEventPublisher.publishEvent(EventMessage(Kind.newPost, PostRespDto.of(newSavedPost)))
+
+		if (!post.isReply) {
+			val followedUsers = userFollowingRepository.findAllByToUserId(loggedUser().id!!)
+
+			followedUsers.forEach {
+				applicationEventPublisher.publishEvent(NotificationDto.New(
+					fromUserId = loggedUser().id!!,
+					toUserId = it.fromUser.id!!,
+					notifyType = NotifyType.NEW_POST,
+					keyId = newSavedPost.id,
+					targetId = newSavedPost.id
+				))
+			}
+		}
 
 		newSavedPost.id!!
 	}
@@ -120,7 +137,8 @@ class PostService(
 			fromUserId = loggedUser().id!!,
 			toUserId = post.postedBy?.id!!,
 			notifyType = NotifyType.REPLY,
-			targetId = reply.id!!
+			keyId = reply.id,
+			targetId = postId
 		))
 
 		reply.id!!
@@ -140,6 +158,7 @@ class PostService(
 				fromUserId = loggedUser.id!!,
 				toUserId = post.postedBy?.id!!,
 				notifyType = NotifyType.LIKE,
+				keyId = postId,
 				targetId = postId
 			))
 		}

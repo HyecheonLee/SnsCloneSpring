@@ -6,5 +6,5 @@ package com.hyecheon.domain.entity.notification
  * Date: 2022/04/10
  */
 enum class NotifyType {
-	LIKE, FOLLOWER, REPLY
+	LIKE, FOLLOWER, REPLY,NEW_POST
 }

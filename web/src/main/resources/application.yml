@@ -54,7 +54,7 @@ spring:
 decorator:
   datasource:
     p6spy:
-      enable-logging: false
+      enable-logging: true
       multiline: true
       logging: slf4j
       log-file: logs/spy.log

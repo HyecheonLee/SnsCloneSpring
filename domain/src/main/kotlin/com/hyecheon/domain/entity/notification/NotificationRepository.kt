@@ -2,8 +2,8 @@ package com.hyecheon.domain.entity.notification
 
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
-import java.util.*
 
 /**
  * User: hyecheon lee
@@ -17,11 +17,15 @@ interface NotificationRepository : JpaRepository<Notification, Long> {
 	@EntityGraph(attributePaths = ["fromUser"], type = EntityGraph.EntityGraphType.LOAD)
 	fun findTop10ByToUserIdAndIdLessThanOrderByIdDesc(toUserId: Long, id: Long): List<Notification>
 
-	fun existsByToUserIdAndFromUserIdAndNotifyTypeAndTargetId(
+	fun existsByToUserIdAndFromUserIdAndNotifyTypeAndKeyId(
 		userId: Long,
 		fromUserId: Long,
 		notifyType: NotifyType,
-		targetId: Long?,
+		keyId: Long?,
 	): Boolean
+
+	@Modifying
+	@Query("update Notification n set n.checked =true  where n.toUserId = :userId")
+	fun updateAllChecked(userId: Long): Int
 
 }

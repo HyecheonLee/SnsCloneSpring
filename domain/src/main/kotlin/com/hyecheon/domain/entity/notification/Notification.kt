@@ -20,6 +20,8 @@ class Notification(
 	@Enumerated(EnumType.STRING)
 	var notifyType: NotifyType? = null,
 
+	var keyId: Long? = null,
+
 	var checked: Boolean = false,
 
 	var targetId: Long? = null,

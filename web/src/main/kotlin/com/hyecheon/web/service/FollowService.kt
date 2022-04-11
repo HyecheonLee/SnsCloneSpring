@@ -67,10 +67,12 @@ class FollowService(
 			FollowInfoDto(followedStatus)))
 
 		applicationEventPublisher.publishEvent(NotificationDto.New(
-			fromUserId = fromId, toUserId = toId,
-			NotifyType.FOLLOWER, null
+			fromUserId = fromId,
+			toUserId = toId,
+			NotifyType.FOLLOWER,
+			keyId = fromId,
+			targetId = fromId
 		))
-
 	}
 
 	private fun unfollow(fromId: Long, toId: Long) {

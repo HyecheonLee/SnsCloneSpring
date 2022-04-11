@@ -16,6 +16,7 @@ object NotificationDto {
 		var fromUser: UserRespDto.SimpleModel? = null,
 		var toUserId: Long? = null,
 		var notifyType: NotifyType? = null,
+		var keyId: Long? = null,
 		var checked: Boolean = false,
 		var targetId: Long?,
 		var createdAt: LocalDateTime? = null,
@@ -23,10 +24,10 @@ object NotificationDto {
 	)
 
 	data class New(
-
 		var fromUserId: Long,
 		var toUserId: Long,
 		var notifyType: NotifyType,
+		var keyId: Long?,
 		var targetId: Long?,
 	) {
 		fun toEntity() = run {

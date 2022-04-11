@@ -34,4 +34,10 @@ class NotificationApi(
 		val result = notificationService.checked(id)
 		ResponseDto(data = result)
 	}
+
+	@PutMapping("/all")
+	fun checked() = run {
+		val result = notificationService.checkedAll()
+		ResponseDto(data = result)
+	}
 }
