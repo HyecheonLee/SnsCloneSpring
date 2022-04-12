@@ -10,6 +10,7 @@ import LiveEvent from '../components/events/LiveEvent'
 import DeletePostModal from '../components/modal/DeletePostModal'
 import React from 'react'
 import ConfirmModal from '../components/modal/ConfirmModal'
+import NotifyToast from '../components/notifications/NotifyToast'
 
 function MyApp({Component, pageProps}: AppProps) {
   let router = useRouter()
@@ -30,6 +31,7 @@ function MyApp({Component, pageProps}: AppProps) {
         <LoadingModal/>
         <DeletePostModal/>
         <ConfirmModal/>
+        <NotifyToast/>
       </LiveEvent>
     </Auth>
   )

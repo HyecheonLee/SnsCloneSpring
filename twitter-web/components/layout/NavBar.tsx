@@ -6,15 +6,19 @@ import { authActions } from '../../store/auth'
 import { apiV1User } from '../../utils/apiUtils'
 import { useSelector } from '../../store'
 import { updateNotifyCount } from '../../apis/notifyApi'
-import { notifyActions } from '../../store/notify'
+import { chatActions } from '../../store/chat'
+import { fetchChatRooms } from '../../apis/chatApi'
 
 const NavBar = () => {
   let router = useRouter()
-  const notify = useSelector(state => state.notify)
+  const {notify, chat} = useSelector(state => state)
   const dispatch = useDispatch()
 
   useEffect(() => {
     updateNotifyCount(dispatch)
+    fetchChatRooms().then(value => {
+      dispatch(chatActions.fetchChats(value))
+    });
   }, []);
 
   const logout = async (e: any) => {
@@ -29,12 +33,10 @@ const NavBar = () => {
     <div className="vh-100 col-2 position-sticky top-0">
       <nav
         className="d-flex flex-column display-6 text-muted justify-content-center">
-        <Link href={"/"}>
-          <a
-            className="btn rounded-circle d-flex align-items-center justify-content-end">
-            <i className="fas fa-dove"/>
-          </a>
-        </Link>
+        <div
+          className="rounded-circle d-flex align-items-center justify-content-end text-primary">
+          <i className="fas fa-dog"/>
+        </div>
         <Link href={"/"}>
           <a
             className="btn rounded-circle d-flex align-items-center justify-content-end">
@@ -59,8 +61,12 @@ const NavBar = () => {
         </Link>
         <Link href="/messages">
           <a
-            className="btn rounded-circle d-flex align-items-center justify-content-end">
+            className="btn rounded-circle d-flex align-items-center justify-content-end position-relative">
             <i className="fas fa-envelope"/>
+            {chat.unCheckedCnt > 0 &&
+            <span style={{top: "12px", left: "42px", fontSize: "10px"}}
+                  className="position-absolute translate-middle badge rounded-circle bg-danger">{chat.unCheckedCnt}</span>
+            }
           </a>
         </Link>
         <Link href={"/profile"}>
@@ -81,6 +87,13 @@ const NavBar = () => {
         }
 
         nav a {
+          padding: 10px;
+          font-size: 30px;
+          width: 55px;
+          height: 55px;
+        }
+
+        nav div {
           padding: 10px;
           font-size: 30px;
           width: 55px;

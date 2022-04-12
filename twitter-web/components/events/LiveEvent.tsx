@@ -9,11 +9,14 @@ import { useAppDispatch } from '../../store'
 import { NotifyType } from '../../types/event'
 import { updateNotifyCount } from '../../apis/notifyApi'
 import { notifyActions } from '../../store/notify'
+import { ChatStatusType, ChatType } from '../../types/chat'
+import { useRouter } from 'next/router'
+import { NextRouter } from 'next/dist/client/router'
 
 interface IProps {
 }
 
-const getEvents = (dispatch: any) => {
+const getEvents = (dispatch: any, router: NextRouter) => {
   const events = new Map<EventKindType, (e: any) => void>()
 
   events.set("updatedPost", (event: any) => {
@@ -44,8 +47,10 @@ const getEvents = (dispatch: any) => {
 
 
   events.set("chatStatus", async (event: any) => {
-    const result = await fetchChatStatus(event.chatRoomId)
-    dispatch(chatActions.fetchChat(result))
+    const pathname = router.pathname
+    if (pathname === `/messages/${event.chatRoomId}`) return
+    const result: ChatStatusType | undefined = await fetchChatStatus(event.chatRoomId);
+    result && dispatch(chatActions.fetchChat(result))
   })
 
   events.set("notify", (event: NotifyType) => {
@@ -59,8 +64,9 @@ const getEvents = (dispatch: any) => {
 const LiveEvent: React.FC<IProps> = ({...props}) => {
   const postEventUrl = `${domain}/api/v1/event`
   const dispatch = useAppDispatch()
+  const router = useRouter()
   useEffect(() => {
-    const events = getEvents(dispatch)
+    const events = getEvents(dispatch, router)
     const source: EventSource = new EventSource(postEventUrl, {withCredentials: true});
     source.onopen = (e) => {
       console.log('SSE opened!');
