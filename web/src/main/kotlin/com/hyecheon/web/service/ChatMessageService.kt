@@ -5,6 +5,7 @@ import com.hyecheon.domain.entity.user.AuthToken
 import com.hyecheon.web.dto.chat.ChatMessageDto
 import com.hyecheon.web.event.EventMessage
 import com.hyecheon.web.exception.IdNotExistsException
+import com.hyecheon.web.utils.getAuthToken
 import com.hyecheon.web.utils.makeChatEventKey
 import com.hyecheon.web.utils.makeUserEventKey
 import org.slf4j.LoggerFactory
@@ -43,13 +44,13 @@ class ChatMessageService(
 			ChatMessageDto.toModel(msg),
 			key = makeChatEventKey(msg.chatRoomId)))
 
-		chatRoom.users?.forEach { user ->
+		val authToken = getAuthToken()
+		chatRoom.users?.filter { it.id != authToken.userId }?.forEach { user ->
 			applicationEventPublisher.publishEvent(
 				EventMessage(EventMessage.Kind.chatStatus,
 					mapOf("chatRoomId" to chatMessage.chatRoomId),
 					key = makeUserEventKey(user.id!!)))
 		}
-
 		msg.id
 	}
 
