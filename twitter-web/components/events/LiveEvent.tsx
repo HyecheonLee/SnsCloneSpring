@@ -47,8 +47,11 @@ const getEvents = (dispatch: any, router: NextRouter) => {
 
 
   events.set("chatStatus", async (event: any) => {
-    const pathname = router.pathname
-    if (pathname === `/messages/${event.chatRoomId}`) return
+    const path = router.asPath
+    console.log("why?");
+    console.log(router)
+    if (path === `/messages/${event.chatRoomId}`) return
+    console.log("w=====");
     const result: ChatStatusType | undefined = await fetchChatStatus(event.chatRoomId);
     result && dispatch(chatActions.fetchChat(result))
   })

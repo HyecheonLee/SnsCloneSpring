@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Toast } from 'react-bootstrap'
 import { NotifyType } from '../../types/event'
 import NotifyItem from './NotifyItem'
+import { dayjs } from '../../utils/DayjsUtils'
 
 interface IProps {
   notify: NotifyType
