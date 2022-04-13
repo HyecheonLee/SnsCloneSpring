@@ -6,12 +6,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web") {
-        // 종속성 제외 추가
         exclude("org.springframework.boot", "spring-boot-starter-tomcat")
     }
+
     implementation("org.springframework.boot:spring-boot-starter-undertow") {
-//        exclude("io.undertow", "undertow-websockets-jsr")
+        exclude("io.undertow", "undertow-websockets-jsr")
     }
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -27,7 +28,6 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.5.0.Beta2")
     kapt("org.mapstruct:mapstruct-processor:1.5.0.Beta2")
 
-
     implementation("io.jsonwebtoken:jjwt:0.9.1")
 
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0")
@@ -35,6 +35,14 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
     testImplementation("com.epages:restdocs-api-spec-mockmvc:0.16.0")
+
+
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    // https://mvnrepository.com/artifact/org.ehcache/ehcache
+    implementation("org.ehcache:ehcache:3.10.0")
+    implementation("javax.cache:cache-api")
+
+
 
     implementation(project(":domain"))
 }

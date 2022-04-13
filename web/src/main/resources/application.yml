@@ -11,14 +11,19 @@ app:
   filePrePath: ${user.dir}/upload
 
 spring:
-  profiles:
-    active: local
+  config:
+    activate:
+      on-profile: local
   web:
     resources:
       static-locations: file:${app.filePrePath},  classpath:/resources/static
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
 server:
   error:
     include-message: always
+
   servlet:
     encoding:
       charset: UTF-8
@@ -58,8 +63,5 @@ decorator:
       multiline: true
       logging: slf4j
       log-file: logs/spy.log
-logging:
-  file:
-    path: logs
-#  level:
-#    root: trace
+
+logging.file.path: logs/
