@@ -36,7 +36,7 @@ class ChatService(
 	}
 
 	fun findRoomAllByLoggedUser() = run {
-		val (userId, username, _) = AuthToken.getLoggedToken()
+		val (_, username, _) = AuthToken.getLoggedToken()
 		chatMessageStatus.findAllByUsername(username!!)
 	}
 

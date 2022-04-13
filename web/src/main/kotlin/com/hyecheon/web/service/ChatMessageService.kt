@@ -35,8 +35,8 @@ class ChatMessageService(
 		val chatRoom = chatRoomRepository.findById(chatMessage.chatRoomId)
 			.orElseThrow { IdNotExistsException("[ chatRoomId : ${chatMessage.chatRoomId}]") }
 
-		chatRoom.lastMessage = chatMessage.message
-		chatRoom.messageCnt = chatRoom.messageCnt ?: 0 + 1L
+        chatRoom.lastMessage = chatMessage.message
+        chatRoom.messageCnt = chatRoom.messageCnt ?: (0 + 1L)
 
 		chatMessageStatusRepository.updateLastMsg(chatMessage.chatRoomId, msg.id!!)
 

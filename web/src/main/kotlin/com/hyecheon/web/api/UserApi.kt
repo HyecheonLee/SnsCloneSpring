@@ -29,16 +29,12 @@ class UserApi(
 	private val appProperty: AppProperty,
 ) {
 
-	@GetMapping("/me")
-	fun me() = run {
-		val token = AuthToken.loggedToken()
-		if (!token.isPresent) throw LoginException("로그인을 해주세요.")
-		val username = token.get().username ?: throw LoginException("로그인을 해주세요.")
-		val loggedUser = userService.findByUsername(username)
-		ResponseEntity.ok(
-			ResponseDto(data = UserRespDto.of(loggedUser))
-		)
-	}
+    @GetMapping("/me")
+    fun me() = run {
+        val authToken = AuthToken.getLoggedToken()
+        val loggedUser = userService.findById(authToken.userId!!)
+        ResponseEntity.ok(ResponseDto(data = UserRespDto.of(loggedUser)))
+    }
 
 	@DeleteMapping("/me")
 	fun deleteMe() = run {

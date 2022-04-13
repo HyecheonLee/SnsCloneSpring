@@ -20,45 +20,45 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 @Service
 class UserService(
-	private val userRepository: UserRepository,
-	private val authorizationRepository: AuthorizationRepository,
-	private val passwordEncoder: PasswordEncoder,
-	private val jwtTokenProvider: JwtTokenProvider,
+    private val userRepository: UserRepository,
+    private val authorizationRepository: AuthorizationRepository,
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtTokenProvider: JwtTokenProvider,
 ) {
 
-	@Transactional
-	fun join(user: User) = run {
-		val authorization =
-			authorizationRepository.findByRole("USER")
-				?: authorizationRepository.save(Authorization("USER"))
+    @Transactional
+    fun join(user: User) = run {
+        val authorization =
+            authorizationRepository.findByRole("USER")
+                ?: authorizationRepository.save(Authorization("USER"))
 
-		val newUser = user.apply {
-			password = passwordEncoder.encode(password)
-			profilePic = "/images/profilePic.jpeg"
-			addRole(authorization)
-		}
-		userRepository.save(newUser)
+        val newUser = user.apply {
+            password = passwordEncoder.encode(password)
+            profilePic = "/images/profilePic.jpeg"
+            addRole(authorization)
+        }
+        userRepository.save(newUser)
 
-	}
+    }
 
-	fun findByUsername(username: String) = run {
-		userRepository.findByUsername(username).orElseThrow { UsernameNotFoundException(username) }
-			?: throw UsernameNotFoundException(username)
-	}
+    fun findByUsername(username: String) = run {
+        userRepository.findByUsername(username).orElseThrow { UsernameNotFoundException(username) }
+            ?: throw UsernameNotFoundException(username)
+    }
 
-	fun generateToken(username: String, password: String) = run {
-		val user = userRepository.findByUsername(username).orElseThrow { UsernameNotFoundException(username) }
-		if (!passwordEncoder.matches(password, user.password)) {
-			throw PasswordInvalidException("$username 의 비밀번호가 틀립니다.")
-		}
-		jwtTokenProvider.generateToken(user)
-	}
+    fun generateToken(username: String, password: String) = run {
+        val user = userRepository.findByUsername(username).orElseThrow { UsernameNotFoundException(username) }
+        if (!passwordEncoder.matches(password, user.password)) {
+            throw PasswordInvalidException("$username 의 비밀번호가 틀립니다.")
+        }
+        jwtTokenProvider.generateToken(user)
+    }
 
-	fun findById(id: Long) {
-		userRepository.findById(id).orElseThrow { IdNotExistsException("사용자 id[${id}] 가 존재하지 않습니다.") }
-	}
+    fun findById(id: Long) = run {
+        userRepository.findById(id).orElseThrow { IdNotExistsException("사용자 id[${id}] 가 존재하지 않습니다.") }
+    }
 
-	fun searchByKeyword(keyword: String, lastId: Long): List<User> {
-		return userRepository.findTop10ByUsernameContainsAndIdIsLessThanOrderByIdDesc(keyword, lastId)
-	}
+    fun searchByKeyword(keyword: String, lastId: Long): List<User> {
+        return userRepository.findTop10ByUsernameContainsAndIdIsLessThanOrderByIdDesc(keyword, lastId)
+    }
 }
